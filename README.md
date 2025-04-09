@@ -14,10 +14,16 @@ This package contains shared utilities designed to be used across the Elvora web
 2. Import the required utilities into your codebase.
 3. Follow the documentation for each utility to ensure proper implementation.
 
+## Guidelines
+
+- Do not include any environment variables or private information in this package.
+- Any changes to functionality must be designed to affect both websites equally.
+- Ensure backward compatibility to avoid breaking existing implementations.
+
 ## Contributing
 
-If you need to add or modify utilities, ensure that the changes are compatible with both websites. Test thoroughly before committing updates.
+If you need to add or modify utilities, ensure that the changes are compatible with both websites. Test thoroughly before committing updates. Follow the guidelines to maintain the integrity and security of the package.
 
 ## License
 
-This package is licensed under [Your License Here]. Ensure compliance with the license terms when using or modifying the utilities.
+This package is private and is not intended for public use. It is strictly for internal use within the Elvora and Ignite Nursing projects. Redistribution or external use is prohibited.
