@@ -9,9 +9,9 @@
     "forceConsistentCasingInFileNames": true, // Ensure consistent casing in imports
     "baseUrl": "./", // Base directory for resolving non-relative module names
     "paths": {
-      "@/*": ["src/*"] // Alias for cleaner imports
+      "@elvora*": ["*"] // Alias for cleaner imports
     }
   },
-  "include": ["src"], // Include all files in the src directory
+  "include": ["./*"], // Include all files in the src directory
   "exclude": ["node_modules", "dist"] // Exclude node_modules and dist directories
 }

@@ -19,7 +19,7 @@ import { fileURLToPath } from "url";
 
 import { collections, Users } from "./collections";
 import { createMailAdapter } from "./functions";
-import { DbConfig, PayloadConfig } from "./types";
+import { DbConfig, PayloadConfig } from "./types/config";
 
 // Database
 
@@ -33,12 +33,13 @@ async function createPayloadConfig(options: PayloadConfig) {
       importMap: {
         baseDir: path.resolve(dirname),
       },
+
       theme: "light",
       avatar: {
-        Component: "components/payload/#PayloadAvatar",
+        Component: "@elvora/components/payload/#PayloadAvatar",
       },
       components: {
-        providers: ["components/payload/#PayloadProvider"],
+        providers: ["@elvora/components/payload/#PayloadProvider"],
       },
       livePreview: {
         url({ data, collectionConfig, req }) {
@@ -91,6 +92,7 @@ async function createPayloadConfig(options: PayloadConfig) {
         connectionString: getDBUrl(options.db) || "",
       },
       push: false,
+      migrationDir: path.resolve(dirname, "migrations"),
     }),
     sharp,
     plugins: [],

@@ -75,7 +75,7 @@ const JobPosting: CollectionConfig = {
             const data = req.data as IJobPosting;
 
             // await import { getSubstringFromLexicalRichText } from "utils/functions";
-            const getSubstringFromLexicalRichText = await import("utils/functions").then((mod) => mod.getSubstringFromLexicalRichText);
+            const getSubstringFromLexicalRichText = await import("@elvora/utils/functions").then((mod) => mod.getSubstringFromLexicalRichText);
 
             if (data.description) {
               data.short_description = getSubstringFromLexicalRichText(data.description as any);

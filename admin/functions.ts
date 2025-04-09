@@ -1,6 +1,6 @@
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import nodemailer from "nodemailer";
-import { MailTransportConfig } from "./types";
+import { MailTransportConfig } from "./types/config";
 
 const createMailTransport = (config: MailTransportConfig) => {
   return nodemailer.createTransport({
