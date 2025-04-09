@@ -1,3 +1,5 @@
 export * from "./config";
-// @ts-nocheck
+export * from "./lexical";
+
+// @ts-ignore
 export * from "./payload";

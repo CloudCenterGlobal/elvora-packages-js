@@ -1,8 +1,8 @@
 import { headers as nextHeaders } from "next/headers";
 
+import { LexicalTextRoot } from "@elvora/admin/types";
 import { capitalCase } from "change-case";
 import path from "path";
-import { LexicalTextRoot } from "types/payload";
 
 // remove /api/ and /file/
 const REPLACE_REGEX = /\/api\/|\/file/g;

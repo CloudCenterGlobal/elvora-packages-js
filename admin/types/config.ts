@@ -1,3 +1,5 @@
+import type { Config } from "payload";
+
 export type DbConfig = {
   host?: string;
   port?: number;
@@ -8,7 +10,7 @@ export type DbConfig = {
 
 export type PayloadConfig = {
   db: DbConfig;
-  email?: MailTransportConfig;
+  email?: Config["email"];
 };
 
 export type MailTransportConfig = {

@@ -18,7 +18,6 @@ import sharp from "sharp";
 import { fileURLToPath } from "url";
 
 import { collections, Users } from "./collections";
-import { createMailAdapter } from "./functions";
 import { DbConfig, PayloadConfig } from "./types/config";
 
 // Database
@@ -62,7 +61,7 @@ async function createPayloadConfig(options: PayloadConfig) {
         ],
       },
     },
-    email: createMailAdapter(options.email),
+    email: options.email,
     collections: collections,
     editor: lexicalEditor({
       features({ rootFeatures }) {
