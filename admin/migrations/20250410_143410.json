@@ -1,5 +1,5 @@
 {
-  "id": "50721fe9-59c7-4526-a0d7-ca977d00ba10",
+  "id": "c2dedd1c-7710-458e-8527-dd2ba8a260c6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -989,8 +989,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.job_postings_job_types": {
-      "name": "job_postings_job_types",
+    "public.job_postings_metadata_job_types": {
+      "name": "job_postings_metadata_job_types",
       "schema": "",
       "columns": {
         "order": {
@@ -1007,7 +1007,7 @@
         },
         "value": {
           "name": "value",
-          "type": "enum_job_postings_job_types",
+          "type": "enum_job_postings_metadata_job_types",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
@@ -1020,8 +1020,8 @@
         }
       },
       "indexes": {
-        "job_postings_job_types_order_idx": {
-          "name": "job_postings_job_types_order_idx",
+        "job_postings_metadata_job_types_order_idx": {
+          "name": "job_postings_metadata_job_types_order_idx",
           "columns": [
             {
               "expression": "order",
@@ -1035,8 +1035,8 @@
           "method": "btree",
           "with": {}
         },
-        "job_postings_job_types_parent_idx": {
-          "name": "job_postings_job_types_parent_idx",
+        "job_postings_metadata_job_types_parent_idx": {
+          "name": "job_postings_metadata_job_types_parent_idx",
           "columns": [
             {
               "expression": "parent_id",
@@ -1052,9 +1052,9 @@
         }
       },
       "foreignKeys": {
-        "job_postings_job_types_parent_fk": {
-          "name": "job_postings_job_types_parent_fk",
-          "tableFrom": "job_postings_job_types",
+        "job_postings_metadata_job_types_parent_fk": {
+          "name": "job_postings_metadata_job_types_parent_fk",
+          "tableFrom": "job_postings_metadata_job_types",
           "tableTo": "job_postings",
           "columnsFrom": [
             "parent_id"
@@ -1084,43 +1084,64 @@
         },
         "role": {
           "name": "role",
-          "type": "varchar",
+          "type": "enum_job_postings_role",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
-        "uuid": {
-          "name": "uuid",
-          "type": "varchar",
+        "metadata_recruitment_type": {
+          "name": "metadata_recruitment_type",
+          "type": "enum_job_postings_metadata_recruitment_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Internal'"
+        },
+        "metadata_min_pay": {
+          "name": "metadata_min_pay",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": false
         },
-        "job_location_id": {
-          "name": "job_location_id",
+        "metadata_max_pay": {
+          "name": "metadata_max_pay",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata_job_location_id": {
+          "name": "metadata_job_location_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "description": {
-          "name": "description",
+        "metadata_job_questions_id": {
+          "name": "metadata_job_questions_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata_created_by_id": {
+          "name": "metadata_created_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "details_description": {
+          "name": "details_description",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
-        "short_description": {
-          "name": "short_description",
+        "details_short_description": {
+          "name": "details_short_description",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "min_pay": {
-          "name": "min_pay",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "max_pay": {
-          "name": "max_pay",
-          "type": "numeric",
+        "uuid": {
+          "name": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -1129,7 +1150,7 @@
           "type": "enum_job_postings_status",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'draft'"
         },
         "start_date": {
@@ -1141,12 +1162,6 @@
         "job_expiration": {
           "name": "job_expiration",
           "type": "timestamp(3) with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "job_questions_id": {
-          "name": "job_questions_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -1166,6 +1181,51 @@
         }
       },
       "indexes": {
+        "job_postings_metadata_metadata_job_location_idx": {
+          "name": "job_postings_metadata_metadata_job_location_idx",
+          "columns": [
+            {
+              "expression": "metadata_job_location_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_postings_metadata_metadata_job_questions_idx": {
+          "name": "job_postings_metadata_metadata_job_questions_idx",
+          "columns": [
+            {
+              "expression": "metadata_job_questions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_postings_metadata_metadata_created_by_idx": {
+          "name": "job_postings_metadata_metadata_created_by_idx",
+          "columns": [
+            {
+              "expression": "metadata_created_by_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "job_postings_uuid_idx": {
           "name": "job_postings_uuid_idx",
           "columns": [
@@ -1177,36 +1237,6 @@
             }
           ],
           "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "job_postings_job_location_idx": {
-          "name": "job_postings_job_location_idx",
-          "columns": [
-            {
-              "expression": "job_location_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "job_postings_job_questions_idx": {
-          "name": "job_postings_job_questions_idx",
-          "columns": [
-            {
-              "expression": "job_questions_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -1243,12 +1273,12 @@
         }
       },
       "foreignKeys": {
-        "job_postings_job_location_id_job_locations_id_fk": {
-          "name": "job_postings_job_location_id_job_locations_id_fk",
+        "job_postings_metadata_job_location_id_job_locations_id_fk": {
+          "name": "job_postings_metadata_job_location_id_job_locations_id_fk",
           "tableFrom": "job_postings",
           "tableTo": "job_locations",
           "columnsFrom": [
-            "job_location_id"
+            "metadata_job_location_id"
           ],
           "columnsTo": [
             "id"
@@ -1256,12 +1286,25 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "job_postings_job_questions_id_job_forms_id_fk": {
-          "name": "job_postings_job_questions_id_job_forms_id_fk",
+        "job_postings_metadata_job_questions_id_job_forms_id_fk": {
+          "name": "job_postings_metadata_job_questions_id_job_forms_id_fk",
           "tableFrom": "job_postings",
           "tableTo": "job_forms",
           "columnsFrom": [
-            "job_questions_id"
+            "metadata_job_questions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "job_postings_metadata_created_by_id_users_id_fk": {
+          "name": "job_postings_metadata_created_by_id_users_id_fk",
+          "tableFrom": "job_postings",
+          "tableTo": "users",
+          "columnsFrom": [
+            "metadata_created_by_id"
           ],
           "columnsTo": [
             "id"
@@ -1375,13 +1418,13 @@
           "name": "name",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "form": {
           "name": "form",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "'{\"fields\":[]}'::jsonb"
         },
         "updated_at": {
@@ -1397,6 +1440,14 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "_status": {
+          "name": "_status",
+          "type": "enum_job_forms_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
         }
       },
       "indexes": {
@@ -1429,9 +1480,847 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "job_forms__status_idx": {
+          "name": "job_forms__status_idx",
+          "columns": [
+            {
+              "expression": "_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._job_forms_v": {
+      "name": "_job_forms_v",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_name": {
+          "name": "version_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_form": {
+          "name": "version_form",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"fields\":[]}'::jsonb"
+        },
+        "version_updated_at": {
+          "name": "version_updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_created_at": {
+          "name": "version_created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version__status": {
+          "name": "version__status",
+          "type": "enum__job_forms_v_version_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "latest": {
+          "name": "latest",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "autosave": {
+          "name": "autosave",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_job_forms_v_parent_idx": {
+          "name": "_job_forms_v_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_version_version_updated_at_idx": {
+          "name": "_job_forms_v_version_version_updated_at_idx",
+          "columns": [
+            {
+              "expression": "version_updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_version_version_created_at_idx": {
+          "name": "_job_forms_v_version_version_created_at_idx",
+          "columns": [
+            {
+              "expression": "version_created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_version_version__status_idx": {
+          "name": "_job_forms_v_version_version__status_idx",
+          "columns": [
+            {
+              "expression": "version__status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_created_at_idx": {
+          "name": "_job_forms_v_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_updated_at_idx": {
+          "name": "_job_forms_v_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_latest_idx": {
+          "name": "_job_forms_v_latest_idx",
+          "columns": [
+            {
+              "expression": "latest",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_autosave_idx": {
+          "name": "_job_forms_v_autosave_idx",
+          "columns": [
+            {
+              "expression": "autosave",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_job_forms_v_parent_id_job_forms_id_fk": {
+          "name": "_job_forms_v_parent_id_job_forms_id_fk",
+          "tableFrom": "_job_forms_v",
+          "tableTo": "job_forms",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.job_applications": {
+      "name": "job_applications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mobile": {
+          "name": "mobile",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cv": {
+          "name": "cv",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "job_id": {
+          "name": "job_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assessment": {
+          "name": "assessment",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"answers\":{},\"fields\":[]}'::jsonb"
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "job_applications_job_idx": {
+          "name": "job_applications_job_idx",
+          "columns": [
+            {
+              "expression": "job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_applications_uuid_idx": {
+          "name": "job_applications_uuid_idx",
+          "columns": [
+            {
+              "expression": "uuid",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_applications_updated_at_idx": {
+          "name": "job_applications_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_applications_created_at_idx": {
+          "name": "job_applications_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "job_applications_job_id_job_postings_id_fk": {
+          "name": "job_applications_job_id_job_postings_id_fk",
+          "tableFrom": "job_applications",
+          "tableTo": "job_postings",
+          "columnsFrom": [
+            "job_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.permissions": {
+      "name": "permissions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "permissions_key_idx": {
+          "name": "permissions_key_idx",
+          "columns": [
+            {
+              "expression": "key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permissions_updated_at_idx": {
+          "name": "permissions_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permissions_created_at_idx": {
+          "name": "permissions_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.permissions_groups": {
+      "name": "permissions_groups",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_system": {
+          "name": "is_system",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "permissions_groups_name_idx": {
+          "name": "permissions_groups_name_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permissions_groups_updated_at_idx": {
+          "name": "permissions_groups_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permissions_groups_created_at_idx": {
+          "name": "permissions_groups_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.permissions_groups_rels": {
+      "name": "permissions_groups_rels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "permissions_id": {
+          "name": "permissions_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "permissions_groups_rels_order_idx": {
+          "name": "permissions_groups_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permissions_groups_rels_parent_idx": {
+          "name": "permissions_groups_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permissions_groups_rels_path_idx": {
+          "name": "permissions_groups_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permissions_groups_rels_permissions_id_idx": {
+          "name": "permissions_groups_rels_permissions_id_idx",
+          "columns": [
+            {
+              "expression": "permissions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "permissions_groups_rels_parent_fk": {
+          "name": "permissions_groups_rels_parent_fk",
+          "tableFrom": "permissions_groups_rels",
+          "tableTo": "permissions_groups",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "permissions_groups_rels_permissions_fk": {
+          "name": "permissions_groups_rels_permissions_fk",
+          "tableFrom": "permissions_groups_rels",
+          "tableTo": "permissions",
+          "columnsFrom": [
+            "permissions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.permission_group_users": {
+      "name": "permission_group_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "permission_group_users_user_idx": {
+          "name": "permission_group_users_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permission_group_users_group_idx": {
+          "name": "permission_group_users_group_idx",
+          "columns": [
+            {
+              "expression": "group_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permission_group_users_updated_at_idx": {
+          "name": "permission_group_users_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "permission_group_users_created_at_idx": {
+          "name": "permission_group_users_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "permission_group_users_user_id_users_id_fk": {
+          "name": "permission_group_users_user_id_users_id_fk",
+          "tableFrom": "permission_group_users",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "permission_group_users_group_id_permissions_groups_id_fk": {
+          "name": "permission_group_users_group_id_permissions_groups_id_fk",
+          "tableFrom": "permission_group_users",
+          "tableTo": "permissions_groups",
+          "columnsFrom": [
+            "group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -1601,6 +2490,30 @@
         },
         "job_forms_id": {
           "name": "job_forms_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "job_applications_id": {
+          "name": "job_applications_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permissions_id": {
+          "name": "permissions_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permissions_groups_id": {
+          "name": "permissions_groups_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permission_group_users_id": {
+          "name": "permission_group_users_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -1786,6 +2699,66 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "payload_locked_documents_rels_job_applications_id_idx": {
+          "name": "payload_locked_documents_rels_job_applications_id_idx",
+          "columns": [
+            {
+              "expression": "job_applications_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_permissions_id_idx": {
+          "name": "payload_locked_documents_rels_permissions_id_idx",
+          "columns": [
+            {
+              "expression": "permissions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_permissions_groups_id_idx": {
+          "name": "payload_locked_documents_rels_permissions_groups_id_idx",
+          "columns": [
+            {
+              "expression": "permissions_groups_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_permission_group_users_id_idx": {
+          "name": "payload_locked_documents_rels_permission_group_users_id_idx",
+          "columns": [
+            {
+              "expression": "permission_group_users_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1912,6 +2885,58 @@
           "tableTo": "job_forms",
           "columnsFrom": [
             "job_forms_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_job_applications_fk": {
+          "name": "payload_locked_documents_rels_job_applications_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "job_applications",
+          "columnsFrom": [
+            "job_applications_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_permissions_fk": {
+          "name": "payload_locked_documents_rels_permissions_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "permissions",
+          "columnsFrom": [
+            "permissions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_permissions_groups_fk": {
+          "name": "payload_locked_documents_rels_permissions_groups_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "permissions_groups",
+          "columnsFrom": [
+            "permissions_groups_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_permission_group_users_fk": {
+          "name": "payload_locked_documents_rels_permission_group_users_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "permission_group_users",
+          "columnsFrom": [
+            "permission_group_users_id"
           ],
           "columnsTo": [
             "id"
@@ -2226,8 +3251,8 @@
     }
   },
   "enums": {
-    "public.enum_job_postings_job_types": {
-      "name": "enum_job_postings_job_types",
+    "public.enum_job_postings_metadata_job_types": {
+      "name": "enum_job_postings_metadata_job_types",
       "schema": "public",
       "values": [
         "full-time",
@@ -2237,8 +3262,48 @@
         "internship"
       ]
     },
+    "public.enum_job_postings_role": {
+      "name": "enum_job_postings_role",
+      "schema": "public",
+      "values": [
+        "Mental Health Support Worker",
+        "Children Support Worker",
+        "Support Worker",
+        "Senior Support Worker",
+        "Care Assistant",
+        "Senior Care Assistant",
+        "Registered Care Manager",
+        "Care Manager",
+        "Registered Nurse",
+        "Registered Mental Health Nurse"
+      ]
+    },
+    "public.enum_job_postings_metadata_recruitment_type": {
+      "name": "enum_job_postings_metadata_recruitment_type",
+      "schema": "public",
+      "values": [
+        "Internal",
+        "External"
+      ]
+    },
     "public.enum_job_postings_status": {
       "name": "enum_job_postings_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "public.enum_job_forms_status": {
+      "name": "enum_job_forms_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "public.enum__job_forms_v_version_status": {
+      "name": "enum__job_forms_v_version_status",
       "schema": "public",
       "values": [
         "draft",

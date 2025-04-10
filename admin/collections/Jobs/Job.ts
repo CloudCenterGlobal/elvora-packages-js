@@ -1,7 +1,10 @@
+import { createdByField } from "@elvora/admin/fields/user";
 import { differenceInDays } from "date-fns";
-import type { CollectionConfig } from "payload";
+import set from "lodash/set";
+import type { CollectionConfig, Option } from "payload";
 import { JobPosting as IJobPosting } from "types/payload";
 import { v4 as uuidv4 } from "uuid";
+import { JOB_STATUS_OPTIONS, JOB_TITLES, RECRUITMENT_TYPES } from "./constants";
 
 const JobPosting: CollectionConfig = {
   slug: "job-postings",
@@ -12,28 +15,184 @@ const JobPosting: CollectionConfig = {
   fields: [
     {
       name: "role",
-      label: "Role",
-      type: "text",
+      label: "Job Title",
+      type: "select",
+      options: JOB_TITLES as unknown as Option[],
       required: true,
       admin: {
-        placeholder: "Care assistant...",
+        description: "Select the job title for the posting.",
       },
     },
+    {
+      type: "tabs",
+      tabs: [
+        {
+          name: "metadata",
+          fields: [
+            {
+              name: "recruitment_type",
+              label: "Recruitment Type",
+              type: "select",
+              options: RECRUITMENT_TYPES as unknown as Option[],
+              required: true,
+              defaultValue: "Internal",
+            },
+
+            {
+              name: "job_types",
+              label: "Job Types",
+              type: "select",
+              required: true,
+              hasMany: true,
+              options: [
+                {
+                  label: "Full Time",
+                  value: "full-time",
+                },
+                {
+                  label: "Part Time",
+                  value: "part-time",
+                },
+                {
+                  label: "Contract",
+                  value: "contract",
+                },
+                {
+                  label: "Temporary",
+                  value: "temporary",
+                },
+                {
+                  label: "Internship",
+                  value: "internship",
+                },
+              ],
+            },
+
+            {
+              label: "Pay Range(£) Per Hour",
+              type: "collapsible",
+
+              admin: {
+                initCollapsed: true,
+                description: "If the rate is fixed, only fill in the minimum pay field.",
+              },
+              fields: [
+                {
+                  name: "min_pay",
+                  label: "Minimum Pay",
+                  type: "number",
+                  admin: {
+                    placeholder: "£",
+                  },
+                  min: 1,
+                },
+                {
+                  name: "max_pay",
+                  label: "Maximum Pay",
+                  type: "number",
+                  admin: {
+                    placeholder: "£",
+                  },
+                  min: 1,
+                  validate(_: any, req: any) {
+                    console.log("validating max pay", _);
+
+                    const data = req.data as IJobPosting;
+
+                    if (data.metadata.max_pay && !data.metadata.min_pay) {
+                      return "Please provide a minimum pay if you are providing a maximum pay.";
+                    }
+
+                    if (data.metadata.max_pay && data.metadata.min_pay && data.metadata.max_pay < data.metadata.min_pay) {
+                      return "The maximum pay must be greater than the minimum pay.";
+                    }
+
+                    return true;
+                  },
+                },
+              ],
+            },
+
+            {
+              name: "job_location",
+              label: "Location",
+              type: "relationship",
+              relationTo: "job-locations",
+              required: true,
+            },
+
+            {
+              type: "relationship",
+              name: "job_questions",
+              label: "Job Questions",
+              relationTo: "job-forms",
+              hasMany: false,
+              admin: {
+                description: "Select the job form that will be used for this job posting.",
+                allowCreate: true,
+              },
+            },
+
+            createdByField({}),
+          ],
+        },
+        {
+          name: "details",
+          fields: [
+            {
+              name: "description",
+              label: "Description",
+              type: "richText",
+              required: true,
+              admin: {
+                description:
+                  "A description of the job posting. The first 160 characters will be used as a preview. Please ensure the first 160 characters provide a clear and concise summary of the job posting.",
+              },
+            },
+            {
+              name: "short_description",
+              type: "text",
+              required: false,
+              admin: {
+                hidden: true,
+                readOnly: true,
+              },
+              hooks: {
+                beforeValidate: [
+                  async (req) => {
+                    const data = req.data as IJobPosting;
+
+                    const getSubstringFromLexicalRichText = await import("@elvora/utils/functions").then((mod) => mod.getSubstringFromLexicalRichText);
+
+                    if (data.details.description) {
+                      data.details.short_description = getSubstringFromLexicalRichText(data.details.description as any);
+                    }
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    },
+
     {
       name: "uuid",
       type: "text",
       unique: true,
       index: true,
       admin: {
-        hidden: true,
+        position: "sidebar",
+        description: "A unique identifier for the job posting. Automatically generated.",
+        readOnly: true,
       },
       hooks: {
         beforeValidate: [
           async (req) => {
             const data = (req.siblingData || req.data) as IJobPosting;
 
-            if (!data.uuid) {
-              data.uuid = uuidv4();
+            if (!data?.uuid) {
+              set(data, "metadata.uuid", uuidv4());
             }
           },
         ],
@@ -45,135 +204,12 @@ const JobPosting: CollectionConfig = {
       },
     },
     {
-      name: "job_location",
-      label: "Location",
-      type: "relationship",
-      relationTo: "job-locations",
-      required: true,
-    },
-    {
-      name: "description",
-      label: "Description",
-      type: "richText",
-      required: true,
-      admin: {
-        description:
-          "A description of the job posting. The first 160 characters will be used as a preview. Please ensure the first 160 characters provide a clear and concise summary of the job posting.",
-      },
-    },
-    {
-      name: "short_description",
-      type: "text",
-      required: false,
-      admin: {
-        hidden: true,
-        readOnly: true,
-      },
-      hooks: {
-        beforeValidate: [
-          async (req) => {
-            const data = req.data as IJobPosting;
-
-            // await import { getSubstringFromLexicalRichText } from "utils/functions";
-            const getSubstringFromLexicalRichText = await import("@elvora/utils/functions").then((mod) => mod.getSubstringFromLexicalRichText);
-
-            if (data.description) {
-              data.short_description = getSubstringFromLexicalRichText(data.description as any);
-            }
-          },
-        ],
-      },
-    },
-    {
-      name: "job_types",
-      label: "Job Types",
-      type: "select",
-      required: true,
-      hasMany: true,
-      options: [
-        {
-          label: "Full Time",
-          value: "full-time",
-        },
-        {
-          label: "Part Time",
-          value: "part-time",
-        },
-        {
-          label: "Contract",
-          value: "contract",
-        },
-        {
-          label: "Temporary",
-          value: "temporary",
-        },
-        {
-          label: "Internship",
-          value: "internship",
-        },
-      ],
-      admin: {
-        position: "sidebar",
-      },
-    },
-    {
-      label: "Pay Range(£) Per Hour",
-      type: "collapsible",
-
-      admin: {
-        position: "sidebar",
-        initCollapsed: true,
-        description: "If the rate is fixed, only fill in the minimum pay field.",
-      },
-      fields: [
-        {
-          name: "min_pay",
-          label: "Minimum Pay",
-          type: "number",
-          admin: {
-            placeholder: "£",
-          },
-          min: 1,
-        },
-        {
-          name: "max_pay",
-          label: "Maximum Pay",
-          type: "number",
-          admin: {
-            placeholder: "£",
-          },
-          min: 1,
-          validate(_: any, req: any) {
-            const data = req.data as IJobPosting;
-
-            if (data.max_pay && !data.min_pay) {
-              return "Please provide a minimum pay if you are providing a maximum pay.";
-            }
-
-            if (data.max_pay && data.min_pay && data.max_pay < data.min_pay) {
-              return "The maximum pay must be greater than the minimum pay.";
-            }
-
-            return true;
-          },
-        },
-      ],
-    },
-    {
       name: "status",
       label: "Status",
       type: "select",
       defaultValue: "draft",
-      options: [
-        {
-          label: "Draft",
-          value: "draft",
-        },
-        {
-          label: "Published",
-          value: "published",
-        },
-      ],
+      options: JOB_STATUS_OPTIONS as unknown as Option[],
+      required: true,
       admin: {
         position: "sidebar",
         isClearable: false,
@@ -188,8 +224,8 @@ const JobPosting: CollectionConfig = {
       required: false,
       admin: {
         position: "sidebar",
-        condition: (_, siblingData) => siblingData.status === "published",
         placeholder: "Start date of the job",
+        condition: (_, siblingData) => siblingData?.status === "published",
       },
 
       validate: async (value, req) => {
@@ -197,8 +233,8 @@ const JobPosting: CollectionConfig = {
 
         if (!value) return true;
 
-        if (data.start_date) {
-          const date = new Date(data.start_date);
+        if (data?.start_date) {
+          const date = new Date(data?.start_date);
 
           if (date === value) return true;
         }
@@ -220,7 +256,7 @@ const JobPosting: CollectionConfig = {
 
       admin: {
         position: "sidebar",
-        condition: (_, siblingData) => siblingData.status === "published",
+        condition: (_, siblingData) => siblingData?.status === "published",
       },
 
       // must one or more days after now if being created
@@ -229,8 +265,8 @@ const JobPosting: CollectionConfig = {
 
         if (!value) return true;
 
-        if (data.job_expiration) {
-          const date = new Date(data.job_expiration);
+        if (data?.job_expiration) {
+          const date = new Date(data?.job_expiration);
 
           if (date === value) return true;
         }
@@ -242,18 +278,6 @@ const JobPosting: CollectionConfig = {
         }
 
         return true;
-      },
-    },
-    {
-      type: "relationship",
-      name: "job_questions",
-      label: "Job Questions",
-      relationTo: "job-forms",
-      hasMany: false,
-      admin: {
-        position: "sidebar",
-        description: "Select the job form that will be used for this job posting.",
-        allowCreate: true,
       },
     },
   ],

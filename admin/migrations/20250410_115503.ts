@@ -2,8 +2,12 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TYPE "public"."enum_job_postings_job_types" AS ENUM('full-time', 'part-time', 'contract', 'temporary', 'internship');
+   CREATE TYPE "public"."enum_job_postings_metadata_job_types" AS ENUM('full-time', 'part-time', 'contract', 'temporary', 'internship');
+  CREATE TYPE "public"."enum_job_postings_role" AS ENUM('Mental Health Support Worker', 'Children Support Worker', 'Support Worker', 'Senior Support Worker', 'Care Assistant', 'Senior Care Assistant', 'Registered Care Manager', 'Care Manager', 'Registered Nurse', 'Registered Mental Health Nurse');
+  CREATE TYPE "public"."enum_job_postings_metadata_recruitment_type" AS ENUM('Internal', 'External');
   CREATE TYPE "public"."enum_job_postings_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum_job_forms_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum__job_forms_v_version_status" AS ENUM('draft', 'published');
   CREATE TABLE IF NOT EXISTS "users" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"name" varchar NOT NULL,
@@ -77,13 +81,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"width" numeric,
   	"height" numeric,
   	"focal_x" numeric,
-  	"focal_y" numeric,
-  	"sizes_thumbnail_url" varchar,
-  	"sizes_thumbnail_width" numeric,
-  	"sizes_thumbnail_height" numeric,
-  	"sizes_thumbnail_mime_type" varchar,
-  	"sizes_thumbnail_filesize" numeric,
-  	"sizes_thumbnail_filename" varchar
+  	"focal_y" numeric
   );
   
   CREATE TABLE IF NOT EXISTS "blog_tags" (
@@ -93,22 +91,25 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  CREATE TABLE IF NOT EXISTS "job_postings_job_types" (
+  CREATE TABLE IF NOT EXISTS "job_postings_metadata_job_types" (
   	"order" integer NOT NULL,
   	"parent_id" integer NOT NULL,
-  	"value" "enum_job_postings_job_types",
+  	"value" "enum_job_postings_metadata_job_types",
   	"id" serial PRIMARY KEY NOT NULL
   );
   
   CREATE TABLE IF NOT EXISTS "job_postings" (
   	"id" serial PRIMARY KEY NOT NULL,
-  	"role" varchar NOT NULL,
+  	"role" "enum_job_postings_role" NOT NULL,
+  	"metadata_recruitment_type" "enum_job_postings_metadata_recruitment_type" DEFAULT 'Internal' NOT NULL,
+  	"metadata_min_pay" numeric,
+  	"metadata_max_pay" numeric,
+  	"metadata_job_location_id" integer NOT NULL,
+  	"metadata_job_questions_id" integer,
+  	"metadata_created_by_id" integer,
+  	"details_description" jsonb NOT NULL,
+  	"details_short_description" varchar,
   	"uuid" varchar,
-  	"job_location_id" integer NOT NULL,
-  	"description" jsonb NOT NULL,
-  	"short_description" varchar,
-  	"min_pay" numeric,
-  	"max_pay" numeric,
   	"status" "enum_job_postings_status" DEFAULT 'draft',
   	"start_date" timestamp(3) with time zone,
   	"job_expiration" timestamp(3) with time zone,
@@ -119,6 +120,43 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE IF NOT EXISTS "job_locations" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"location" varchar NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
+  CREATE TABLE IF NOT EXISTS "job_forms" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"form" jsonb DEFAULT '{"fields":[]}'::jsonb,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"_status" "enum_job_forms_status" DEFAULT 'draft'
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_job_forms_v" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"parent_id" integer,
+  	"version_name" varchar,
+  	"version_form" jsonb DEFAULT '{"fields":[]}'::jsonb,
+  	"version_updated_at" timestamp(3) with time zone,
+  	"version_created_at" timestamp(3) with time zone,
+  	"version__status" "enum__job_forms_v_version_status" DEFAULT 'draft',
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"latest" boolean,
+  	"autosave" boolean
+  );
+  
+  CREATE TABLE IF NOT EXISTS "job_applications" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"first_name" varchar NOT NULL,
+  	"last_name" varchar NOT NULL,
+  	"email" varchar NOT NULL,
+  	"mobile" varchar,
+  	"cv" varchar NOT NULL,
+  	"job_id" integer NOT NULL,
+  	"assessment" jsonb DEFAULT '{"answers":{},"fields":[]}'::jsonb,
+  	"uuid" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
@@ -142,7 +180,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"blog_images_id" integer,
   	"blog_tags_id" integer,
   	"job_postings_id" integer,
-  	"job_locations_id" integer
+  	"job_locations_id" integer,
+  	"job_forms_id" integer,
+  	"job_applications_id" integer
   );
   
   CREATE TABLE IF NOT EXISTS "payload_preferences" (
@@ -206,13 +246,37 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   END $$;
   
   DO $$ BEGIN
-   ALTER TABLE "job_postings_job_types" ADD CONSTRAINT "job_postings_job_types_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."job_postings"("id") ON DELETE cascade ON UPDATE no action;
+   ALTER TABLE "job_postings_metadata_job_types" ADD CONSTRAINT "job_postings_metadata_job_types_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."job_postings"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
   
   DO $$ BEGIN
-   ALTER TABLE "job_postings" ADD CONSTRAINT "job_postings_job_location_id_job_locations_id_fk" FOREIGN KEY ("job_location_id") REFERENCES "public"."job_locations"("id") ON DELETE set null ON UPDATE no action;
+   ALTER TABLE "job_postings" ADD CONSTRAINT "job_postings_metadata_job_location_id_job_locations_id_fk" FOREIGN KEY ("metadata_job_location_id") REFERENCES "public"."job_locations"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "job_postings" ADD CONSTRAINT "job_postings_metadata_job_questions_id_job_forms_id_fk" FOREIGN KEY ("metadata_job_questions_id") REFERENCES "public"."job_forms"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "job_postings" ADD CONSTRAINT "job_postings_metadata_created_by_id_users_id_fk" FOREIGN KEY ("metadata_created_by_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_job_forms_v" ADD CONSTRAINT "_job_forms_v_parent_id_job_forms_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."job_forms"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "job_applications" ADD CONSTRAINT "job_applications_job_id_job_postings_id_fk" FOREIGN KEY ("job_id") REFERENCES "public"."job_postings"("id") ON DELETE set null ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
@@ -272,6 +336,18 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   END $$;
   
   DO $$ BEGIN
+   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_job_forms_fk" FOREIGN KEY ("job_forms_id") REFERENCES "public"."job_forms"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_job_applications_fk" FOREIGN KEY ("job_applications_id") REFERENCES "public"."job_applications"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
    ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_preferences"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
@@ -308,19 +384,35 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "blog_images_updated_at_idx" ON "blog_images" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "blog_images_created_at_idx" ON "blog_images" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "blog_images_filename_idx" ON "blog_images" USING btree ("filename");
-  CREATE INDEX IF NOT EXISTS "blog_images_sizes_thumbnail_sizes_thumbnail_filename_idx" ON "blog_images" USING btree ("sizes_thumbnail_filename");
   CREATE UNIQUE INDEX IF NOT EXISTS "blog_tags_name_idx" ON "blog_tags" USING btree ("name");
   CREATE INDEX IF NOT EXISTS "blog_tags_updated_at_idx" ON "blog_tags" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "blog_tags_created_at_idx" ON "blog_tags" USING btree ("created_at");
-  CREATE INDEX IF NOT EXISTS "job_postings_job_types_order_idx" ON "job_postings_job_types" USING btree ("order");
-  CREATE INDEX IF NOT EXISTS "job_postings_job_types_parent_idx" ON "job_postings_job_types" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "job_postings_metadata_job_types_order_idx" ON "job_postings_metadata_job_types" USING btree ("order");
+  CREATE INDEX IF NOT EXISTS "job_postings_metadata_job_types_parent_idx" ON "job_postings_metadata_job_types" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "job_postings_metadata_metadata_job_location_idx" ON "job_postings" USING btree ("metadata_job_location_id");
+  CREATE INDEX IF NOT EXISTS "job_postings_metadata_metadata_job_questions_idx" ON "job_postings" USING btree ("metadata_job_questions_id");
+  CREATE INDEX IF NOT EXISTS "job_postings_metadata_metadata_created_by_idx" ON "job_postings" USING btree ("metadata_created_by_id");
   CREATE UNIQUE INDEX IF NOT EXISTS "job_postings_uuid_idx" ON "job_postings" USING btree ("uuid");
-  CREATE INDEX IF NOT EXISTS "job_postings_job_location_idx" ON "job_postings" USING btree ("job_location_id");
   CREATE INDEX IF NOT EXISTS "job_postings_updated_at_idx" ON "job_postings" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "job_postings_created_at_idx" ON "job_postings" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "job_locations_location_idx" ON "job_locations" USING btree ("location");
   CREATE INDEX IF NOT EXISTS "job_locations_updated_at_idx" ON "job_locations" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "job_locations_created_at_idx" ON "job_locations" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "job_forms_updated_at_idx" ON "job_forms" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "job_forms_created_at_idx" ON "job_forms" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "job_forms__status_idx" ON "job_forms" USING btree ("_status");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_parent_idx" ON "_job_forms_v" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_version_version_updated_at_idx" ON "_job_forms_v" USING btree ("version_updated_at");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_version_version_created_at_idx" ON "_job_forms_v" USING btree ("version_created_at");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_version_version__status_idx" ON "_job_forms_v" USING btree ("version__status");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_created_at_idx" ON "_job_forms_v" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_updated_at_idx" ON "_job_forms_v" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_latest_idx" ON "_job_forms_v" USING btree ("latest");
+  CREATE INDEX IF NOT EXISTS "_job_forms_v_autosave_idx" ON "_job_forms_v" USING btree ("autosave");
+  CREATE INDEX IF NOT EXISTS "job_applications_job_idx" ON "job_applications" USING btree ("job_id");
+  CREATE UNIQUE INDEX IF NOT EXISTS "job_applications_uuid_idx" ON "job_applications" USING btree ("uuid");
+  CREATE INDEX IF NOT EXISTS "job_applications_updated_at_idx" ON "job_applications" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "job_applications_created_at_idx" ON "job_applications" USING btree ("created_at");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_global_slug_idx" ON "payload_locked_documents" USING btree ("global_slug");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_updated_at_idx" ON "payload_locked_documents" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_created_at_idx" ON "payload_locked_documents" USING btree ("created_at");
@@ -335,6 +427,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_blog_tags_id_idx" ON "payload_locked_documents_rels" USING btree ("blog_tags_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_job_postings_id_idx" ON "payload_locked_documents_rels" USING btree ("job_postings_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_job_locations_id_idx" ON "payload_locked_documents_rels" USING btree ("job_locations_id");
+  CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_job_forms_id_idx" ON "payload_locked_documents_rels" USING btree ("job_forms_id");
+  CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_job_applications_id_idx" ON "payload_locked_documents_rels" USING btree ("job_applications_id");
   CREATE INDEX IF NOT EXISTS "payload_preferences_key_idx" ON "payload_preferences" USING btree ("key");
   CREATE INDEX IF NOT EXISTS "payload_preferences_updated_at_idx" ON "payload_preferences" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "payload_preferences_created_at_idx" ON "payload_preferences" USING btree ("created_at");
@@ -355,14 +449,21 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "blog_categories" CASCADE;
   DROP TABLE "blog_images" CASCADE;
   DROP TABLE "blog_tags" CASCADE;
-  DROP TABLE "job_postings_job_types" CASCADE;
+  DROP TABLE "job_postings_metadata_job_types" CASCADE;
   DROP TABLE "job_postings" CASCADE;
   DROP TABLE "job_locations" CASCADE;
+  DROP TABLE "job_forms" CASCADE;
+  DROP TABLE "_job_forms_v" CASCADE;
+  DROP TABLE "job_applications" CASCADE;
   DROP TABLE "payload_locked_documents" CASCADE;
   DROP TABLE "payload_locked_documents_rels" CASCADE;
   DROP TABLE "payload_preferences" CASCADE;
   DROP TABLE "payload_preferences_rels" CASCADE;
   DROP TABLE "payload_migrations" CASCADE;
-  DROP TYPE "public"."enum_job_postings_job_types";
-  DROP TYPE "public"."enum_job_postings_status";`)
+  DROP TYPE "public"."enum_job_postings_metadata_job_types";
+  DROP TYPE "public"."enum_job_postings_role";
+  DROP TYPE "public"."enum_job_postings_metadata_recruitment_type";
+  DROP TYPE "public"."enum_job_postings_status";
+  DROP TYPE "public"."enum_job_forms_status";
+  DROP TYPE "public"."enum__job_forms_v_version_status";`)
 }

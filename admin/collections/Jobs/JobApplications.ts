@@ -103,8 +103,9 @@ const JobApplications: CollectionConfig = {
       name: "uuid",
       label: "UUID",
       required: false,
-      admin: { position: "sidebar" },
+      admin: { position: "sidebar", readOnly: true, hidden: true },
       unique: true,
+
       defaultValue: () => uuidv4(),
       // @ts-ignore
       validate: (value) => {

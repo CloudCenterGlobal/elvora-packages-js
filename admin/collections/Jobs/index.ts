@@ -11,4 +11,5 @@ const JobsCollectionConfig = [JobPosting, JobLocations, JobForms, JobApplication
   return collection;
 });
 
+export * from "./constants";
 export { JobsCollectionConfig };

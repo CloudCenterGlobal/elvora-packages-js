@@ -1,5 +1,5 @@
 {
-  "id": "d675e967-0cbc-4d5f-8c34-acd8f37baff5",
+  "id": "205b9dff-c239-4ae8-bc3f-7f121081f25c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -848,42 +848,6 @@
           "type": "numeric",
           "primaryKey": false,
           "notNull": false
-        },
-        "sizes_thumbnail_url": {
-          "name": "sizes_thumbnail_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sizes_thumbnail_width": {
-          "name": "sizes_thumbnail_width",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sizes_thumbnail_height": {
-          "name": "sizes_thumbnail_height",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sizes_thumbnail_mime_type": {
-          "name": "sizes_thumbnail_mime_type",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sizes_thumbnail_filesize": {
-          "name": "sizes_thumbnail_filesize",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sizes_thumbnail_filename": {
-          "name": "sizes_thumbnail_filename",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {
@@ -928,21 +892,6 @@
             }
           ],
           "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "blog_images_sizes_thumbnail_sizes_thumbnail_filename_idx": {
-          "name": "blog_images_sizes_thumbnail_sizes_thumbnail_filename_idx",
-          "columns": [
-            {
-              "expression": "sizes_thumbnail_filename",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -1040,8 +989,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.job_postings_job_types": {
-      "name": "job_postings_job_types",
+    "public.job_postings_metadata_job_types": {
+      "name": "job_postings_metadata_job_types",
       "schema": "",
       "columns": {
         "order": {
@@ -1058,7 +1007,7 @@
         },
         "value": {
           "name": "value",
-          "type": "enum_job_postings_job_types",
+          "type": "enum_job_postings_metadata_job_types",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
@@ -1071,8 +1020,8 @@
         }
       },
       "indexes": {
-        "job_postings_job_types_order_idx": {
-          "name": "job_postings_job_types_order_idx",
+        "job_postings_metadata_job_types_order_idx": {
+          "name": "job_postings_metadata_job_types_order_idx",
           "columns": [
             {
               "expression": "order",
@@ -1086,8 +1035,8 @@
           "method": "btree",
           "with": {}
         },
-        "job_postings_job_types_parent_idx": {
-          "name": "job_postings_job_types_parent_idx",
+        "job_postings_metadata_job_types_parent_idx": {
+          "name": "job_postings_metadata_job_types_parent_idx",
           "columns": [
             {
               "expression": "parent_id",
@@ -1103,9 +1052,9 @@
         }
       },
       "foreignKeys": {
-        "job_postings_job_types_parent_fk": {
-          "name": "job_postings_job_types_parent_fk",
-          "tableFrom": "job_postings_job_types",
+        "job_postings_metadata_job_types_parent_fk": {
+          "name": "job_postings_metadata_job_types_parent_fk",
+          "tableFrom": "job_postings_metadata_job_types",
           "tableTo": "job_postings",
           "columnsFrom": [
             "parent_id"
@@ -1135,43 +1084,64 @@
         },
         "role": {
           "name": "role",
-          "type": "varchar",
+          "type": "enum_job_postings_role",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
-        "uuid": {
-          "name": "uuid",
-          "type": "varchar",
+        "metadata_recruitment_type": {
+          "name": "metadata_recruitment_type",
+          "type": "enum_job_postings_metadata_recruitment_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Internal'"
+        },
+        "metadata_min_pay": {
+          "name": "metadata_min_pay",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": false
         },
-        "job_location_id": {
-          "name": "job_location_id",
+        "metadata_max_pay": {
+          "name": "metadata_max_pay",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata_job_location_id": {
+          "name": "metadata_job_location_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "description": {
-          "name": "description",
+        "metadata_job_questions_id": {
+          "name": "metadata_job_questions_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata_created_by_id": {
+          "name": "metadata_created_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "details_description": {
+          "name": "details_description",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
-        "short_description": {
-          "name": "short_description",
+        "details_short_description": {
+          "name": "details_short_description",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "min_pay": {
-          "name": "min_pay",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "max_pay": {
-          "name": "max_pay",
-          "type": "numeric",
+        "uuid": {
+          "name": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -1180,7 +1150,7 @@
           "type": "enum_job_postings_status",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'draft'"
         },
         "start_date": {
@@ -1211,6 +1181,51 @@
         }
       },
       "indexes": {
+        "job_postings_metadata_metadata_job_location_idx": {
+          "name": "job_postings_metadata_metadata_job_location_idx",
+          "columns": [
+            {
+              "expression": "metadata_job_location_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_postings_metadata_metadata_job_questions_idx": {
+          "name": "job_postings_metadata_metadata_job_questions_idx",
+          "columns": [
+            {
+              "expression": "metadata_job_questions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_postings_metadata_metadata_created_by_idx": {
+          "name": "job_postings_metadata_metadata_created_by_idx",
+          "columns": [
+            {
+              "expression": "metadata_created_by_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "job_postings_uuid_idx": {
           "name": "job_postings_uuid_idx",
           "columns": [
@@ -1222,21 +1237,6 @@
             }
           ],
           "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "job_postings_job_location_idx": {
-          "name": "job_postings_job_location_idx",
-          "columns": [
-            {
-              "expression": "job_location_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -1273,12 +1273,38 @@
         }
       },
       "foreignKeys": {
-        "job_postings_job_location_id_job_locations_id_fk": {
-          "name": "job_postings_job_location_id_job_locations_id_fk",
+        "job_postings_metadata_job_location_id_job_locations_id_fk": {
+          "name": "job_postings_metadata_job_location_id_job_locations_id_fk",
           "tableFrom": "job_postings",
           "tableTo": "job_locations",
           "columnsFrom": [
-            "job_location_id"
+            "metadata_job_location_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "job_postings_metadata_job_questions_id_job_forms_id_fk": {
+          "name": "job_postings_metadata_job_questions_id_job_forms_id_fk",
+          "tableFrom": "job_postings",
+          "tableTo": "job_forms",
+          "columnsFrom": [
+            "metadata_job_questions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "job_postings_metadata_created_by_id_users_id_fk": {
+          "name": "job_postings_metadata_created_by_id_users_id_fk",
+          "tableFrom": "job_postings",
+          "tableTo": "users",
+          "columnsFrom": [
+            "metadata_created_by_id"
           ],
           "columnsTo": [
             "id"
@@ -1372,6 +1398,482 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.job_forms": {
+      "name": "job_forms",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "form": {
+          "name": "form",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"fields\":[]}'::jsonb"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_status": {
+          "name": "_status",
+          "type": "enum_job_forms_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        }
+      },
+      "indexes": {
+        "job_forms_updated_at_idx": {
+          "name": "job_forms_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_forms_created_at_idx": {
+          "name": "job_forms_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_forms__status_idx": {
+          "name": "job_forms__status_idx",
+          "columns": [
+            {
+              "expression": "_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._job_forms_v": {
+      "name": "_job_forms_v",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_name": {
+          "name": "version_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_form": {
+          "name": "version_form",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"fields\":[]}'::jsonb"
+        },
+        "version_updated_at": {
+          "name": "version_updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_created_at": {
+          "name": "version_created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version__status": {
+          "name": "version__status",
+          "type": "enum__job_forms_v_version_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "latest": {
+          "name": "latest",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "autosave": {
+          "name": "autosave",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_job_forms_v_parent_idx": {
+          "name": "_job_forms_v_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_version_version_updated_at_idx": {
+          "name": "_job_forms_v_version_version_updated_at_idx",
+          "columns": [
+            {
+              "expression": "version_updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_version_version_created_at_idx": {
+          "name": "_job_forms_v_version_version_created_at_idx",
+          "columns": [
+            {
+              "expression": "version_created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_version_version__status_idx": {
+          "name": "_job_forms_v_version_version__status_idx",
+          "columns": [
+            {
+              "expression": "version__status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_created_at_idx": {
+          "name": "_job_forms_v_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_updated_at_idx": {
+          "name": "_job_forms_v_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_latest_idx": {
+          "name": "_job_forms_v_latest_idx",
+          "columns": [
+            {
+              "expression": "latest",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_job_forms_v_autosave_idx": {
+          "name": "_job_forms_v_autosave_idx",
+          "columns": [
+            {
+              "expression": "autosave",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_job_forms_v_parent_id_job_forms_id_fk": {
+          "name": "_job_forms_v_parent_id_job_forms_id_fk",
+          "tableFrom": "_job_forms_v",
+          "tableTo": "job_forms",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.job_applications": {
+      "name": "job_applications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mobile": {
+          "name": "mobile",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cv": {
+          "name": "cv",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "job_id": {
+          "name": "job_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assessment": {
+          "name": "assessment",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"answers\":{},\"fields\":[]}'::jsonb"
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "job_applications_job_idx": {
+          "name": "job_applications_job_idx",
+          "columns": [
+            {
+              "expression": "job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_applications_uuid_idx": {
+          "name": "job_applications_uuid_idx",
+          "columns": [
+            {
+              "expression": "uuid",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_applications_updated_at_idx": {
+          "name": "job_applications_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_applications_created_at_idx": {
+          "name": "job_applications_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "job_applications_job_id_job_postings_id_fk": {
+          "name": "job_applications_job_id_job_postings_id_fk",
+          "tableFrom": "job_applications",
+          "tableTo": "job_postings",
+          "columnsFrom": [
+            "job_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -1535,6 +2037,18 @@
         },
         "job_locations_id": {
           "name": "job_locations_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "job_forms_id": {
+          "name": "job_forms_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "job_applications_id": {
+          "name": "job_applications_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -1705,6 +2219,36 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "payload_locked_documents_rels_job_forms_id_idx": {
+          "name": "payload_locked_documents_rels_job_forms_id_idx",
+          "columns": [
+            {
+              "expression": "job_forms_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_job_applications_id_idx": {
+          "name": "payload_locked_documents_rels_job_applications_id_idx",
+          "columns": [
+            {
+              "expression": "job_applications_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1818,6 +2362,32 @@
           "tableTo": "job_locations",
           "columnsFrom": [
             "job_locations_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_job_forms_fk": {
+          "name": "payload_locked_documents_rels_job_forms_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "job_forms",
+          "columnsFrom": [
+            "job_forms_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_job_applications_fk": {
+          "name": "payload_locked_documents_rels_job_applications_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "job_applications",
+          "columnsFrom": [
+            "job_applications_id"
           ],
           "columnsTo": [
             "id"
@@ -2132,8 +2702,8 @@
     }
   },
   "enums": {
-    "public.enum_job_postings_job_types": {
-      "name": "enum_job_postings_job_types",
+    "public.enum_job_postings_metadata_job_types": {
+      "name": "enum_job_postings_metadata_job_types",
       "schema": "public",
       "values": [
         "full-time",
@@ -2143,8 +2713,48 @@
         "internship"
       ]
     },
+    "public.enum_job_postings_role": {
+      "name": "enum_job_postings_role",
+      "schema": "public",
+      "values": [
+        "Mental Health Support Worker",
+        "Children Support Worker",
+        "Support Worker",
+        "Senior Support Worker",
+        "Care Assistant",
+        "Senior Care Assistant",
+        "Registered Care Manager",
+        "Care Manager",
+        "Registered Nurse",
+        "Registered Mental Health Nurse"
+      ]
+    },
+    "public.enum_job_postings_metadata_recruitment_type": {
+      "name": "enum_job_postings_metadata_recruitment_type",
+      "schema": "public",
+      "values": [
+        "Internal",
+        "External"
+      ]
+    },
     "public.enum_job_postings_status": {
       "name": "enum_job_postings_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "public.enum_job_forms_status": {
+      "name": "enum_job_forms_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "public.enum__job_forms_v_version_status": {
+      "name": "enum__job_forms_v_version_status",
       "schema": "public",
       "values": [
         "draft",

@@ -77,6 +77,9 @@ export interface Config {
     'job-locations': JobLocation;
     'job-forms': JobForm;
     'job-applications': JobApplication;
+    permissions: Permission;
+    'permissions-groups': PermissionsGroup;
+    'permission-group-users': PermissionGroupUser;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -93,6 +96,9 @@ export interface Config {
     'job-locations': JobLocationsSelect<false> | JobLocationsSelect<true>;
     'job-forms': JobFormsSelect<false> | JobFormsSelect<true>;
     'job-applications': JobApplicationsSelect<false> | JobApplicationsSelect<true>;
+    permissions: PermissionsSelect<false> | PermissionsSelect<true>;
+    'permissions-groups': PermissionsGroupsSelect<false> | PermissionsGroupsSelect<true>;
+    'permission-group-users': PermissionGroupUsersSelect<false> | PermissionGroupUsersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -264,41 +270,66 @@ export interface BlogTag {
  */
 export interface JobPosting {
   id: number;
-  role: string;
-  uuid?: string | null;
-  job_location: number | JobLocation;
   /**
-   * A description of the job posting. The first 160 characters will be used as a preview. Please ensure the first 160 characters provide a clear and concise summary of the job posting.
+   * Select the job title for the posting.
    */
-  description: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
+  role:
+    | 'Mental Health Support Worker'
+    | 'Children Support Worker'
+    | 'Support Worker'
+    | 'Senior Support Worker'
+    | 'Care Assistant'
+    | 'Senior Care Assistant'
+    | 'Registered Care Manager'
+    | 'Care Manager'
+    | 'Registered Nurse'
+    | 'Registered Mental Health Nurse';
+  metadata: {
+    recruitment_type: 'Internal' | 'External';
+    job_types: ('full-time' | 'part-time' | 'contract' | 'temporary' | 'internship')[];
+    min_pay?: number | null;
+    max_pay?: number | null;
+    job_location: number | JobLocation;
+    /**
+     * Select the job form that will be used for this job posting.
+     */
+    job_questions?: (number | null) | JobForm;
+    /**
+     * The user who created this document.
+     */
+    created_by?: (number | null) | User;
   };
-  short_description?: string | null;
-  job_types: ('full-time' | 'part-time' | 'contract' | 'temporary' | 'internship')[];
-  min_pay?: number | null;
-  max_pay?: number | null;
+  details: {
+    /**
+     * A description of the job posting. The first 160 characters will be used as a preview. Please ensure the first 160 characters provide a clear and concise summary of the job posting.
+     */
+    description: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    short_description?: string | null;
+  };
+  /**
+   * A unique identifier for the job posting. Automatically generated.
+   */
+  uuid?: string | null;
   /**
    * Toggle between draft and published to control the visibility of the job posting.
    */
-  status?: ('draft' | 'published') | null;
+  status: 'draft' | 'published';
   start_date?: string | null;
   job_expiration?: string | null;
-  /**
-   * Select the job form that will be used for this job posting.
-   */
-  job_questions?: (number | null) | JobForm;
   updatedAt: string;
   createdAt: string;
 }
@@ -375,6 +406,55 @@ export interface JobApplication {
   createdAt: string;
 }
 /**
+ * Permissions are used to control access to different parts of the system. They are used in conjunction with permission groups to determine what a user can do.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permissions".
+ */
+export interface Permission {
+  id: number;
+  /**
+   * Unique. This will be used in the code.
+   */
+  key: string;
+  /**
+   * This will be displayed in the admin panel.
+   */
+  description: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Permission groups are used to group permissions together. This is useful for assigning multiple permissions to a user at once.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permissions-groups".
+ */
+export interface PermissionsGroup {
+  id: number;
+  name: string;
+  permissions: (number | Permission)[];
+  /**
+   * If checked, this group cannot be deleted or modified and is used internally by the system.
+   */
+  isSystem?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Group users are used to assign users to permission groups.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permission-group-users".
+ */
+export interface PermissionGroupUser {
+  id: number;
+  user: number | User;
+  group: number | PermissionsGroup;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -420,6 +500,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'job-applications';
         value: number | JobApplication;
+      } | null)
+    | ({
+        relationTo: 'permissions';
+        value: number | Permission;
+      } | null)
+    | ({
+        relationTo: 'permissions-groups';
+        value: number | PermissionsGroup;
+      } | null)
+    | ({
+        relationTo: 'permission-group-users';
+        value: number | PermissionGroupUser;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -557,17 +649,27 @@ export interface BlogTagsSelect<T extends boolean = true> {
  */
 export interface JobPostingsSelect<T extends boolean = true> {
   role?: T;
+  metadata?:
+    | T
+    | {
+        recruitment_type?: T;
+        job_types?: T;
+        min_pay?: T;
+        max_pay?: T;
+        job_location?: T;
+        job_questions?: T;
+        created_by?: T;
+      };
+  details?:
+    | T
+    | {
+        description?: T;
+        short_description?: T;
+      };
   uuid?: T;
-  job_location?: T;
-  description?: T;
-  short_description?: T;
-  job_types?: T;
-  min_pay?: T;
-  max_pay?: T;
   status?: T;
   start_date?: T;
   job_expiration?: T;
-  job_questions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -611,6 +713,37 @@ export interface JobApplicationsSelect<T extends boolean = true> {
   job?: T;
   assessment?: T;
   uuid?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permissions_select".
+ */
+export interface PermissionsSelect<T extends boolean = true> {
+  key?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permissions-groups_select".
+ */
+export interface PermissionsGroupsSelect<T extends boolean = true> {
+  name?: T;
+  permissions?: T;
+  isSystem?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "permission-group-users_select".
+ */
+export interface PermissionGroupUsersSelect<T extends boolean = true> {
+  user?: T;
+  group?: T;
   updatedAt?: T;
   createdAt?: T;
 }

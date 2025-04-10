@@ -17,7 +17,9 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 
+import { setPayload } from "@elvora/utils/payload";
 import { collections, Users } from "./collections";
+import { syncPermissions } from "./collections/Permissions/helpers";
 import { DbConfig, PayloadConfig } from "./types/config";
 
 // Database
@@ -27,6 +29,17 @@ async function createPayloadConfig(options: PayloadConfig) {
   const dirname = path.dirname(filename);
 
   const config = buildConfig({
+    onInit(payload) {
+      setPayload(payload);
+
+      syncPermissions(payload)
+        .then((a) => {
+          console.log("Permissions synced", a);
+        })
+        .catch((e) => {
+          console.error("Error syncing permissions", e);
+        });
+    },
     admin: {
       user: Users.slug,
       importMap: {
