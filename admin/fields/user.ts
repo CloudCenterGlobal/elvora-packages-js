@@ -1,48 +1,47 @@
-import get from "lodash/get";
-import set from "lodash/set";
-import type { Field } from "payload";
+import type { Field, SingleRelationshipField } from "payload";
 
 const createField = <T extends Field>(options: T) => options;
 
-export const createdByField = <T extends Omit<Field, "type">>(options: T) => ({
+export const currentUserField = <
+  T extends Omit<X, "type" | "relationTo" | "name"> & {
+    name?: string;
+  },
+  X extends SingleRelationshipField = SingleRelationshipField & {
+    type: "relationship";
+    relationTo: "users";
+    name: "createdBy" | "publishedBy" | "string";
+  },
+>(
+  options: T
+) => ({
   ...createField({
-    type: "relationship",
-    name: "created_by",
-    label: "Created By",
-    relationTo: "users",
     hasMany: false,
+    type: "relationship",
+    relationTo: "users",
 
+    name: options.name || "createdBy",
+    label: options.name || "Created By",
     admin: {
       allowCreate: false,
       allowEdit: false,
-      readOnly: true,
       description: "The user who created this document.",
+      readOnly: true,
+      ...(options.admin as any),
     },
 
     hooks: {
       beforeChange: [
-        async ({ req, path, data, field }) => {
-          console.log(field.name, "beforeChange", data, path);
-          const _path = path.join(".");
-
-          if (get(data, _path, false)) {
-            return;
+        async ({ req, value }) => {
+          if (!value && req.user) {
+            return req.user.id;
           }
-          const user = req.user;
 
-          if (user) {
-            set(req, _path, user.id);
-          }
+          return value;
         },
       ],
       beforeDuplicate: [
-        async ({ req, path }) => {
-          const user = req.user;
-          const _path = path.join(".");
-
-          if (user) {
-            set(req, _path, null);
-          }
+        async ({ data, path }) => {
+          return null;
         },
       ],
     },

@@ -1,6 +1,6 @@
-import { CollectionConfig } from "payload";
+import { createCollection } from "@elvora/utils/payload";
 
-const BlogTags: CollectionConfig = {
+const BlogTags = createCollection({
   slug: "blog-tags",
   admin: {
     group: "Blog",
@@ -15,12 +15,6 @@ const BlogTags: CollectionConfig = {
       required: true,
     },
   ],
-  access: {
-    create: () => true,
-    read: () => true,
-    update: () => false,
-    delete: () => true,
-  },
   hooks: {
     beforeValidate: [
       async ({ operation, data }) => {
@@ -33,6 +27,6 @@ const BlogTags: CollectionConfig = {
       },
     ],
   },
-};
+});
 
 export default BlogTags;

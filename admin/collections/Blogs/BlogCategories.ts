@@ -1,6 +1,6 @@
-import { CollectionConfig } from "payload";
+import { createCollection } from "@elvora/utils/payload";
 
-const BlogCategories: CollectionConfig = {
+const BlogCategories = createCollection({
   slug: "blog-categories",
   admin: {
     group: "Blog",
@@ -20,7 +20,6 @@ const BlogCategories: CollectionConfig = {
       type: "text",
       unique: true,
       access: {
-        read: () => true,
         create: () => false,
         update: () => false,
       },
@@ -56,6 +55,6 @@ const BlogCategories: CollectionConfig = {
       },
     ],
   },
-};
+});
 
 export default BlogCategories;

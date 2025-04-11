@@ -144,6 +144,7 @@ export interface User {
   name: string;
   bio?: string | null;
   avatar?: (number | null) | ProfileImage;
+  role?: ('super-admin' | 'user') | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -287,17 +288,17 @@ export interface JobPosting {
   metadata: {
     recruitment_type: 'Internal' | 'External';
     job_types: ('full-time' | 'part-time' | 'contract' | 'temporary' | 'internship')[];
-    min_pay?: number | null;
-    max_pay?: number | null;
     job_location: number | JobLocation;
     /**
-     * Select the job form that will be used for this job posting.
+     * The number of hours the employee is expected to work each week.
      */
-    job_questions?: (number | null) | JobForm;
+    weekly_hours?: number | null;
+    min_pay?: number | null;
+    max_pay?: number | null;
     /**
-     * The user who created this document.
+     * A brief reason for hiring for this job posting.
      */
-    created_by?: (number | null) | User;
+    reason_for_hiring?: string | null;
   };
   details: {
     /**
@@ -330,6 +331,18 @@ export interface JobPosting {
   status: 'draft' | 'published';
   start_date?: string | null;
   job_expiration?: string | null;
+  /**
+   * Select the job form that will be used for this job posting.
+   */
+  job_questions?: (number | null) | JobForm;
+  /**
+   * The user who created the job posting.
+   */
+  createdBy?: (number | null) | User;
+  /**
+   * The user who published the job posting.
+   */
+  publishedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -563,6 +576,7 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T;
   bio?: T;
   avatar?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -654,11 +668,11 @@ export interface JobPostingsSelect<T extends boolean = true> {
     | {
         recruitment_type?: T;
         job_types?: T;
+        job_location?: T;
+        weekly_hours?: T;
         min_pay?: T;
         max_pay?: T;
-        job_location?: T;
-        job_questions?: T;
-        created_by?: T;
+        reason_for_hiring?: T;
       };
   details?:
     | T
@@ -670,6 +684,9 @@ export interface JobPostingsSelect<T extends boolean = true> {
   status?: T;
   start_date?: T;
   job_expiration?: T;
+  job_questions?: T;
+  createdBy?: T;
+  publishedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }

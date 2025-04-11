@@ -1,7 +1,8 @@
+import { createCollection } from "@elvora/utils/payload";
 import { capitalCase } from "change-case";
 import type { CollectionConfig } from "payload";
 
-const JobLocations: CollectionConfig = {
+const JobLocations: CollectionConfig = createCollection({
   slug: "job-locations",
   admin: {
     useAsTitle: "location",
@@ -24,6 +25,6 @@ const JobLocations: CollectionConfig = {
       },
     },
   ],
-};
+});
 
 export default JobLocations;

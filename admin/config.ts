@@ -18,6 +18,7 @@ import sharp from "sharp";
 import { fileURLToPath } from "url";
 
 import { setPayload } from "@elvora/utils/payload";
+import { initRedisClient } from "@elvora/utils/redis";
 import { collections, Users } from "./collections";
 import { syncPermissions } from "./collections/Permissions/helpers";
 import { DbConfig, PayloadConfig } from "./types/config";
@@ -31,6 +32,7 @@ async function createPayloadConfig(options: PayloadConfig) {
   const config = buildConfig({
     onInit(payload) {
       setPayload(payload);
+      initRedisClient();
 
       syncPermissions(payload)
         .then((a) => {
@@ -45,8 +47,7 @@ async function createPayloadConfig(options: PayloadConfig) {
       importMap: {
         baseDir: path.resolve(dirname),
       },
-
-      theme: "light",
+      theme: "dark",
       avatar: {
         Component: "@elvora/components/payload/#PayloadAvatar",
       },

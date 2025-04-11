@@ -1,8 +1,8 @@
 // src/components/forms/builder
 
+import { createCollection } from "@elvora/utils/payload";
 import { yupResolver } from "@hookform/resolvers/yup";
 import get from "lodash/get";
-import type { CollectionConfig } from "payload";
 import * as yup from "yup";
 
 export const FIELD_TYPES = [
@@ -44,7 +44,7 @@ export const FIELD_TYPES = [
   },
 ];
 
-export const JobForms: CollectionConfig = {
+export const JobForms = createCollection({
   slug: "job-forms",
   admin: {
     useAsTitle: "name",
@@ -200,7 +200,7 @@ export const JobForms: CollectionConfig = {
     },
     maxPerDoc: 5,
   },
-};
+});
 
 const jobFormInnerSchema = yup.object().shape({
   fields: yup
@@ -271,9 +271,3 @@ type ResolveOptions<Value extends any, Parent extends object = {}> = {
 };
 
 const jobFormInnerSchemaResolver = yupResolver(jobFormInnerSchema);
-
-// const getParentNameFromPath = (path: string, levels = 1) => {
-//   const pathParts = path.split(/\.|\[|\]/).filter(Boolean);
-//   const parentName = pathParts.slice(0, -levels).join(".");
-//   return parentName;
-// };

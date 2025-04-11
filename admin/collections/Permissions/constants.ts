@@ -34,7 +34,6 @@ export const getAllCollectionPermissions = (payload: Payload) => {
       const permissions = collectionPermissions.reduce(
         (acc, permission) => {
           if (permission === "readVersions" && !collection.config?.versions) {
-            console.warn(`Collection ${slug} does not support readVersions permission`);
             return acc;
           }
 
@@ -98,7 +97,7 @@ const formatDefaultDescription = <Permission extends PermissionConfig<T>, T exte
   return t;
 };
 
-const collectionPermissions: (keyof CollectionPermission)[] = ["create", "read", "update", "delete", "readVersions"];
+export const collectionPermissions: (keyof CollectionPermission)[] = ["create", "read", "update", "delete", "readVersions"];
 
 // types
 

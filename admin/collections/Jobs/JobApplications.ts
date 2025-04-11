@@ -1,7 +1,7 @@
-import type { CollectionConfig } from "payload";
+import { createCollection } from "@elvora/utils/payload";
 import { v4 as uuidv4 } from "uuid";
 
-const JobApplications: CollectionConfig = {
+const JobApplications = createCollection({
   slug: "job-applications",
   admin: {
     useAsTitle: "first_name",
@@ -126,6 +126,6 @@ const JobApplications: CollectionConfig = {
       },
     },
   ],
-};
+});
 
 export default JobApplications;

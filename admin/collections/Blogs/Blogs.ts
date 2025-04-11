@@ -1,24 +1,25 @@
-import { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import slugify from 'slugify'
+import { createCollection } from "@elvora/utils/payload";
+import { CollectionBeforeValidateHook } from "payload";
+import slugify from "slugify";
 
 const beforeValidate: CollectionBeforeValidateHook = async ({ data, req }) => {
   if (data) {
-    data.slug = slugify(data.title ?? '', {
+    data.slug = slugify(data.title ?? "", {
       lower: true,
-    })
+    });
   }
 
-  return data
-}
+  return data;
+};
 
-const Blogs: CollectionConfig = {
-  slug: 'blogs',
+const Blogs = createCollection({
+  slug: "blogs",
   admin: {
-    useAsTitle: 'title',
-    group: 'Blog',
-    description: 'Manage blog posts',
+    useAsTitle: "title",
+    group: "Blog",
+    description: "Manage blog posts",
     enableRichTextRelationship: true,
-    defaultColumns: ['title', 'thumbnail', 'author', 'published', 'createdAt', 'categories'],
+    defaultColumns: ["title", "thumbnail", "author", "published", "createdAt", "categories"],
   },
 
   hooks: {
@@ -27,86 +28,85 @@ const Blogs: CollectionConfig = {
 
   fields: [
     {
-      name: 'title',
-      label: 'Title',
-      type: 'text',
+      name: "title",
+      label: "Title",
+      type: "text",
       required: true,
       index: true,
     },
     {
-      name: 'slug',
-      label: 'Slug',
-      type: 'text',
+      name: "slug",
+      label: "Slug",
+      type: "text",
       required: false,
       index: true,
       unique: true,
       admin: {
-        position: 'sidebar',
+        position: "sidebar",
         readOnly: true,
-        description:
-          'This will be automatically generated from the title once the blog post is saved.',
+        description: "This will be automatically generated from the title once the blog post is saved.",
       },
     },
     {
-      name: 'content',
-      label: 'Content',
-      type: 'richText',
+      name: "content",
+      label: "Content",
+      type: "richText",
       required: true,
     },
     {
-      name: 'thumbnail',
-      label: 'Thumbnail',
-      type: 'upload',
-      relationTo: 'blog-images',
+      name: "thumbnail",
+      label: "Thumbnail",
+      type: "upload",
+      relationTo: "blog-images",
       required: true,
     },
     {
-      name: 'author',
-      label: 'Author',
-      type: 'relationship',
-      relationTo: 'users',
+      name: "author",
+      label: "Author",
+      type: "relationship",
+      relationTo: "users",
       required: true,
       hasMany: false,
       admin: {
-        description: 'Author of the blog post. This will be displayed on the blog post.',
-        position: 'sidebar',
+        description: "Author of the blog post. This will be displayed on the blog post.",
+        position: "sidebar",
       },
     },
     {
-      name: 'categories',
-      label: 'Categories',
-      type: 'relationship',
-      relationTo: 'blog-categories',
+      name: "categories",
+      label: "Categories",
+      type: "relationship",
+      relationTo: "blog-categories",
       required: true,
       hasMany: true,
       admin: {
-        position: 'sidebar',
-        description: 'Categories of the blog post. Recommended to add at least one category.',
+        position: "sidebar",
+        description: "Categories of the blog post. Recommended to add at least one category.",
       },
     },
     {
-      name: 'tags',
-      label: 'Tags',
-      type: 'relationship',
-      relationTo: 'blog-tags',
+      name: "tags",
+      label: "Tags",
+      type: "relationship",
+      relationTo: "blog-tags",
       required: true,
       hasMany: true,
       admin: {
-        position: 'sidebar',
+        position: "sidebar",
       },
     },
     {
-      name: 'published',
-      label: 'Publish',
-      type: 'checkbox',
+      name: "published",
+      label: "Publish",
+      type: "checkbox",
       defaultValue: true,
       required: false,
       admin: {
-        position: 'sidebar',
-        description: 'Check this box to publish the blog post.',
+        position: "sidebar",
+        description: "Check this box to publish the blog post.",
       },
     },
   ],
-}
+});
 
-export default Blogs
+export default Blogs;

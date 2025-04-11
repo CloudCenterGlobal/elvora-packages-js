@@ -1,12 +1,13 @@
-import { createdByField } from "@elvora/admin/fields/user";
+import { currentUserField } from "@elvora/admin/fields/user";
+import { createCollection } from "@elvora/utils/payload";
 import { differenceInDays } from "date-fns";
 import set from "lodash/set";
-import type { CollectionConfig, Option } from "payload";
+import type { Option } from "payload";
 import { JobPosting as IJobPosting } from "types/payload";
 import { v4 as uuidv4 } from "uuid";
 import { JOB_STATUS_OPTIONS, JOB_TITLES, RECRUITMENT_TYPES } from "./constants";
 
-const JobPosting: CollectionConfig = {
+const JobPosting = createCollection({
   slug: "job-postings",
   admin: {
     useAsTitle: "role",
@@ -69,7 +70,23 @@ const JobPosting: CollectionConfig = {
             },
 
             {
-              label: "Pay Range(£) Per Hour",
+              name: "job_location",
+              label: "Location",
+              type: "relationship",
+              relationTo: "job-locations",
+              required: true,
+            },
+            {
+              name: "weekly_hours",
+              label: "Weekly Hours",
+              type: "number",
+              admin: {
+                description: "The number of hours the employee is expected to work each week.",
+              },
+              min: 1,
+            },
+            {
+              label: "Hourly Rate(£) Per Hour",
               type: "collapsible",
 
               admin: {
@@ -95,8 +112,6 @@ const JobPosting: CollectionConfig = {
                   },
                   min: 1,
                   validate(_: any, req: any) {
-                    console.log("validating max pay", _);
-
                     const data = req.data as IJobPosting;
 
                     if (data.metadata.max_pay && !data.metadata.min_pay) {
@@ -114,26 +129,13 @@ const JobPosting: CollectionConfig = {
             },
 
             {
-              name: "job_location",
-              label: "Location",
-              type: "relationship",
-              relationTo: "job-locations",
-              required: true,
-            },
-
-            {
-              type: "relationship",
-              name: "job_questions",
-              label: "Job Questions",
-              relationTo: "job-forms",
-              hasMany: false,
+              name: "reason_for_hiring",
+              label: "Reason for Hiring",
+              type: "textarea",
               admin: {
-                description: "Select the job form that will be used for this job posting.",
-                allowCreate: true,
+                description: "A brief reason for hiring for this job posting.",
               },
             },
-
-            createdByField({}),
           ],
         },
         {
@@ -192,7 +194,7 @@ const JobPosting: CollectionConfig = {
             const data = (req.siblingData || req.data) as IJobPosting;
 
             if (!data?.uuid) {
-              set(data, "metadata.uuid", uuidv4());
+              set(data, "uuid", uuidv4());
             }
           },
         ],
@@ -280,7 +282,39 @@ const JobPosting: CollectionConfig = {
         return true;
       },
     },
+
+    {
+      type: "relationship",
+      name: "job_questions",
+      label: "Job Questions",
+      relationTo: "job-forms",
+      hasMany: false,
+      admin: {
+        description: "Select the job form that will be used for this job posting.",
+        allowCreate: true,
+        position: "sidebar",
+      },
+    },
+
+    currentUserField({
+      admin: {
+        position: "sidebar",
+        description: "The user who created the job posting.",
+      },
+      access: {
+        update: () => false,
+      },
+    }),
+    currentUserField({
+      name: "publishedBy",
+      label: "Published By",
+      admin: {
+        position: "sidebar",
+        description: "The user who published the job posting.",
+        condition: (_, siblingData) => siblingData?.status === "published",
+      },
+    }),
   ],
-};
+});
 
 export default JobPosting;

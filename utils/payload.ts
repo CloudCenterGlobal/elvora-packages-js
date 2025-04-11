@@ -1,3 +1,4 @@
+import { getDefaultCollectionAccess } from "@elvora/admin/collections/Permissions/helpers";
 import configPromise from "@payload-config";
 import { capitalCase } from "change-case";
 import { getPayload as _getPayload, CollectionConfig, CollectionSlug, Payload } from "payload";
@@ -36,4 +37,13 @@ const getCollectionLabel = (collection: CollectionSlug) => {
   return label;
 };
 
-export { getCollectionLabel, getPayload, setPayload };
+const createCollection = <T extends CollectionConfig>(collection: T) => {
+  return {
+    ...collection,
+    access: {
+      ...getDefaultCollectionAccess(collection.slug as CollectionSlug, collection.access),
+    },
+  };
+};
+
+export { createCollection, getCollectionLabel, getPayload, setPayload };

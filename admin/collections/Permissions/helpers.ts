@@ -1,8 +1,8 @@
-import type { Payload } from "payload";
-import payload from "payload";
-import { getAllPermissions, PermissionConfig } from "./constants";
+import type { CollectionConfig, CollectionSlug, Payload, PayloadRequest, User } from "payload";
+import { Permission, PermissionsGroup } from "../../types";
+import { collectionPermissions, getAllPermissions, PermissionConfig, PermissionObjectKey } from "./constants";
 
-export const syncPermissions = async (payload: Payload) => {
+const syncPermissions = async (payload: Payload) => {
   // Get permissions in parallel
   const [definedPermissions, dbPermissions] = await Promise.all([
     getAllPermissions(payload) as Record<string, PermissionConfig>,
@@ -13,8 +13,6 @@ export const syncPermissions = async (payload: Payload) => {
       pagination: false,
     }),
   ]);
-
-  console.log(definedPermissions);
 
   // Create lookup maps
   const definedMap = new Map(Object.entries(definedPermissions));
@@ -112,12 +110,96 @@ export const syncPermissions = async (payload: Payload) => {
   };
 };
 
-const initPayload = async () => {
-  const payloadConfig = await import("@payload-config");
+const getUserPermissionsFromDb = async (user: User, payload: Payload): Promise<Record<PermissionObjectKey, boolean>> => {
+  if (!user?.id) {
+    return {} as any;
+  }
 
-  const p = await payload.init({ config: payloadConfig.default });
+  const groups = await payload.find({
+    collection: "permission-group-users",
+    where: {
+      user: {
+        equals: user.id,
+      },
+    },
+    depth: 2,
+  });
 
-  await syncPermissions(p);
+  const permissions = groups.docs.reduce(
+    (acc, group) => {
+      const permissionGroup = group.group as PermissionsGroup;
+      permissionGroup.permissions.forEach((permission) => {
+        acc[(permission as Permission).key as PermissionObjectKey] = true;
+      });
+      return acc;
+    },
+    {} as Record<PermissionObjectKey, boolean>
+  );
+
+  return permissions;
 };
 
-// initPayload();
+const cacheUserPermissionsInRedis = async (user: User, payload: Payload) => {
+  const permissions = await getUserPermissionsFromDb(user, payload);
+
+  if (!permissions || Object.keys(permissions).length === 0) {
+    return;
+  }
+};
+
+const getUserPermissions = async (user: User, payload: Payload): Promise<Record<PermissionObjectKey, boolean>> => {
+  // Check if permissions are cached in Redis
+  if (!user?.id) {
+    return {} as any;
+  }
+
+  const cachedPermissions = await redisClient.get(`user-permissions:${user.id}`);
+
+  if (cachedPermissions) {
+    const parsed = JSON.parse(cachedPermissions);
+    if (Object.keys(parsed ?? {}).length > 0) {
+      return parsed as Record<PermissionObjectKey, boolean>;
+    }
+  }
+  return getUserPermissionsFromDb(user, payload);
+};
+
+const userHasPermission = async (
+  { user, payload }: { user: User; payload: Payload } | PayloadRequest,
+  permissions: PermissionObjectKey[],
+
+  _or?: boolean
+) => {
+  if (user?.role === "super-admin") {
+    return true;
+  }
+
+  const userPermissions = await getUserPermissions(user!, payload);
+  if (!userPermissions) {
+    return false;
+  }
+  return permissions?.[_or ? "some" : "every"]((permission) => userPermissions[permission]);
+};
+
+const getDefaultCollectionAccess = (collectionName: CollectionSlug, defaults?: Access) => {
+  return collectionPermissions.reduce(
+    (prev, name) => {
+      if (prev[name as keyof Access] !== undefined) {
+        return prev;
+      }
+
+      prev[name as keyof Access] = ({ req }) => {
+        return userHasPermission(req, [`${collectionName}.${name}`]);
+      };
+
+      return prev;
+    },
+    {
+      ...defaults,
+    } as Access
+  );
+};
+
+type Access = NonNullable<CollectionConfig["access"]>;
+
+export { cacheUserPermissionsInRedis, getDefaultCollectionAccess, getUserPermissionsFromDb, syncPermissions, userHasPermission };

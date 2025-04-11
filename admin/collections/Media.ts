@@ -1,3 +1,4 @@
+import { createCollection } from "@elvora/utils/payload";
 import type { CollectionConfig, UploadConfig } from "payload";
 
 const getMediaDir = (slug: string) => `public/media/${slug}`;
@@ -31,24 +32,24 @@ const createMediaCollection = <
   };
 };
 
-const ProfileImages: CollectionConfig = createMediaCollection({
-  slug: "profile-images",
-  upload: {
-    staticDir: getMediaDir("profile-images"),
-  },
-  admin: {
-    group: "Users",
-  },
-  access: {
-    admin: () => true,
-    create: ({ req }) => {
-      return !!req.headers.get("referer")?.includes("/users/") || req.pathname.endsWith("/account");
+const ProfileImages = createCollection(
+  createMediaCollection({
+    slug: "profile-images",
+    upload: {
+      staticDir: getMediaDir("profile-images"),
     },
-    update: () => true,
-  },
-
-  fields: [],
-});
+    admin: {
+      group: "Users",
+    },
+    access: {
+      admin: () => true,
+      create: ({ req }) => {
+        return !!req.headers.get("referer")?.includes("/users/") || req.pathname.endsWith("/account");
+      },
+    },
+    fields: [],
+  })
+);
 
 const MediaCollectionConfig = [ProfileImages];
 

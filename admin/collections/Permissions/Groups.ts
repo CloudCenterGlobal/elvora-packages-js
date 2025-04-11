@@ -1,6 +1,6 @@
-import type { CollectionConfig } from "payload";
+import { createCollection } from "@elvora/utils/payload";
 
-export const PermissionsGroup: CollectionConfig = {
+export const PermissionsGroup = createCollection({
   slug: "permissions-groups",
   admin: {
     useAsTitle: "name",
@@ -41,4 +41,4 @@ export const PermissionsGroup: CollectionConfig = {
       },
     },
   ],
-};
+});
