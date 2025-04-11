@@ -1,3 +1,4 @@
+import { redisClient } from "@elvora/utils/redis";
 import type { CollectionConfig, CollectionSlug, Payload, PayloadRequest, User } from "payload";
 import { Permission, PermissionsGroup } from "../../types";
 import { collectionPermissions, getAllPermissions, PermissionConfig, PermissionObjectKey } from "./constants";

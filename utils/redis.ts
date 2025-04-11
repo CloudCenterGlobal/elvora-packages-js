@@ -1,19 +1,12 @@
 import { createClient } from "redis";
 
-let redisClient: ReturnType<typeof createClient>;
-
-if (!global.redisClient) {
-  redisClient = createClient({
-    url: process.env.REDIS_URL,
-    username: process.env.REDIS_USERNAME,
-    password: process.env.REDIS_PASSWORD,
-  });
-  global.redisClient = redisClient;
-}
+let redisClient = createClient({
+  url: process.env.REDIS_URL,
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PASSWORD,
+});
 
 declare global {
-  var redisClient: ReturnType<typeof createClient>;
-
   namespace NodeJS {
     interface ProcessEnv {
       REDIS_URL: string;
