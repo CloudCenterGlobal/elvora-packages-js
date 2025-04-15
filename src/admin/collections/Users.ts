@@ -1,5 +1,5 @@
 import { createCollection, userHasPermission } from "@elvora/admin/collections/Permissions/helpers";
-import { cacheUserPermissionsInRedis, getDefaultCollectionAccess } from "./Permissions/helpers";
+import { cacheUserPermissionsInRedis } from "./Permissions/helpers";
 
 export const Users = createCollection({
   slug: "users",
@@ -12,7 +12,11 @@ export const Users = createCollection({
     useAsTitle: "name",
     group: "Users",
   },
-  access: getDefaultCollectionAccess("users"),
+  access: {
+    read: ({ req }) => {
+      return true;
+    },
+  },
 
   hooks: {
     afterLogin: [

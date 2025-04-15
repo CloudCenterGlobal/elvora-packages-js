@@ -1,7 +1,7 @@
+import { Permission, PermissionsGroup } from "@elvora/types";
 import { redisClient } from "@elvora/utils/redis";
 import type { CollectionConfig, CollectionSlug, Payload, PayloadRequest, User } from "payload";
 import { collectionPermissions, getAllPermissions, PermissionConfig, PermissionObjectKey } from "./constants";
-import { Permission, PermissionsGroup } from "@elvora/types";
 
 const syncPermissions = async (payload: Payload) => {
   // Get permissions in parallel
@@ -152,6 +152,16 @@ const getUserPermissions = async (user: User, payload: Payload): Promise<Record<
   // Check if permissions are cached in Redis
   if (!user?.id) {
     return {} as any;
+  }
+
+  if (redisClient.isReady === false || redisClient.isOpen === false) {
+    // Connect to Redis if not already connected
+    try {
+      await redisClient.connect();
+    } catch (error) {
+      console.error("Error connecting to Redis:", error);
+      return {} as any;
+    }
   }
 
   const cachedPermissions = await redisClient.get(`user-permissions:${user.id}`);
