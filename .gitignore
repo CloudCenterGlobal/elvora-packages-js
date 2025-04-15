@@ -43,3 +43,5 @@ public/media/*
 package-lock.json
 
 test/
+/**/*.js
+node_modules/

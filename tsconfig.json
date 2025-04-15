@@ -1,17 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ESNext", // Specify ECMAScript target version
-    "module": "ESNext", // Specify module code generation
-    "strict": true, // Enable all strict type-checking options
-    "esModuleInterop": true, // Enable compatibility with CommonJS modules
-    "moduleResolution": "Node", // Use Node.js module resolution strategy
-    "skipLibCheck": true, // Skip type checking of declaration files
-    "forceConsistentCasingInFileNames": true, // Ensure consistent casing in imports
-    "baseUrl": "./", // Base directory for resolving non-relative module names
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["esnext", "dom"],
+    "types": ["node", "bun"],
     "paths": {
-      "@elvora*": ["*"] // Alias for cleaner imports
+      "@elvora/*": ["./src/*"]
     }
   },
-  "include": ["./*"], // Include all files in the src directory
-  "exclude": ["node_modules", "dist"] // Exclude node_modules and dist directories
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+  "exclude": ["src/node_modules"]
 }

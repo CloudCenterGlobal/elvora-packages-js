@@ -1,0 +1,41 @@
+{
+  "name": "@elvora/base",
+  "version": "1.0.0",
+  "description": "Unbundled shared package for Next.js applications",
+  "main": "src/index.ts",
+  "types": "src/types",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.0.2",
+    "@payloadcms/db-mongodb": "^3.32.0",
+    "@payloadcms/db-postgres": "^3.32.0",
+    "@payloadcms/email-nodemailer": "^3.32.0",
+    "@payloadcms/live-preview-react": "^3.32.0",
+    "@payloadcms/next": "^3.32.0",
+    "@payloadcms/payload-cloud": "^3.32.0",
+    "@payloadcms/richtext-lexical": "^3.32.0",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-dropzone": "^14.3.8",
+    "react-hook-form": "^7.55.0",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.9",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.3.3"
+  },
+  "module": "src/index.ts",
+  "type": "module",
+  "license": "MIT"
+}
