@@ -20,7 +20,6 @@ import { fileURLToPath } from "url";
 import { DbConfig, PayloadConfig } from "@elvora/types";
 import { initRedisClient } from "@elvora/utils/redis";
 import { collections, Users } from "./collections";
-import { syncPermissions } from "./collections/Permissions/helpers";
 
 // Database
 
@@ -29,8 +28,10 @@ async function createPayloadConfig(options: PayloadConfig) {
   const dirname = path.dirname(filename);
 
   const config = buildConfig({
-    onInit(payload) {
+    async onInit(payload) {
       initRedisClient();
+
+      const { syncPermissions } = await import("./collections/Permissions/helpers");
 
       syncPermissions(payload)
         .then((a) => {

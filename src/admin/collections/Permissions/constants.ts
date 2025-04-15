@@ -2,13 +2,16 @@ import { getCollectionLabel } from "@elvora/utils/payload";
 import { capitalCase } from "change-case";
 import type { Collection, CollectionPermission, CollectionSlug, Payload } from "payload";
 
-const createPermissionObject = <T extends PermissionObjectKey>(opts: PermissionConfig<T>) => {
+const createPermissionObject = <T extends PermissionObjectKey>(opts: PermissionConfig<T>, payload: Payload) => {
   const permission = {
-    [opts.key]: formatDefaultDescription({
-      ...opts,
-      label: capitalCase(opts.label),
-      description: opts.description,
-    }),
+    [opts.key]: formatDefaultDescription(
+      {
+        ...opts,
+        label: capitalCase(opts.label),
+        description: opts.description,
+      },
+      payload
+    ),
   } as const;
 
   return permission as Record<T, (typeof permission)[T]>;
@@ -41,11 +44,14 @@ export const getAllCollectionPermissions = (payload: Payload) => {
 
           return {
             ...acc,
-            ...createPermissionObject({
-              key: permissionKey,
-              label: permission,
-              collection: slug,
-            }),
+            ...createPermissionObject(
+              {
+                key: permissionKey,
+                label: permission,
+                collection: slug,
+              },
+              payload
+            ),
           };
         },
         {} as Record<PermissionObjectKey, PermissionConfig<PermissionObjectKey>>
@@ -69,9 +75,9 @@ export const getAllPermissions = (payload: Payload) => {
   };
 };
 
-const formatDefaultDescription = <Permission extends PermissionConfig<T>, T extends PermissionObjectKey>(t: Permission) => {
+const formatDefaultDescription = <Permission extends PermissionConfig<T>, T extends PermissionObjectKey>(t: Permission, payload: Payload) => {
   if (!t.description) {
-    const label = getCollectionLabel(t.collection);
+    const label = getCollectionLabel(t.collection, payload);
 
     switch (t.key.split(".")[1]) {
       case "create":

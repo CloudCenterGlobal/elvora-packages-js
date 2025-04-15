@@ -11,13 +11,19 @@ const getPayload = async () => {
   }
 
   // @ts-ignore
-  _payload = _getPayload({ config: configPromise });
+  _payload = await _getPayload({ config: configPromise });
 
   return _payload!;
 };
 
-const getCollectionLabel = (collection: CollectionSlug) => {
-  const collectionConfig = _payload!.collections[collection] as unknown as CollectionConfig;
+const getCollectionLabel = (collection: CollectionSlug, payload?: Payload) => {
+  if (payload && !_payload) {
+    _payload = payload;
+  } else if (!_payload) {
+    getPayload();
+  }
+
+  const collectionConfig = (_payload || payload)!.collections[collection] as unknown as CollectionConfig;
 
   if (!collectionConfig) {
     throw new Error(`Collection "${collection}" not found`);

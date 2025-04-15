@@ -1,4 +1,4 @@
-import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
+import { createCollection, userHasPermission } from "@elvora/admin/collections/Permissions/helpers";
 import { cacheUserPermissionsInRedis, getDefaultCollectionAccess } from "./Permissions/helpers";
 
 export const Users = createCollection({
@@ -58,7 +58,10 @@ export const Users = createCollection({
 
       access: {
         create({ req }) {
-          return req.user?.role === "super-admin";
+          return req.user?.role === "super-admin" || userHasPermission(req, ["users.create"]);
+        },
+        update({ req }) {
+          return req.user?.role === "super-admin" || userHasPermission(req, ["users.update"]);
         },
       },
     },
