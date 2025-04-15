@@ -8,15 +8,7 @@ const createMailTransport = (config?: MailTransportConfig) => {
     config = getMailConfig();
   }
 
-  return nodemailer.createTransport({
-    host: config.host!,
-    port: config.port,
-    auth: config.auth,
-    tls: {
-      rejectUnauthorized: false,
-    },
-    secure: config.secure,
-  });
+  return nodemailer.createTransport(config);
 };
 
 const getMailConfig = (): MailTransportConfig => {
@@ -24,12 +16,14 @@ const getMailConfig = (): MailTransportConfig => {
     host: mailConfig.SMTP_HOST,
     port: Number(mailConfig.SMTP_PORT!),
     secure: false,
+    requireTLS: true,
     auth: {
       user: mailConfig.SMTP_USERNAME,
       pass: mailConfig.SMTP_PASSWORD,
     },
-    systemEmail: mailConfig.SYSTEM_EMAIL || mailConfig.SMTP_USERNAME,
-    systemName: mailConfig.SYSTEM_NAME,
+    tls: {
+      ciphers: "SSLv3",
+    },
   };
 };
 
@@ -44,8 +38,9 @@ const createMailAdapter = (config?: MailTransportConfig) => {
 
   return nodemailerAdapter({
     transport: createMailTransport(config),
-    defaultFromAddress: config.systemEmail!,
-    defaultFromName: config.systemName,
+    defaultFromAddress: mailConfig.SYSTEM_EMAIL,
+    defaultFromName: mailConfig.SYSTEM_NAME,
+    skipVerify: true,
   });
 };
 

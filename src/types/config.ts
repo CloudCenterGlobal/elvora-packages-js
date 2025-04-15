@@ -1,3 +1,4 @@
+import SMTPConnection from "nodemailer/lib/smtp-connection";
 import type { Config } from "payload";
 
 export type DbConfig = {
@@ -13,15 +14,4 @@ export type PayloadConfig = {
   email?: Config["email"];
 };
 
-export type MailTransportConfig = {
-  systemEmail: string;
-  systemName: string;
-
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-};
+export type MailTransportConfig = SMTPConnection.Options;

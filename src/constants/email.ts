@@ -3,7 +3,7 @@ export const SMTP_HOST = process.env.SMTP_HOST!;
 export const SMTP_USERNAME = process.env.SMTP_USERNAME || "";
 export const SMTP_PASSWORD = process.env.SMTP_PASSWORD || "";
 
-export const SMTP_SECURE = process.env.SMTP_SECURE?.toLowerCase() === "true" || false;
+export const SMTP_SECURE = process.env.SMTP_SECURE?.toLowerCase() === "true" || true;
 
 export const SYSTEM_EMAIL = process.env.SYSTEM_EMAIL;
 
