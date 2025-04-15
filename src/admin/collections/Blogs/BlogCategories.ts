@@ -5,6 +5,10 @@ const BlogCategories = createCollection({
   admin: {
     useAsTitle: "name",
   },
+  labels: {
+    singular: "Blog Category",
+    plural: "Blog Categories",
+  },
   fields: [
     {
       name: "name",
@@ -18,10 +22,6 @@ const BlogCategories = createCollection({
       label: "Slug",
       type: "text",
       unique: true,
-      access: {
-        create: () => false,
-        update: () => false,
-      },
       admin: {
         position: "sidebar",
         description: "This will be automatically generated from the name. It must be unique.",
