@@ -1,7 +1,7 @@
-import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
-import nodemailer from "nodemailer";
 import * as mailConfig from "@elvora/constants/email";
 import { MailTransportConfig } from "@elvora/types";
+import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
+import nodemailer from "nodemailer";
 
 const createMailTransport = (config?: MailTransportConfig) => {
   if (!config) {
@@ -11,13 +11,11 @@ const createMailTransport = (config?: MailTransportConfig) => {
   return nodemailer.createTransport({
     host: config.host!,
     port: config.port,
-    secure: config.secure,
     auth: config.auth,
-    requireTLS: true,
     tls: {
-      ciphers: "SSLv3",
       rejectUnauthorized: false,
     },
+    secure: config.secure,
   });
 };
 
@@ -25,12 +23,12 @@ const getMailConfig = (): MailTransportConfig => {
   return {
     host: mailConfig.SMTP_HOST,
     port: Number(mailConfig.SMTP_PORT!),
-    secure: process.env.SMTP_SECURE?.toLowerCase() === "true" || false,
+    secure: false,
     auth: {
-      user: mailConfig.SMTP_USER,
-      pass: mailConfig.SMTP_PASS,
+      user: mailConfig.SMTP_USERNAME,
+      pass: mailConfig.SMTP_PASSWORD,
     },
-    systemEmail: mailConfig.SYSTEM_EMAIL,
+    systemEmail: mailConfig.SYSTEM_EMAIL || mailConfig.SMTP_USERNAME,
     systemName: mailConfig.SYSTEM_NAME,
   };
 };
@@ -44,12 +42,10 @@ const createMailAdapter = (config?: MailTransportConfig) => {
     return undefined;
   }
 
-  const transport = createMailTransport(config);
   return nodemailerAdapter({
-    transport,
-    defaultFromAddress: config.systemEmail,
+    transport: createMailTransport(config),
+    defaultFromAddress: config.systemEmail!,
     defaultFromName: config.systemName,
-    skipVerify: true,
   });
 };
 
