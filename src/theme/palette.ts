@@ -97,7 +97,6 @@ declare module "@mui/material/styles" {
 
 declare module "@mui/material/styles/createPalette" {
   type GreyType = typeof GREY;
-  interface Color extends GreyType {}
 
   interface PaletteOptions {}
 }
