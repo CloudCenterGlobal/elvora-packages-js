@@ -5,7 +5,6 @@ import { fileURLToPath } from "url";
 
 const HERE = path.resolve(fileURLToPath(import.meta.url));
 const BASE_DIR = path.dirname(HERE);
-__dirname = BASE_DIR;
 const TEMPLATES_DIR = BASE_DIR;
 
 const loadTemplate = (file: AvailableTemplates) => {
