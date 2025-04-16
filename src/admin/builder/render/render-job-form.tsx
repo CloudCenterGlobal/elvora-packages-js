@@ -82,6 +82,7 @@ const RenderJobForm = ({ formData, onSubmit, values, disabled }: RenderJobFormPr
                 <RHFRadioGroup<JobForm["form"]> key={index} {...(_props as RHFMultiCheckboxProps)} name={getFieldName(index) as any} label={field.label} />
               );
 
+            case "date":
             case "text":
             case "longText":
             case "email":

@@ -1,21 +1,17 @@
 "use client";
 
 import { GlobalStyles } from "@mui/material";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
- //@ts-ignore
+import { DateLocalizationProvider } from "../date-localization";
+
+// @ts-ignore
 import ThemeProvider from "@theme/provider";
-import { NotistackProvider } from "../notistack";
 
 const PayloadProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
-    <AppRouterCacheProvider>
-      <ThemeProvider>
-        <NotistackProvider>
-          {children}
-          <GlobalStyles styles={styles} />
-        </NotistackProvider>
-      </ThemeProvider>
-    </AppRouterCacheProvider>
+    <ThemeProvider>
+      <DateLocalizationProvider>{children}</DateLocalizationProvider>
+      <GlobalStyles styles={styles} />
+    </ThemeProvider>
   );
 };
 

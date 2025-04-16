@@ -4,10 +4,24 @@ import { mergeSxProps } from "@elvora/utils/sx";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
+import { DatePicker, DatePickerProps } from "@mui/x-date-pickers/DatePicker";
 import classnames from "classnames";
+import * as React from "react";
 import { useMemo } from "react";
 import { Path, useController, useFormContext } from "react-hook-form";
 import { alternative_sx } from "./utils";
+
+const _isDate = (props: Partial<TextFieldProps>) => {
+  const type =
+    props.type ||
+    props.type ||
+    // @ts-ignore
+    props.slotProps?.htmlInput?.type ||
+    // @ts-ignore
+    props.slotProps?.htmlInput?.type;
+
+  return type === "date" || type === "datetime-local";
+};
 
 const RHFTextField = <T extends object>({
   name,
@@ -16,6 +30,7 @@ const RHFTextField = <T extends object>({
   color = "secondary",
   alternative = true,
   helperText,
+  datePickerProps,
   label,
   ...props
 }: RHFTextFieldProps<T>) => {
@@ -28,23 +43,37 @@ const RHFTextField = <T extends object>({
 
   const controller = useController<T>({ name, control });
 
-  const field = useMemo(() => {
-    return (
-      <TextField
-        className={classNames}
-        color={color}
-        disabled={disabled}
-        fullWidth
-        variant="outlined"
-        {...props}
-        error={!!controller.fieldState.error}
-        helperText={controller.fieldState.error?.message ?? helperText}
-        label={defaultLabelStyle ? label : null}
-        sx={mergeSxProps(alternative_sx, props.sx)}
-        {...controller.field}
-      />
-    );
-  }, [classNames, color, disabled, helperText, defaultLabelStyle, label, props, controller.field]);
+  const isDate = _isDate(props);
+
+  const commonProps = useMemo(() => {
+    return {
+      className: classNames,
+      error: !!controller.fieldState.error,
+      disabled: !!disabled,
+      fullWidth: true,
+      variant: "outlined",
+      color: color,
+      label: defaultLabelStyle ? label : null,
+      helperText: controller.fieldState.error?.message ?? helperText,
+      sx: mergeSxProps(alternative_sx, props.sx),
+      ...props,
+      ...controller.field,
+    };
+  }, [classNames, controller.field, controller.fieldState.error, color, defaultLabelStyle, disabled, helperText, label, props.sx, props]);
+
+  const field = (() => {
+    if (isDate) {
+      return (
+        <DatePicker
+          enableAccessibleFieldDOMStructure
+          {...datePickerProps}
+          {...(commonProps as DatePickerProps<any, boolean>)}
+          value={(commonProps.value || null) as unknown as Date}
+        />
+      );
+    }
+    return <TextField {...(commonProps as TextFieldProps)} />;
+  })();
 
   if (!defaultLabelStyle) {
     return (
@@ -73,6 +102,8 @@ export type RHFTextFieldProps<T extends object = object> = {
   alternative?: boolean;
   defaultLabelStyle?: boolean;
   helperText?: React.ReactNode;
+
+  datePickerProps?: Partial<DatePickerProps<any, boolean>>;
 } & Omit<TextFieldProps, "name">;
 
 export { RHFTextField };

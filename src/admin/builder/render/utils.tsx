@@ -1,10 +1,11 @@
 import { JobForm } from "@elvora/types/payload";
 // import { cache } from "react";
+import { RHFCheckboxProps, RHFMultiCheckboxProps, RHFSelectFieldProps, RHFTextFieldProps } from "@elvora/components/react-hook-form";
 import { EMAIL_REGEX } from "@elvora/constants/email";
+import { DesktopDatePickerProps } from "@mui/x-date-pickers/DesktopDatePicker";
 import merge from "lodash/merge";
 import set from "lodash/set";
 import * as yup from "yup";
-import { RHFCheckboxProps, RHFMultiCheckboxProps, RHFSelectFieldProps, RHFTextFieldProps } from "@elvora/components/react-hook-form";
 
 const getSchema = (
   form: JobForm["form"],
@@ -35,14 +36,42 @@ const getSchema = (
 
       switch (fieldType) {
         case "text":
+        case "date":
         case "longText":
-          acc[fieldName] = yup.string().nullable().trim();
-          set(_defaultValues, fieldName, "");
+          {
+            set(_defaultValues, fieldName, "");
 
-          fieldProps[fieldName] = {
-            multiline: fieldType === "longText",
-            rows: fieldType === "longText" ? 4 : 1,
-          } as RHFTextFieldProps;
+            if (fieldType === "date") {
+              // @ts-ignore
+              let fieldSchema = yup.date().nullable();
+              // @ts-ignore
+              const props: DesktopDatePickerProps<Date, boolean> & { type: "date" } = {
+                type: "date",
+                slotProps: {},
+                disableOpenPicker: false,
+                disablePast: true,
+              };
+
+              if (properties?.disablePast) {
+                fieldSchema = fieldSchema.min(new Date(), "Date cannot be in the past");
+                console.log("Date cannot be in the past");
+              }
+              fieldProps[fieldName] = {
+                ...props,
+                ...properties,
+              } as RHFTextFieldProps;
+
+              acc[fieldName] = fieldSchema;
+            } else {
+              const fieldSchema = yup.string().nullable().trim();
+              fieldProps[fieldName] = {
+                multiline: fieldType === "longText",
+                rows: fieldType === "longText" ? 4 : 1,
+              } as RHFTextFieldProps;
+
+              acc[fieldName] = fieldSchema;
+            }
+          }
 
           break;
         case "email":

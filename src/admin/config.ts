@@ -46,6 +46,7 @@ async function createPayloadConfig(options: PayloadConfig) {
       importMap: {
         baseDir: path.resolve(dirname),
       },
+
       theme: "light",
       avatar: {
         Component: "@elvora/components/payload/#PayloadAvatar",
@@ -96,7 +97,7 @@ async function createPayloadConfig(options: PayloadConfig) {
     }),
     secret: process.env.PAYLOAD_SECRET || "",
     typescript: {
-      outputFile: path.resolve(dirname, "types/payload.ts"),
+      outputFile: path.resolve(dirname, "../", "types/payload.ts"),
     },
 
     db: postgresAdapter({

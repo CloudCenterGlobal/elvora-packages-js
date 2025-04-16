@@ -1,16 +1,16 @@
-import { JobPostingMini } from "@elvora/types/careers";
+import { CareerItemCard } from "@elvora/components/career-item-card";
 import { NextLink } from "@elvora/components/next-link";
 import PageContainer from "@elvora/components/page-container";
 import SectionHeader from "@elvora/components/section-header";
 import SectionSpacer, { SECTION_SPACER } from "@elvora/components/section-spacer";
+import { baseRoutes } from "@elvora/routes";
+import { CareersPageFilters } from "@elvora/sections/careers/filters";
+import { JobPostingMini } from "@elvora/types/careers";
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import { baseRoutes } from "@elvora/routes";
-import { CareersPageFilters } from "@elvora/sections/careers/filters";
-import { CareerItemCard } from "@elvora/components/career-item-card";
 import { SxProps } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 
 const CareersListPageBase: React.FC<CareersDetailPageBaseProps> = async ({ landing, jobs }) => {
   const hasJobs = jobs?.length > 0;
@@ -29,12 +29,12 @@ const CareersListPageBase: React.FC<CareersDetailPageBaseProps> = async ({ landi
                 sx={{
                   alignItems: {
                     xs: "center",
-                    "md": "flex-start",
+                    md: "flex-start",
                   },
                   "& .MuiTypography-root": {
                     textAlign: {
                       xs: "center",
-                      "md": "left",
+                      md: "left",
                     },
                   },
                 }}

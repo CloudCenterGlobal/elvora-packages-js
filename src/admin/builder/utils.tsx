@@ -1,4 +1,5 @@
 import { JobFormValues } from "@elvora/types/payload";
+import Stack from "@mui/material/Stack";
 import { Path } from "react-hook-form";
 import { PayloadOptionsField } from "./inputs/options";
 import { PayloadSwitch } from "./inputs/switch";
@@ -31,6 +32,14 @@ const fieldComponents = {
   options: ({ index }: FormBuilderFieldPropertiesProps) => (
     <PayloadOptionsField name={formFieldName(`fields.${index}.properties.options`)} label="Options" required />
   ),
+
+  dateConfig: (props: FormBuilderFieldPropertiesProps) => (
+    <Stack direction="row" justifyContent="space-between" alignItems="center">
+      {fieldComponents.required(props)}
+
+      <PayloadSwitch name={formFieldName(`fields.${props.index}.properties.disablePast`)} label="Disable Past Dates" />
+    </Stack>
+  ),
 } as const;
 
 const createFieldPropertiesMapping = <X extends FieldComponentKeys, T extends OptionsConfig<X>>(options: Pick<T, "text"> & Partial<Omit<T, "text">>) => {
@@ -42,6 +51,7 @@ const fieldPropertiesMapping = createFieldPropertiesMapping({
   select: ["label", "helperText", "required", "options"],
   checkbox: ["label", "helperText", "required", "options"],
   radio: ["label", "helperText", "required", "options"],
+  date: ["label", "helperText", "dateConfig"],
 });
 
 export const getFieldPropertiesMapping = <X extends keyof typeof fieldPropertiesMapping>(key: X) => {

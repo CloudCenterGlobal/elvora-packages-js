@@ -377,6 +377,7 @@ export interface JobForm {
         helperText?: string;
         options?: string;
         placeholder?: string;
+        disablePast?: boolean;
       };
     }[];
   };

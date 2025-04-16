@@ -117,6 +117,9 @@ export const JobForms = createCollection({
                         placeholder: {
                           type: "string",
                         },
+                        disablePast: {
+                          type: "boolean",
+                        },
                       },
                       additionalProperties: false,
                     },
