@@ -64,6 +64,11 @@ type Params = {
       };
     };
   };
+  "forgot-password": {
+    link: string;
+    name: string;
+    expiry: number;
+  };
 };
 
 type AvailableTemplates = keyof Params;

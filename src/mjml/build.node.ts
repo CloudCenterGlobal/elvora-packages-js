@@ -36,10 +36,23 @@ const serve = async () => {
   Bun.serve({
     port: 3000,
     development: true,
+    static: {
+      "/favicon.ico": new Response(path.join(__dirname, "index.html"), { status: 404 }),
+    },
 
     async fetch(event) {
       const url = new URL(event.url);
       const pathname = url.pathname;
+
+      if (pathname === "/favicon.ico") {
+        return new Response(null, {
+          status: 404,
+          statusText: "Not Found",
+          headers: {
+            "content-type": "text/plain",
+          },
+        });
+      }
 
       if (pathname === "/" || pathname === "/index.html") {
         return Response.json(
@@ -58,32 +71,12 @@ const serve = async () => {
 
       build();
 
-      const response = loadAndCompileTemplate("forms-submission", {
-        title: "Form Submission",
-        description: "This is a form submission",
+      const file = pathname.replace("/", "").split(".")[0];
 
-        form: {
-          referer: "https://www.google.com",
-          items: [
-            {
-              label: "Name",
-              value: "John Doe",
-            },
-            {
-              label: "Email",
-              value: "john@doe.com",
-            },
-          ],
-        },
-
-        banner: {
-          title: "Callback Request",
-          image: "https://ignite-nursing.vercel.app/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Flive-in-care.6892c680.png&w=640&q=75",
-          link: {
-            url: "https://www.google.com",
-            text: "Learn more",
-          },
-        },
+      const response = loadAndCompileTemplate(file as "forgot-password", {
+        name: "John Doe",
+        link: "https://elvora.dev",
+        expiry: 15,
       });
 
       return new Response(response, {

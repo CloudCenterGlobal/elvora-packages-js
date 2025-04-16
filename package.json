@@ -17,11 +17,13 @@
     "@payloadcms/next": "^3.32.0",
     "@payloadcms/payload-cloud": "^3.32.0",
     "@payloadcms/richtext-lexical": "^3.32.0",
+    "mjml-wrapper": "^4.15.3",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.55.0",
+    "sharp": "^0.34.1",
     "yup": "^1.6.1"
   },
   "devDependencies": {

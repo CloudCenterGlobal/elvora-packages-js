@@ -2,12 +2,9 @@
   <mj-body>
     <mj-section background-color="#eeeeee">
       <mj-column>
-        <mj-image width="100px" src="https://ignite-nursing.vercel.app/_next/static/media/logo-wide.bacd748a.png"></mj-image>
+        <mj-image width="100px" src="https://ignitenursing.com/_next/static/media/logo-wide.bacd748a.png"></mj-image>
       </mj-column>
     </mj-section>
-
-
-
 
     <mj-section>
       <mj-column>
