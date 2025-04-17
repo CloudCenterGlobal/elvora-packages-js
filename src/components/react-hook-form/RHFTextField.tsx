@@ -6,6 +6,7 @@ import FormLabel from "@mui/material/FormLabel";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import { DatePicker, DatePickerProps } from "@mui/x-date-pickers/DatePicker";
 import classnames from "classnames";
+import dayjs from "dayjs";
 import * as React from "react";
 import { useMemo } from "react";
 import { Path, useController, useFormContext } from "react-hook-form";
@@ -68,7 +69,7 @@ const RHFTextField = <T extends object>({
           enableAccessibleFieldDOMStructure
           {...datePickerProps}
           {...(commonProps as DatePickerProps<any, boolean>)}
-          value={(commonProps.value || null) as unknown as Date}
+          value={commonProps.value ? dayjs(commonProps.value) : (null as unknown as Date)}
         />
       );
     }
