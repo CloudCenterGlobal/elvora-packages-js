@@ -65,7 +65,6 @@ export const JobForms = createCollection({
         description: "This name will be used to identify the form in the admin panel.",
       },
     },
-
     {
       name: "form",
       label: "Form",
@@ -99,6 +98,11 @@ export const JobForms = createCollection({
                       type: "string",
                       enum: FIELD_TYPES.map((field) => field.value),
                     },
+                    id: {
+                      type: "string",
+                      format: "uuid",
+                      description: "Unique identifier for the field",
+                    },
                     label: {
                       type: "string",
                     },
@@ -125,7 +129,7 @@ export const JobForms = createCollection({
                     },
                   },
                   additionalProperties: false,
-                  required: ["fieldType", "label"],
+                  required: ["fieldType", "label", "id"],
                 },
               },
             },

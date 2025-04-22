@@ -143,10 +143,16 @@ export interface User {
   id: number;
   name: string;
   bio?: string | null;
+  /**
+   * Image will be resized to 200x200
+   */
   avatar?: (number | null) | ProfileImage;
   role?: ('super-admin' | 'user') | null;
   updatedAt: string;
   createdAt: string;
+  /**
+   * This is the email used to login
+   */
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -331,6 +337,9 @@ export interface JobPosting {
    * Toggle between draft and published to control the visibility of the job posting.
    */
   status: 'draft' | 'published';
+  /**
+   * The date the employee is expected to start work.
+   */
   start_date?: string | null;
   job_expiration?: string | null;
   /**
@@ -344,7 +353,7 @@ export interface JobPosting {
   /**
    * The user who published the job posting.
    */
-  publishedBy?: (number | null) | User;
+  published_by?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -371,6 +380,10 @@ export interface JobForm {
   form: {
     fields: {
       fieldType: 'text' | 'longText' | 'email' | 'number' | 'url' | 'date' | 'select' | 'radio' | 'checkbox';
+      /**
+       * Unique identifier for the field
+       */
+      id: string;
       label: string;
       properties?: {
         required?: boolean;
@@ -689,7 +702,7 @@ export interface JobPostingsSelect<T extends boolean = true> {
   job_expiration?: T;
   job_questions?: T;
   createdBy?: T;
-  publishedBy?: T;
+  published_by?: T;
   updatedAt?: T;
   createdAt?: T;
 }

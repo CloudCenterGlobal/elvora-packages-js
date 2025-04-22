@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, PlusIcon, toast, useField } from "@payloadcms/ui";
+import { v4 as uuid4 } from "uuid";
 import { FormBuilderProvider } from "./context";
 import { addNewFieldRef } from "./refs";
 
@@ -22,6 +23,7 @@ export const AddFieldButton = ({ field: fieldConfig }: AddFieldButtonProps) => {
     addNewFieldRef.current?.({
       label: fieldLabel.value as string,
       fieldType: fieldType.value as any,
+      id: uuid4(),
     });
 
     fieldLabel.setValue("", true);

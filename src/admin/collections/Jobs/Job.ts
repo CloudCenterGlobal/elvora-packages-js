@@ -1,12 +1,11 @@
+import { createCollection, userHasPermission } from "@elvora/admin/collections/Permissions/helpers";
 import { currentUserField } from "@elvora/admin/fields/user";
 import { JobPosting as IJobPosting } from "@elvora/types/payload";
-import { createCollection } from "@elvora/admin/collections/Permissions/helpers";;
 import { differenceInDays } from "date-fns";
 import set from "lodash/set";
 import type { Option } from "payload";
 import { v4 as uuidv4 } from "uuid";
 import { JOB_STATUS_OPTIONS, JOB_TITLES, RECRUITMENT_TYPES } from "./constants";
-
 const JobPosting = createCollection({
   slug: "job-postings",
   admin: {
@@ -220,6 +219,14 @@ const JobPosting = createCollection({
         isSortable: true,
         description: "Toggle between draft and published to control the visibility of the job posting.",
       },
+      access: {
+        create({ req }) {
+          return userHasPermission(req, ["job-postings.publish"]);
+        },
+        update({ req }) {
+          return userHasPermission(req, ["job-postings.publish"]);
+        },
+      },
     },
     {
       name: "start_date",
@@ -228,7 +235,7 @@ const JobPosting = createCollection({
       required: false,
       admin: {
         position: "sidebar",
-        placeholder: "Start date of the job",
+        description: "The date the employee is expected to start work.",
         condition: (_, siblingData) => siblingData?.status === "published",
       },
 
@@ -308,7 +315,7 @@ const JobPosting = createCollection({
       },
     }),
     currentUserField({
-      name: "publishedBy",
+      name: "published_by",
       label: "Published By",
       admin: {
         position: "sidebar",

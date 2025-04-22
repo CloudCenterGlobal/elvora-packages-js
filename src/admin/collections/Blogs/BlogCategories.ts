@@ -1,4 +1,6 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
+import set from "lodash/set";
+import slugify from "slugify";
 
 const BlogCategories = createCollection({
   slug: "blog-categories",
@@ -36,19 +38,11 @@ const BlogCategories = createCollection({
       },
     },
   ],
-  access: {
-    create: () => true,
-    read: () => true,
-    update: () => false,
-    delete: () => true,
-  },
   hooks: {
     beforeValidate: [
       async ({ operation, data }) => {
-        // @ts-expect-error data is possibly undefined
-        if (operation === "create" && !data.slug) {
-          // @ts-expect-error data is possibly undefined
-          data.slug = data.name.toLowerCase();
+        if (data && operation === "create" && !data?.slug) {
+          set(data, "slug", slugify(data.name, { lower: true }));
         }
         return data;
       },

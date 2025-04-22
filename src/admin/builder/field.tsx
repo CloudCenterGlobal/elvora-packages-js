@@ -9,7 +9,7 @@ import { FieldsListForm } from "./fields-list";
 import type { FormBuilderFieldProps } from "./types";
 
 export const FormBuilderField: React.FC<FormBuilderFieldProps> = memo(
-  function FormBuilderField({ path, field }) {
+  function FormBuilderField({ field }) {
     return (
       <FormBuilderProvider>
         <Stack spacing={2} sx={{ mb: 2 }}>

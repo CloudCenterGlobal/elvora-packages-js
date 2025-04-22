@@ -11,7 +11,6 @@ export const Users = createCollection({
     forgotPassword: {
       generateEmailHTML(req) {
         const url = new URL(req?.req?.referrer!);
-        // admin/reset/a82e7f28d0711f5bab7cd90f8d2a2dd4761b14d7
         const link = `${url.origin}/admin/reset/${req?.token!}`;
 
         return loadAndCompileTemplate("forgot-password", {
@@ -27,8 +26,14 @@ export const Users = createCollection({
     group: "Users",
   },
   access: {
-    read: ({ req }) => {
+    read: () => {
       return true;
+    },
+    update: ({ req, data }) => {
+      return (!!data && data.id === req.user?.id) || userHasPermission(req, ["users.update"]);
+    },
+    unlock({ req }) {
+      return userHasPermission(req, ["users.update"]);
     },
   },
 
@@ -46,6 +51,21 @@ export const Users = createCollection({
   },
   fields: [
     {
+      name: "email",
+      label: "Email",
+      type: "email",
+      required: true,
+      unique: true,
+      admin: {
+        description: "This is the email used to login",
+      },
+      access: {
+        update({ req, data }) {
+          return userHasPermission(req, ["users.update"]);
+        },
+      },
+    },
+    {
       name: "name",
       label: "Full Name",
       type: "text",
@@ -56,6 +76,11 @@ export const Users = createCollection({
       label: "Bio",
       type: "text",
       required: false,
+      access: {
+        update({ req, data }) {
+          return data?.id === req.user?.id || userHasPermission(req, ["users.update"]);
+        },
+      },
     },
     {
       name: "avatar",
@@ -65,6 +90,17 @@ export const Users = createCollection({
       required: false,
       hasMany: false,
       displayPreview: true,
+      admin: {
+        description: "Image will be resized to 200x200",
+      },
+      access: {
+        read() {
+          return true;
+        },
+        update({ req, data }) {
+          return data?.id === req.user?.id || userHasPermission(req, ["users.update"]);
+        },
+      },
     },
     {
       saveToJWT: true,
@@ -76,10 +112,10 @@ export const Users = createCollection({
 
       access: {
         create({ req }) {
-          return req.user?.role === "super-admin" || userHasPermission(req, ["users.create"]);
+          return userHasPermission(req, ["users.create"]);
         },
         update({ req }) {
-          return req.user?.role === "super-admin" || userHasPermission(req, ["users.update"]);
+          return userHasPermission(req, ["users.update"]);
         },
       },
     },

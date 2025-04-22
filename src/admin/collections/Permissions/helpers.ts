@@ -1,7 +1,7 @@
 import { Permission, PermissionsGroup } from "@elvora/types";
 import { redisClient } from "@elvora/utils/redis";
 import type { CollectionConfig, CollectionSlug, Payload, PayloadRequest, User } from "payload";
-import { collectionPermissions, getAllPermissions, PermissionConfig, PermissionObjectKey } from "./constants";
+import { AllPermissionKeys, collectionPermissions, getAllPermissions, PermissionConfig, PermissionObjectKey } from "./constants";
 
 const syncPermissions = async (payload: Payload) => {
   // Get permissions in parallel
@@ -111,7 +111,7 @@ const syncPermissions = async (payload: Payload) => {
   };
 };
 
-const getUserPermissionsFromDb = async (user: User, payload: Payload): Promise<Record<PermissionObjectKey, boolean>> => {
+const getUserPermissionsFromDb = async (user: User, payload: Payload): Promise<Record<AllPermissionKeys, boolean>> => {
   if (!user?.id) {
     return {} as any;
   }
@@ -134,7 +134,7 @@ const getUserPermissionsFromDb = async (user: User, payload: Payload): Promise<R
       });
       return acc;
     },
-    {} as Record<PermissionObjectKey, boolean>
+    {} as Record<AllPermissionKeys, boolean>
   );
 
   return permissions;
@@ -148,13 +148,13 @@ const cacheUserPermissionsInRedis = async (user: User, payload: Payload) => {
   }
 };
 
-const getUserPermissions = async (user: User, payload: Payload): Promise<Record<PermissionObjectKey, boolean>> => {
+const getUserPermissions = async (user: User, payload: Payload): Promise<Record<AllPermissionKeys, boolean>> => {
   // Check if permissions are cached in Redis
   if (!user?.id) {
     return {} as any;
   }
 
-  if (redisClient.isReady === false || redisClient.isOpen === false) {
+  if (redisClient.isOpen === false) {
     // Connect to Redis if not already connected
     try {
       await redisClient.connect();
@@ -169,7 +169,7 @@ const getUserPermissions = async (user: User, payload: Payload): Promise<Record<
   if (cachedPermissions) {
     const parsed = JSON.parse(cachedPermissions);
     if (Object.keys(parsed ?? {}).length > 0) {
-      return parsed as Record<PermissionObjectKey, boolean>;
+      return parsed as Record<AllPermissionKeys, boolean>;
     }
   }
   return getUserPermissionsFromDb(user, payload);
@@ -177,7 +177,7 @@ const getUserPermissions = async (user: User, payload: Payload): Promise<Record<
 
 const userHasPermission = async (
   { user, payload }: { user: User; payload: Payload } | PayloadRequest,
-  permissions: PermissionObjectKey[],
+  permissions: AllPermissionKeys[],
 
   _or?: boolean
 ) => {

@@ -1,3 +1,4 @@
+import { JobForm } from "@elvora/types";
 import { useField } from "@payloadcms/ui";
 import get from "lodash/get";
 import set from "lodash/set";
@@ -5,7 +6,6 @@ import { createContext, useCallback, useContext, useEffect, useMemo } from "reac
 import { Path } from "react-hook-form";
 import { addNewFieldRef, removeFieldRef } from "./refs";
 import { FieldDefinition } from "./types";
-import { JobForm } from "@elvora/types";
 
 export const FormBuilderContext = createContext<FormBuilderContextType>(undefined as unknown as any);
 
@@ -81,9 +81,9 @@ export const FormBuilderProvider = ({ children }: React.PropsWithChildren) => {
     //@ts-ignore
     removeFieldRef.current = _removeFieldRef;
     return () => {
-    //@ts-ignore
+      //@ts-ignore
       addNewFieldRef.current = null;
-    //@ts-ignore
+      //@ts-ignore
       removeFieldRef.current = null;
     };
   }, [_addNewFieldRef]);
@@ -118,7 +118,7 @@ export const useFormBuilderContext = () => {
 export type FormBuilderContextType = {
   setFormValue: (name: Path<JobForm["form"]>, value: any) => void;
   formValue: JobForm["form"];
-  watch: (name: Path<JobForm["form"]>, _default?: any) => any;
+  watch: <T extends any>(name: Path<JobForm["form"]>, _default?: T) => T;
   removeFieldRef: React.RefObject<((index: number) => void) | null>;
   addNewFieldRef: React.RefObject<((field: FieldDefinition) => void) | null>;
   openFieldIndex: number;

@@ -2,7 +2,7 @@ import { getCollectionLabel } from "@elvora/utils/payload";
 import { capitalCase } from "change-case";
 import type { Collection, CollectionPermission, CollectionSlug, Payload } from "payload";
 
-const createPermissionObject = <T extends PermissionObjectKey>(opts: PermissionConfig<T>, payload: Payload) => {
+const createPermissionObject = <T extends PermissionObjectKey>(opts: PermissionConfig<T>, payload?: Payload) => {
   const permission = {
     [opts.key]: formatDefaultDescription(
       {
@@ -10,14 +10,33 @@ const createPermissionObject = <T extends PermissionObjectKey>(opts: PermissionC
         label: capitalCase(opts.label),
         description: opts.description,
       },
-      payload
+      payload as Payload
     ),
   } as const;
 
   return permission as Record<T, (typeof permission)[T]>;
 };
 
-export const customPermissions = {};
+const createCustomPermissionObject = <T extends string>(opts: PermissionConfig<T>) => {
+  const permission = {
+    [opts.key as T]: {
+      ...opts,
+      label: capitalCase(opts.label),
+      description: opts.description,
+    },
+  } as const;
+
+  return permission as Record<T, (typeof permission)[T]>;
+};
+
+export const customPermissions = {
+  ...createCustomPermissionObject({
+    collection: "job-applications",
+    key: "job-postings.publish",
+    label: "Publish job posting",
+    description: "Publish job posting",
+  }),
+};
 
 const excludedCollections: { [key in CollectionSlug]?: true } = {
   "payload-migrations": true,
@@ -108,12 +127,16 @@ export const collectionPermissions: (keyof CollectionPermission)[] = ["create", 
 // types
 
 export type PermissionObjectKey = `${CollectionSlug}.${keyof CollectionPermission}`;
-export type PermissionConfig<T extends PermissionObjectKey = PermissionObjectKey> = {
-  key: T;
+export type CustomPermissionsObjectKey = keyof typeof customPermissions;
+
+export type PermissionConfig<T extends string | PermissionObjectKey = PermissionObjectKey> = {
+  key: T extends PermissionObjectKey ? T : string;
   label: string;
   description?: string;
   collection: CollectionSlug;
 };
 
 export type AllPermissions = Record<PermissionObjectKey, CollectionPermission> & CustomPermissionsObject;
+export type AllPermissionKeys = keyof AllPermissions;
+
 type CustomPermissionsObject = typeof customPermissions;

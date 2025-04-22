@@ -3,16 +3,17 @@ import type { Field, SingleRelationshipField } from "payload";
 const createField = <T extends Field>(options: T) => options;
 
 export const currentUserField = <
+  TX extends Omit<T, keyof X> & X,
   T extends Omit<X, "type" | "relationTo" | "name"> & {
     name?: string;
   },
   X extends SingleRelationshipField = SingleRelationshipField & {
     type: "relationship";
     relationTo: "users";
-    name: "createdBy" | "publishedBy" | "string";
+    name: "createdBy" | "publishedBy";
   },
 >(
-  options: T
+  options: T | X | TX = {} as T | X | TX
 ) => ({
   ...createField({
     hasMany: false,
