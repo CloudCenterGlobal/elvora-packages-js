@@ -16,8 +16,8 @@ import { FieldDefinition } from "./types";
 
 const getFieldID = (field: FieldDefinition, index: number) => field.id || index;
 
-const FieldsListForm = memo(function FieldsListForm(props) {
-  const { watch, setFormValue, hasFieldError } = useFormBuilderContext();
+const FieldsListForm = memo(function FieldsListForm() {
+  const { watch, setFormValue, hasFieldError, getFieldError } = useFormBuilderContext();
 
   const fields = watch<FieldDefinition[]>("fields", []);
   const { setNodeRef } = useDroppable({ id: "fields-dropzone" });
@@ -28,20 +28,28 @@ const FieldsListForm = memo(function FieldsListForm(props) {
     removeFieldRef.current?.(index);
   };
 
+  const fieldErrors = getFieldError("fields");
+
   return (
-    <DndContext
-      onDragEnd={({ active, over }) => {
-        if (!active || !over || active.id === over.id) return;
+    <Stack ref={setNodeRef} spacing={3} sx={sx}>
+      {fieldErrors?.message && (
+        <Typography variant="body2" color="var(--theme-error-500) !important">
+          {fieldErrors?.message}
+        </Typography>
+      )}
 
-        //@ts-expect-error the type is not set
-        const currentAtiveIndex = active.data.current.sortable.index;
-        //@ts-expect-error the type is not set
-        const overIndex = over.data.current.sortable.index;
+      <DndContext
+        onDragEnd={({ active, over }) => {
+          if (!active || !over || active.id === over.id) return;
 
-        setFormValue("fields", arrayMove(fields, currentAtiveIndex, overIndex));
-      }}
-    >
-      <Stack ref={setNodeRef} spacing={3} sx={sx}>
+          //@ts-expect-error the type is not set
+          const currentAtiveIndex = active.data.current.sortable.index;
+          //@ts-expect-error the type is not set
+          const overIndex = over.data.current.sortable.index;
+
+          setFormValue("fields", arrayMove(fields, currentAtiveIndex, overIndex));
+        }}
+      >
         <SortableContext items={fieldIds} id="fields-sortable">
           {fields.map((field, index) => {
             const key = getFieldID(field, index);
@@ -49,8 +57,8 @@ const FieldsListForm = memo(function FieldsListForm(props) {
             return <SortableItem key={key} field={field} hasFieldError={hasFieldError as any} index={index} removeField={removeField} />;
           })}
         </SortableContext>
-      </Stack>
-    </DndContext>
+      </DndContext>
+    </Stack>
   );
 });
 
