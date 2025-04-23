@@ -16,18 +16,21 @@ export const currentUserField = <
   options: T | X | TX = {} as T | X | TX
 ) => ({
   ...createField({
-    hasMany: false,
     type: "relationship",
     relationTo: "users",
+    // @ts-ignore
+    hasMany: false,
+    ...options,
 
     name: options.name || "createdBy",
-    label: options.name || "Created By",
+    label: options.label || "Created By",
     admin: {
       allowCreate: false,
       allowEdit: false,
       description: "The user who created this document.",
       readOnly: true,
-      ...(options.admin as any),
+      ...(options.admin as Partial<SingleRelationshipField["admin"]>),
+      disableBulkEdit: true,
     },
 
     hooks: {
@@ -41,10 +44,11 @@ export const currentUserField = <
         },
       ],
       beforeDuplicate: [
-        async ({ data, path }) => {
+        async () => {
           return null;
         },
       ],
+      ...(options.hooks as Partial<SingleRelationshipField["hooks"]>),
     },
   }),
 });

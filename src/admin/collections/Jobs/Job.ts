@@ -320,7 +320,20 @@ const JobPosting = createCollection({
       admin: {
         position: "sidebar",
         description: "The user who published the job posting.",
-        condition: (_, siblingData) => siblingData?.status === "published",
+      },
+
+      hooks: {
+        beforeChange: [
+          async ({ req }) => {
+            const data = req.data as IJobPosting;
+
+            if (data.status === "published") {
+              return req.user?.id;
+            }
+
+            return null;
+          },
+        ],
       },
     }),
   ],
