@@ -10,8 +10,11 @@ export const Users = createCollection({
     tokenExpiration: 15 * 60,
     forgotPassword: {
       generateEmailHTML(req) {
-        const url = new URL(req?.req?.referrer!);
-        const link = `${url.origin}/admin/reset/${req?.token!}`;
+        let link = `https://${req!.req?.host}/admin/reset/${req!.token}`;
+
+        if (link.includes("localhost") || link.includes("127.0.0.1")) {
+          link = link.replace("https://", "http://");
+        }
 
         return loadAndCompileTemplate("forgot-password", {
           link,
