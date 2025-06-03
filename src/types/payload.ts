@@ -292,7 +292,8 @@ export interface JobPosting {
     | 'Registered Care Manager'
     | 'Care Manager'
     | 'Registered Nurse'
-    | 'Registered Mental Health Nurse';
+    | 'Registered Mental Health Nurse'
+    | 'Bank Support Worker';
   metadata: {
     recruitment_type: 'Internal' | 'External';
     job_types: ('full-time' | 'part-time' | 'contract' | 'temporary' | 'internship')[];

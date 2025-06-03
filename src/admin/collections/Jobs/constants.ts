@@ -9,6 +9,7 @@ export const JOB_TITLES = [
   "Care Manager",
   "Registered Nurse",
   "Registered Mental Health Nurse",
+  "Bank Support Worker",
 ] as const;
 
 export const RECRUITMENT_TYPES = ["Internal", "External"] as const;
