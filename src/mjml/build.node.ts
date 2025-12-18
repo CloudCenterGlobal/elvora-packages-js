@@ -36,8 +36,10 @@ const serve = async () => {
   Bun.serve({
     port: 3000,
     development: true,
-    static: {
-      "/favicon.ico": new Response(path.join(__dirname, "index.html"), { status: 404 }),
+    routes: {
+      "/favicon.ico": new Response(path.join(__dirname, "index.html"), {
+        status: 404,
+      }),
     },
 
     async fetch(event) {

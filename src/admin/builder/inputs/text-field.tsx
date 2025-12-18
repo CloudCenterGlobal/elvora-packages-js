@@ -1,3 +1,4 @@
+import { JobFormValues } from "@elvora/types";
 import styled from "@emotion/styled";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -6,7 +7,6 @@ import isEqual from "lodash/isEqual";
 import { memo } from "react";
 import { Path } from "react-hook-form";
 import { useFormBuilderContext } from "../context";
-import { JobFormValues } from "@elvora/types";
 
 const StyledTextInput = styled(TextInput)(() => ({
   width: "100%",
@@ -36,7 +36,7 @@ const _PayloadTextField = <T extends Path<JobFormValues>>({
         onChange={(e: any) => {
           setFormValue(name as any, e.target.value);
         }}
-        value={value}
+        value={value as string | undefined}
         showError={!!error?.message}
         {...props}
       />
