@@ -178,7 +178,7 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
               })}
             </Stack>
 
-            {!!isJobOpenForApplications(job) ? (
+            {!isJobOpenForApplications(job) ? (
               <Box
                 className="application-form-container"
                 sx={{ minWidth: { md: 350 }, maxWidth: { md: 600 } }}

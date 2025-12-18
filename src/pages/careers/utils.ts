@@ -1,14 +1,12 @@
 import { JobPosting } from "@elvora/types";
 
 export const isJobOpenForApplications = (job: JobPosting) => {
-  // Check if job has an expiration date
   if (job.job_expiration) {
     const expirationDate = new Date(job.job_expiration);
     expirationDate.setHours(23, 59, 59, 999);
 
-    const today = new Date();
-
-    return expirationDate <= today;
+    return new Date() > expirationDate;
   }
+
   return job.status === "published";
 };
