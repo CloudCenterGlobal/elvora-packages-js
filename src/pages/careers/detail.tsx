@@ -27,8 +27,6 @@ import { notFound } from "next/navigation";
 import { cloneElement } from "react";
 import { isJobOpenForApplications } from "./utils";
 
-
-
 export const getJobDetailsItems = (job: JobPosting) => {
   return [
     {
@@ -194,8 +192,8 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
                     Application Closed
                   </AlertTitle>
                   <Typography variant="body2">
-                    This position is no longer accepting applications. Please
-                    check our other{" "}
+                    This position is currently not accepting applications.
+                    Please check our other{" "}
                     <NextLink
                       href="/careers"
                       sx={{

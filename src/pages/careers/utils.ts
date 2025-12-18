@@ -8,6 +8,5 @@ export const isJobOpenForApplications = (job: JobPosting) => {
     const now = new Date();
     return expirationDate >= now;
   }
-  // If no expiration date, job is open
-  return true;
+  return job.status === "published";
 };
