@@ -1,15 +1,10 @@
 "use server";
 
+import { getStartOfDay } from "@elvora/pages/careers/utils";
 import { JobPostingMini } from "@elvora/types/careers";
 import { JobForm } from "@elvora/types/payload";
 import { getPayload } from "@elvora/utils/payload";
 import type { Where } from "payload";
-
-const getStartOfDay = () => {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  return now.toISOString();
-};
 
 const defaultAndFilter: Where[] = [
   {

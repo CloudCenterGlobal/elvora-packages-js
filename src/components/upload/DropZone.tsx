@@ -1,13 +1,26 @@
+"use client";
+
 import Box from "@mui/material/Box";
 import FormHelperText from "@mui/material/FormHelperText";
+import { SxProps } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { DropzoneState } from "react-dropzone";
 import { BlockContent } from "./BlockContent";
-import { SxProps } from "@mui/material/styles";
 
-const DropZone: React.FC<DropZoneProps> = ({ isDragActive, isDragReject, getRootProps, getInputProps, label, error, helperText }) => {
+const DropZone: React.FC<DropZoneProps> = ({
+  isDragActive,
+  isDragReject,
+  getRootProps,
+  getInputProps,
+  label,
+  error,
+  helperText,
+}) => {
   return (
-    <Box sx={sx} className={`drop-zone-wrapper ${isDragActive ? "active" : ""} ${isDragReject || error ? "reject" : ""}`}>
+    <Box
+      sx={sx}
+      className={`drop-zone-wrapper ${isDragActive ? "active" : ""} ${isDragReject || error ? "reject" : ""}`}
+    >
       {!!label && (
         <Typography variant="subtitle2" fontWeight={500} className="label">
           {label}
