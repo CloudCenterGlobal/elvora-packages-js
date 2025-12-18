@@ -21,7 +21,7 @@ const defaultAndFilter: Where[] = [
         or: [
           {
             job_expiration: {
-              greater_than_equal: getStartOfDay(),
+              less_than_equal: getStartOfDay(),
             },
           },
           {
@@ -54,6 +54,7 @@ const getJobsList = async () => {
         metadata: job.metadata as JobPostingMini["metadata"],
         createdAt: job.createdAt,
         details: job.details,
+        job_expiration: job.job_expiration,
       };
 
       return item;

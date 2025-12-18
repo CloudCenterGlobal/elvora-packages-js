@@ -15,7 +15,13 @@ const CareerItemCard: React.FC<CareerItemCardProps> = ({ item }) => {
     <Card sx={sx}>
       <CardHeader
         title={item.role}
-        subheader={`Posted on ${fDate(item.createdAt)}`}
+        subheader={
+          item.job_expiration
+            ? `Apply by ${fDate(item.job_expiration)}`
+            : item.createdAt
+              ? `Posted on ${fDate(item.createdAt)}`
+              : undefined
+        }
         slotProps={{
           title: {
             variant: "subtitle1",
@@ -27,8 +33,15 @@ const CareerItemCard: React.FC<CareerItemCardProps> = ({ item }) => {
         }}
         action={
           !!hasPayRange && (
-            <Typography variant="caption" component="p" maxWidth={120} color="secondary.main">
-              £{item.metadata?.min_pay} {!!item.metadata?.max_pay && `to ${item.metadata?.max_pay}`} per hour
+            <Typography
+              variant="caption"
+              component="p"
+              maxWidth={120}
+              color="secondary.main"
+            >
+              £{item.metadata?.min_pay}{" "}
+              {!!item.metadata?.max_pay && `to ${item.metadata?.max_pay}`} per
+              hour
             </Typography>
           )
         }
@@ -37,16 +50,28 @@ const CareerItemCard: React.FC<CareerItemCardProps> = ({ item }) => {
         <Stack direction="row" spacing={0.5} mb={1} alignItems="center">
           <LocationOnOutlined className="location-icon" />
 
-          <Typography variant="body2" color="secondary.main" component="p" letterSpacing={0.8} lineHeight={1}>
+          <Typography
+            variant="body2"
+            color="secondary.main"
+            component="p"
+            letterSpacing={0.8}
+            lineHeight={1}
+          >
             {item.metadata?.job_location?.location || "Remote"}
           </Typography>
         </Stack>
+
         <Typography variant="body2" color="textSecondary" component="p">
           {item.details?.short_description}
         </Typography>
 
         <Divider flexItem />
-        <Typography variant="caption" color="primary.main" component="p" className="view-job-description">
+        <Typography
+          variant="caption"
+          color="primary.main"
+          component="p"
+          className="view-job-description"
+        >
           View Job Description
         </Typography>
       </CardContent>
@@ -73,6 +98,12 @@ const sx: SxProps = {
     paddingTop: 1,
     "& .location-icon": {
       color: "secondary.main",
+      marginLeft: -0.5,
+      transform: "translateY(-0.08rem)",
+      fontSize: 20,
+    },
+    "& .expiration-icon": {
+      color: "text.secondary",
       marginLeft: -0.5,
       transform: "translateY(-0.08rem)",
       fontSize: 20,

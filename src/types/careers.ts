@@ -1,12 +1,14 @@
 import { JobLocation, JobPosting } from "@elvora/types/payload";
 
-export type JobPostingMini = Pick<JobPosting, "uuid" | "role" | "createdAt" | "details"> & {
+export type JobPostingMini = Pick<
+  JobPosting,
+  "uuid" | "role" | "createdAt" | "details" | "job_expiration"
+> & {
   metadata: JobPosting["metadata"] & {
     job_location: JobLocation;
   };
 };
 
-
-declare module "./payload"{
-  export type JobFormValues = JobForm['form']
+declare module "./payload" {
+  export type JobFormValues = JobForm["form"];
 }

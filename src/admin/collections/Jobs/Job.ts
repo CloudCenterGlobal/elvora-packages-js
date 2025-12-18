@@ -1,4 +1,7 @@
-import { createCollection, userHasPermission } from "@elvora/admin/collections/Permissions/helpers";
+import {
+  createCollection,
+  userHasPermission,
+} from "@elvora/admin/collections/Permissions/helpers";
 import { currentUserField } from "@elvora/admin/fields/user";
 import { JobPosting as IJobPosting } from "@elvora/types/payload";
 import { differenceInDays } from "date-fns";
@@ -11,7 +14,8 @@ const JobPosting = createCollection({
   admin: {
     useAsTitle: "role",
     defaultColumns: ["role", "status", "createdBy", "createdAt", "updatedAt"],
-    description: "Job postings are used to display job openings on the website.",
+    description:
+      "Job postings are used to display job openings on the website.",
   },
 
   fields: [
@@ -82,7 +86,8 @@ const JobPosting = createCollection({
               label: "Weekly Hours",
               type: "number",
               admin: {
-                description: "The number of hours the employee is expected to work each week.",
+                description:
+                  "The number of hours the employee is expected to work each week.",
               },
               min: 1,
             },
@@ -92,7 +97,8 @@ const JobPosting = createCollection({
 
               admin: {
                 initCollapsed: true,
-                description: "If the rate is fixed, only fill in the minimum pay field.",
+                description:
+                  "If the rate is fixed, only fill in the minimum pay field.",
               },
               fields: [
                 {
@@ -119,7 +125,11 @@ const JobPosting = createCollection({
                       return "Please provide a minimum pay if you are providing a maximum pay.";
                     }
 
-                    if (data.metadata.max_pay && data.metadata.min_pay && data.metadata.max_pay < data.metadata.min_pay) {
+                    if (
+                      data.metadata.max_pay &&
+                      data.metadata.min_pay &&
+                      data.metadata.max_pay < data.metadata.min_pay
+                    ) {
                       return "The maximum pay must be greater than the minimum pay.";
                     }
 
@@ -165,10 +175,15 @@ const JobPosting = createCollection({
                   async (req) => {
                     const data = req.data as IJobPosting;
 
-                    const getSubstringFromLexicalRichText = await import("@elvora/utils/functions").then((mod) => mod.getSubstringFromLexicalRichText);
+                    const getSubstringFromLexicalRichText = await import(
+                      "@elvora/utils/functions"
+                    ).then((mod) => mod.getSubstringFromLexicalRichText);
 
                     if (data.details.description) {
-                      data.details.short_description = getSubstringFromLexicalRichText(data.details.description as any);
+                      data.details.short_description =
+                        getSubstringFromLexicalRichText(
+                          data.details.description as any
+                        );
                     }
                   },
                 ],
@@ -186,7 +201,8 @@ const JobPosting = createCollection({
       index: true,
       admin: {
         position: "sidebar",
-        description: "A unique identifier for the job posting. Automatically generated.",
+        description:
+          "A unique identifier for the job posting. Automatically generated.",
         readOnly: true,
       },
       hooks: {
@@ -217,7 +233,8 @@ const JobPosting = createCollection({
         position: "sidebar",
         isClearable: false,
         isSortable: true,
-        description: "Toggle between draft and published to control the visibility of the job posting.",
+        description:
+          "Toggle between draft and published to control the visibility of the job posting.",
       },
       access: {
         create({ req }) {
@@ -284,9 +301,9 @@ const JobPosting = createCollection({
 
         const days = differenceInDays(value, new Date());
 
-        if (days < 1) {
-          return "Job expiration must be one or more days after now.";
-        }
+        // if (days < 1) {
+        //   return "Job expiration must be one or more days after now.";
+        // }
 
         return true;
       },
@@ -299,7 +316,8 @@ const JobPosting = createCollection({
       relationTo: "job-forms",
       hasMany: false,
       admin: {
-        description: "Select the job form that will be used for this job posting.",
+        description:
+          "Select the job form that will be used for this job posting.",
         allowCreate: true,
         position: "sidebar",
       },
