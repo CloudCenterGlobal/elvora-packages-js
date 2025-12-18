@@ -1,13 +1,26 @@
-import { getJobApplicationById, getJobFormByJobUUID } from "@elvora/admin/server-actions/jobs";
+import {
+  getJobApplicationById,
+  getJobFormByJobUUID,
+} from "@elvora/admin/server-actions/jobs";
 import PageContainer from "@elvora/components/page-container";
-import SectionSpacer, { SECTION_SPACER_SMALL, SECTION_SPACER_SMALLER } from "@elvora/components/section-spacer";
+import SectionSpacer, {
+  SECTION_SPACER_SMALL,
+  SECTION_SPACER_SMALLER,
+} from "@elvora/components/section-spacer";
+import { JobPosting } from "@elvora/types";
 import Box from "@mui/material/Box";
 import { SxProps } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { notFound } from "next/navigation";
 import { RenderForm } from "./render";
+import { isJobOpenForApplications } from "./utils";
 
-const CareersAssessmentPageBase: React.FC<Props> = async ({ landing, job, application, onApplicationSuccess }) => {
+const CareersAssessmentPageBase: React.FC<Props> = async ({
+  landing,
+  job,
+  application,
+  onApplicationSuccess,
+}) => {
   if (Object.keys(application?.assessment?.answers ?? {}).length > 0) {
     return onApplicationSuccess();
   }
@@ -16,7 +29,11 @@ const CareersAssessmentPageBase: React.FC<Props> = async ({ landing, job, applic
     return notFound();
   }
 
-  if (!job || !job.job_questions) {
+  if (
+    !job ||
+    !job.job_questions ||
+    isJobOpenForApplications(job as JobPosting)
+  ) {
     return notFound();
   }
 
@@ -39,7 +56,11 @@ const CareersAssessmentPageBase: React.FC<Props> = async ({ landing, job, applic
 
           <SectionSpacer smaller />
 
-          <RenderForm formData={job.job_questions.form} application_id={application.id as unknown as string} job_uuid={job.uuid!} />
+          <RenderForm
+            formData={job.job_questions.form}
+            application_id={application.id as unknown as string}
+            job_uuid={job.uuid!}
+          />
         </PageContainer>
       </div>
     </Box>
