@@ -1,7 +1,19 @@
 import { Permission, PermissionsGroup } from "@elvora/types";
 import { redisClient } from "@elvora/utils/redis";
-import type { CollectionConfig, CollectionSlug, Payload, PayloadRequest, User } from "payload";
-import { AllPermissionKeys, collectionPermissions, getAllPermissions, PermissionConfig, PermissionObjectKey } from "./constants";
+import type {
+  CollectionConfig,
+  CollectionSlug,
+  Payload,
+  PayloadRequest,
+  TypedUser,
+} from "payload";
+import {
+  AllPermissionKeys,
+  collectionPermissions,
+  getAllPermissions,
+  PermissionConfig,
+  PermissionObjectKey,
+} from "./constants";
 
 const syncPermissions = async (payload: Payload) => {
   // Get permissions in parallel
@@ -52,7 +64,11 @@ const syncPermissions = async (payload: Payload) => {
   });
 
   // Execute changes in transaction if needed
-  if (changes.create.length > 0 || changes.update.length > 0 || changes.delete.length > 0) {
+  if (
+    changes.create.length > 0 ||
+    changes.update.length > 0 ||
+    changes.delete.length > 0
+  ) {
     const transactionID = await payload.db.beginTransaction();
 
     if (!transactionID) {
@@ -111,7 +127,10 @@ const syncPermissions = async (payload: Payload) => {
   };
 };
 
-const getUserPermissionsFromDb = async (user: User, payload: Payload): Promise<Record<AllPermissionKeys, boolean>> => {
+const getUserPermissionsFromDb = async (
+  user: TypedUser,
+  payload: Payload
+): Promise<Record<AllPermissionKeys, boolean>> => {
   if (!user?.id) {
     return {} as any;
   }
@@ -140,7 +159,10 @@ const getUserPermissionsFromDb = async (user: User, payload: Payload): Promise<R
   return permissions;
 };
 
-const cacheUserPermissionsInRedis = async (user: User, payload: Payload) => {
+const cacheUserPermissionsInRedis = async (
+  user: TypedUser,
+  payload: Payload
+) => {
   const permissions = await getUserPermissionsFromDb(user, payload);
 
   if (!permissions || Object.keys(permissions).length === 0) {
@@ -148,7 +170,10 @@ const cacheUserPermissionsInRedis = async (user: User, payload: Payload) => {
   }
 };
 
-const getUserPermissions = async (user: User, payload: Payload): Promise<Record<AllPermissionKeys, boolean>> => {
+const getUserPermissions = async (
+  user: TypedUser,
+  payload: Payload
+): Promise<Record<AllPermissionKeys, boolean>> => {
   // Check if permissions are cached in Redis
   if (!user?.id) {
     return {} as any;
@@ -164,7 +189,9 @@ const getUserPermissions = async (user: User, payload: Payload): Promise<Record<
     }
   }
 
-  const cachedPermissions = await redisClient.get(`user-permissions:${user.id}`);
+  const cachedPermissions = await redisClient.get(
+    `user-permissions:${user.id}`
+  );
 
   if (cachedPermissions) {
     const parsed = JSON.parse(cachedPermissions);
@@ -176,7 +203,7 @@ const getUserPermissions = async (user: User, payload: Payload): Promise<Record<
 };
 
 const userHasPermission = async (
-  { user, payload }: { user: User; payload: Payload } | PayloadRequest,
+  { user, payload }: { user: TypedUser; payload: Payload } | PayloadRequest,
   permissions: AllPermissionKeys[],
 
   _or?: boolean
@@ -189,10 +216,15 @@ const userHasPermission = async (
   if (!userPermissions) {
     return false;
   }
-  return permissions?.[_or ? "some" : "every"]((permission) => userPermissions[permission]);
+  return permissions?.[_or ? "some" : "every"](
+    (permission) => userPermissions[permission]
+  );
 };
 
-const getDefaultCollectionAccess = (collectionName: CollectionSlug, defaults?: Access) => {
+const getDefaultCollectionAccess = (
+  collectionName: CollectionSlug,
+  defaults?: Access
+) => {
   return collectionPermissions.reduce(
     (prev, name) => {
       if (prev[name as keyof Access] !== undefined) {
@@ -217,9 +249,19 @@ const createCollection = <T extends CollectionConfig>(collection: T) => {
   return {
     ...collection,
     access: {
-      ...getDefaultCollectionAccess(collection.slug as CollectionSlug, collection.access),
+      ...getDefaultCollectionAccess(
+        collection.slug as CollectionSlug,
+        collection.access
+      ),
     },
   };
 };
 
-export { cacheUserPermissionsInRedis, createCollection, getDefaultCollectionAccess, getUserPermissionsFromDb, syncPermissions, userHasPermission };
+export {
+  cacheUserPermissionsInRedis,
+  createCollection,
+  getDefaultCollectionAccess,
+  getUserPermissionsFromDb,
+  syncPermissions,
+  userHasPermission,
+};
