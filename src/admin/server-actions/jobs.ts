@@ -5,6 +5,12 @@ import { JobForm } from "@elvora/types/payload";
 import { getPayload } from "@elvora/utils/payload";
 import type { Where } from "payload";
 
+const getStartOfDay = () => {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return now.toISOString();
+};
+
 const defaultAndFilter: Where[] = [
   {
     status: {
@@ -15,7 +21,7 @@ const defaultAndFilter: Where[] = [
         or: [
           {
             job_expiration: {
-              greater_than_equal: new Date(),
+              greater_than_equal: getStartOfDay(),
             },
           },
           {
@@ -55,7 +61,7 @@ const getJobsList = async () => {
   };
 };
 
-const getJobByUuid = async (uuid: string) => {
+const getJobByUuid = async (uuid: string, only_active = false) => {
   const payload = await getPayload();
 
   const data = await payload.find({
@@ -74,6 +80,7 @@ const getJobByUuid = async (uuid: string) => {
             equals: "published",
           },
         },
+        ...(only_active ? defaultAndFilter : []),
       ],
     },
   });
@@ -163,4 +170,10 @@ const getJobApplicationById = async (id: string, job_uuid: string) => {
   return application.docs[0];
 };
 
-export { getJobApplicationById, getJobByUuid, getJobFormByJobUUID, getJobsList, getRolesAndLocations };
+export {
+  getJobApplicationById,
+  getJobByUuid,
+  getJobFormByJobUUID,
+  getJobsList,
+  getRolesAndLocations,
+};
