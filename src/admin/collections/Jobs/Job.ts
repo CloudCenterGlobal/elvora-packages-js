@@ -301,9 +301,9 @@ const JobPosting = createCollection({
 
         const days = differenceInDays(value, new Date());
 
-        // if (days < 1) {
-        //   return "Job expiration must be one or more days after now.";
-        // }
+        if (days < 1) {
+          return "Job expiration must be one or more days after now.";
+        }
 
         return true;
       },

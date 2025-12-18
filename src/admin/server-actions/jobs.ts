@@ -21,7 +21,7 @@ const defaultAndFilter: Where[] = [
         or: [
           {
             job_expiration: {
-              less_than_equal: getStartOfDay(),
+              greater_than_equal: getStartOfDay(),
             },
           },
           {
@@ -144,6 +144,7 @@ const getJobFormByJobUUID = async (job_uuid: string) => {
     job_questions: _job.job_questions as JobForm,
     metadata: _job.metadata,
     uuid: _job.uuid,
+    job_expiration: _job.job_expiration,
   };
 };
 
