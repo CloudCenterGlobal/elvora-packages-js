@@ -28,8 +28,11 @@ const SectionSpacer = ({
   smaller?: boolean;
 }) => (
   <Box
-    paddingTop={small ? SECTION_SPACER_SMALL : smaller ? SECTION_SPACER_SMALLER : SECTION_SPACER}
     {...props}
+    sx={{
+      paddingTop: small ? SECTION_SPACER_SMALL : smaller ? SECTION_SPACER_SMALLER : SECTION_SPACER,
+      ...(props.sx as object),
+    }}
     className={`section-spacer ${props.className || ""}`}
   />
 );

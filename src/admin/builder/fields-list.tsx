@@ -98,8 +98,8 @@ function SortableItem({ hasFieldError, index, field, removeField }: SortableItem
           </IconButton>
         }
         header={
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="h6" component="div" display="inline-block">
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Typography variant="h6" component="div" sx={{ display: "inline-block" }}>
               {field.label}
             </Typography>
           </Stack>

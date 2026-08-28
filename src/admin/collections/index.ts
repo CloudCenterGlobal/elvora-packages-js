@@ -4,7 +4,13 @@ import { MediaCollectionConfig } from "./Media";
 import { PermissionsCollectionConfig } from "./Permissions";
 import { Users } from "./Users";
 
-const collections = [Users, ...MediaCollectionConfig, ...BlogsCollectionConfig, ...JobsCollectionConfig, ...PermissionsCollectionConfig];
+const collections = [
+  Users,
+  ...MediaCollectionConfig,
+  ...BlogsCollectionConfig,
+  ...JobsCollectionConfig,
+  ...PermissionsCollectionConfig,
+];
 
 export * from "./Blogs";
 export * from "./Jobs";

@@ -10,10 +10,8 @@ const BlockContent: React.FC<BlockContentProps> = () => {
   return (
     <Stack
       spacing={2}
-      alignItems="center"
-      justifyContent="center"
       direction={{ xs: "column", md: "row" }}
-      sx={{ width: 1, textAlign: { xs: "center", md: "left" } }}
+      sx={{ width: 1, textAlign: { xs: "center", md: "left" }, alignItems: "center", justifyContent: "center" }}
     >
       <UploadIllustration sx={{ width: 180 }} />
 

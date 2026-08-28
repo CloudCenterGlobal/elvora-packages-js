@@ -18,7 +18,7 @@ import PersonOutlined from "@mui/icons-material/PersonOutlined";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Box from "@mui/material/Box";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import { SxProps } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
@@ -97,7 +97,7 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
               APPLY FOR
             </Typography>
 
-            <Typography variant="h3" fontWeight={500} gutterBottom>
+            <Typography variant="h3" gutterBottom sx={{ fontWeight: 500 }}>
               {job.role}
             </Typography>
 
@@ -108,10 +108,8 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
               })}
               <Typography
                 variant="caption"
-                ml={1}
-                lineHeight={1.5}
                 color="text.secondary"
-                fontWeight={500}
+                sx={{ ml: 1, lineHeight: 1.5, fontWeight: 500 }}
               >
                 {fDate(job.createdAt)}
               </Typography>
@@ -124,10 +122,8 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
               })}
               <Typography
                 variant="caption"
-                ml={1}
-                lineHeight={1.5}
                 color="text.secondary"
-                fontWeight={500}
+                sx={{ ml: 1, lineHeight: 1.5, fontWeight: 500 }}
               >
                 {job.role}
               </Typography>
@@ -143,32 +139,32 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
             }}
             spacing={2}
           >
-            <Stack spacing={0} maxWidth="md" flex={1}>
+            <Stack spacing={0} sx={{ maxWidth: "md", flex: 1 }}>
               <div>
-                <Grid2 container maxWidth="md" spacing={0.5}>
+                <Grid container spacing={0.5} sx={{ maxWidth: "md" }}>
                   {getJobDetailsItems(job).map((item, index) => (
-                    <Grid2 size={{ xs: 12, md: 6 }} key={index} spacing={1}>
+                    <Grid size={{ xs: 12, md: 6 }} key={index} spacing={1}>
                       <Stack direction="row" spacing={1}>
                         <Typography
                           variant="caption"
                           color="text.primary"
-                          fontWeight={600}
                           component="p"
+                          sx={{ fontWeight: 600 }}
                         >
                           {item.title}:
                         </Typography>
                         <Typography
                           variant="caption"
                           color="text.secondary"
-                          fontWeight={400}
                           component="p"
+                          sx={{ fontWeight: 400 }}
                         >
                           {item.value}
                         </Typography>
                       </Stack>
-                    </Grid2>
+                    </Grid>
                   ))}
-                </Grid2>
+                </Grid>
 
                 <SectionSpacer smaller />
               </div>
@@ -213,8 +209,7 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      display="block"
-                      sx={{ mt: 1 }}
+                      sx={{ display: "block", mt: 1 }}
                     >
                       Application deadline was {fDate(job.job_expiration)}
                     </Typography>

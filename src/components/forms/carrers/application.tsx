@@ -79,9 +79,9 @@ const CareersApplicationForm: React.FC<CareersApplicationFormProps> = ({ hasQues
         <Typography
           variant="h6"
           gutterBottom
-          fontWeight={600}
           color="text.alt"
           sx={{
+            fontWeight: 600,
             marginTop: {
               xs: 3,
               md: 0,
@@ -91,7 +91,7 @@ const CareersApplicationForm: React.FC<CareersApplicationFormProps> = ({ hasQues
           Complete The Form Below
         </Typography>
 
-        <Stack spacing={3} mt={2}>
+        <Stack spacing={3} sx={{ mt: 2 }}>
           <Stack direction={{ xs: "column", md: "row" }} spacing={3}>
             <RHFTextField name="first_name" fullWidth label="First Name" defaultLabelStyle />
             <RHFTextField name="last_name" fullWidth label="Last Name" defaultLabelStyle />
@@ -112,7 +112,13 @@ const CareersApplicationForm: React.FC<CareersApplicationFormProps> = ({ hasQues
         </Stack>
 
         <Stack className="footer" spacing={1}>
-          <Typography color="secondary.main" variant="caption" component="div" className="privacy-policy" px={1}>
+          <Typography
+            color="secondary.main"
+            variant="caption"
+            component="div"
+            className="privacy-policy"
+            sx={{ px: 1 }}
+          >
             By clicking "{label}", you agree to our{" "}
             <NextLink underline="hover" href={baseRoutes.termsAndConditions.root} color="inherit">
               Terms & Conditions{" "}

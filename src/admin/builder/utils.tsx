@@ -34,7 +34,7 @@ const fieldComponents = {
   ),
 
   dateConfig: (props: FormBuilderFieldPropertiesProps) => (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
       {fieldComponents.required(props)}
 
       <PayloadSwitch name={formFieldName(`fields.${props.index}.properties.disablePast`)} label="Disable Past Dates" />

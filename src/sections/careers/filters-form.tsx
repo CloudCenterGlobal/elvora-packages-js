@@ -47,7 +47,7 @@ const _CareersPageFiltersForm = (props: CareersPageFiltersFormProps) => {
 
   return (
     <RHFFormProvider methods={methods} onSubmit={onSubmit} className="filters-form">
-      <Stack direction="column" spacing={1.5} flex={1}>
+      <Stack direction="column" spacing={1.5} sx={{ flex: 1 }}>
         <RHFTextField name="search" label="Search" fullWidth alternative placeholder="Search by location/ Role..." />
 
         {!!hasLocations && (
@@ -87,7 +87,7 @@ const _CareersPageFiltersForm = (props: CareersPageFiltersFormProps) => {
         )}
       </Stack>
 
-      <Stack direction="row" justifyContent="center" mt={3}>
+      <Stack direction="row" sx={{ justifyContent: "center", mt: 3 }}>
         <Button
           type="submit"
           variant="contained"

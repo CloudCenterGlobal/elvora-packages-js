@@ -96,12 +96,14 @@ const getProps = (data: LexicalTextChild): Partial<TypographyProps> => {
 
   return {
     color: isHeading ? "text.primary" : "text.secondary",
-    fontWeight: isPrimary ? 600 : isHeading ? 700 : 400,
     variant: isPrimary ? "subtitle2" : data.tag ? textVariants[data.tag as string] : "body2",
     component: data.tag || "span",
     gutterBottom: isHeading || data.type === "paragraph",
-    ml: indent,
     align,
+    sx: {
+      fontWeight: isPrimary ? 600 : isHeading ? 700 : 400,
+      ml: indent,
+    },
   };
 };
 

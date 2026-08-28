@@ -8,10 +8,10 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ overline, title, subtitle
 
   return (
     <Stack
-      alignItems={textAlign === "center" ? "center" : "flex-start"}
       {...props}
       sx={{
         ...sx,
+        alignItems: textAlign === "center" ? "center" : "flex-start",
         ...(props.sx as object),
       }}
       className="section-header"
@@ -19,12 +19,18 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ overline, title, subtitle
     >
       <div>
         {!!overline && (
-          <Typography textAlign={textAlign} color="common.red" letterSpacing={3} fontWeight={500} variant="overline" className="overline" component="p">
+          <Typography
+            color="common.red"
+            variant="overline"
+            className="overline"
+            component="p"
+            sx={{ textAlign, letterSpacing: 3, fontWeight: 500 }}
+          >
             {overline}
           </Typography>
         )}
         {!!title && (
-          <Typography textAlign={textAlign} variant="h2" fontWeight={600} lineHeight={1.25} className="title" gutterBottom>
+          <Typography variant="h2" className="title" gutterBottom sx={{ textAlign, fontWeight: 600, lineHeight: 1.25 }}>
             {title}
           </Typography>
         )}
@@ -33,10 +39,12 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ overline, title, subtitle
         <Typography
           color="text.secondary"
           className="subtitle"
-          textAlign={textAlign}
-          maxWidth={{
-            lg: 700,
-            xl: 1200,
+          sx={{
+            textAlign,
+            maxWidth: {
+              lg: 700,
+              xl: 1200,
+            },
           }}
         >
           {subtitle}
@@ -62,6 +70,7 @@ export type SectionHeaderProps = {
   overline?: React.ReactNode;
   title?: React.ReactNode | React.ReactElement;
   subtitle?: React.ReactNode;
+  textAlign?: "center" | "left";
 } & Omit<StackProps, "title">;
 
 export default SectionHeader;

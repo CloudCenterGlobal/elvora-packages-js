@@ -1,5 +1,4 @@
-import { alpha } from "@mui/material/styles";
-import createPalette from "@mui/material/styles/createPalette";
+import { alpha, createTheme } from "@mui/material/styles";
 
 const PRIMARY = {
   main: "#FF386E",
@@ -68,7 +67,7 @@ export const palette = {
 
 declare module "@mui/material/styles" {
   interface PaletteColor {
-    darker: string;
+    darker?: string;
   }
 
   interface CommonColors {
@@ -95,11 +94,5 @@ declare module "@mui/material/styles" {
   }
 }
 
-declare module "@mui/material/styles/createPalette" {
-  type GreyType = typeof GREY;
-
-  interface PaletteOptions {}
-}
-
 export { GREY, PRIMARY, SECONDARY, WARNING };
-export default createPalette(palette);
+export default createTheme({ palette }).palette;

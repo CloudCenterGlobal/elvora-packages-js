@@ -17,8 +17,8 @@ const FormBuilderFieldProperties: React.FC<Omit<FormBuilderFieldPropertiesProps,
   }, [field?.fieldType]);
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
-      <Stack flex={1} spacing={1} className="field-properties">
+    <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+      <Stack spacing={1} className="field-properties" sx={{ flex: 1 }}>
         {components.map((component) => {
           const Component = fieldComponents[component];
 

@@ -22,7 +22,7 @@ const DropZone: React.FC<DropZoneProps> = ({
       className={`drop-zone-wrapper ${isDragActive ? "active" : ""} ${isDragReject || error ? "reject" : ""}`}
     >
       {!!label && (
-        <Typography variant="subtitle2" fontWeight={500} className="label">
+        <Typography variant="subtitle2" className="label" sx={{ fontWeight: 500 }}>
           {label}
         </Typography>
       )}

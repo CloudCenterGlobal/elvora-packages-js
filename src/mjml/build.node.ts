@@ -16,9 +16,11 @@ const build = () => {
     fs.writeFileSync(
       output,
       minify(
-        mjml(input, {
-          keepComments: process.env.NODE_ENV === "development",
-        }).html,
+        (
+          mjml(input, {
+            keepComments: process.env.NODE_ENV === "development",
+          }) as unknown as { html: string }
+        ).html,
         {
           collapseWhitespace: true,
           removeComments: true,
@@ -42,7 +44,7 @@ const serve = async () => {
       }),
     },
 
-    async fetch(event) {
+    async fetch(event: Request) {
       const url = new URL(event.url);
       const pathname = url.pathname;
 

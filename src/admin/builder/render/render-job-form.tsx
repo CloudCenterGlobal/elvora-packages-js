@@ -104,7 +104,7 @@ const RenderJobForm = ({ formData, onSubmit, values, disabled }: RenderJobFormPr
       </Stack>
 
       {!disabled && (
-        <Stack mt={3} spacing={2} alignItems="center" className="form-actions">
+        <Stack spacing={2} className="form-actions" sx={{ mt: 3, alignItems: "center" }}>
           <LoadingButton type="submit" disableElevation loading={methods.formState.isSubmitting} variant="contained" color="primary">
             Complete Application
           </LoadingButton>

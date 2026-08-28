@@ -46,7 +46,7 @@ const CareersAssessmentPageBase: React.FC<Props> = async ({
           <Typography variant="overline" color="common.red">
             APPLYING FOR
           </Typography>
-          <Typography variant="h3" fontWeight={500}>
+          <Typography variant="h3" sx={{ fontWeight: 500 }}>
             {job.role}
           </Typography>
 

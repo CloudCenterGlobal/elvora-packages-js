@@ -36,8 +36,8 @@ const CareerItemCard: React.FC<CareerItemCardProps> = ({ item }) => {
             <Typography
               variant="caption"
               component="p"
-              maxWidth={120}
               color="secondary.main"
+              sx={{ maxWidth: 120 }}
             >
               £{item.metadata?.min_pay}{" "}
               {!!item.metadata?.max_pay && `to ${item.metadata?.max_pay}`} per
@@ -47,15 +47,14 @@ const CareerItemCard: React.FC<CareerItemCardProps> = ({ item }) => {
         }
       />
       <CardContent>
-        <Stack direction="row" spacing={0.5} mb={1} alignItems="center">
+        <Stack direction="row" spacing={0.5} sx={{ mb: 1, alignItems: "center" }}>
           <LocationOnOutlined className="location-icon" />
 
           <Typography
             variant="body2"
             color="secondary.main"
             component="p"
-            letterSpacing={0.8}
-            lineHeight={1}
+            sx={{ letterSpacing: 0.8, lineHeight: 1 }}
           >
             {item.metadata?.job_location?.location || "Remote"}
           </Typography>
