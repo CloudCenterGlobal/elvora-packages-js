@@ -16,9 +16,13 @@ const build = () => {
     fs.writeFileSync(
       output,
       minify(
-        mjml(input, {
-          keepComments: process.env.NODE_ENV === "development",
-        }).html,
+        // mjml() is synchronous at runtime; its bundled types incorrectly
+        // declare a Promise return.
+        (
+          mjml(input, {
+            keepComments: process.env.NODE_ENV === "development",
+          }) as unknown as { html: string }
+        ).html,
         {
           collapseWhitespace: true,
           removeComments: true,

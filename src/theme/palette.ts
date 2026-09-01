@@ -1,4 +1,7 @@
 import { alpha } from "@mui/material/styles";
+// @ts-ignore MUI v7's public .d.ts only re-exports the Palette *types* from
+// this path, not the createPalette factory itself, even though the JS
+// runtime still exports it as default. No public replacement for it exists.
 import createPalette from "@mui/material/styles/createPalette";
 
 const PRIMARY = {
@@ -93,12 +96,6 @@ declare module "@mui/material/styles" {
     neutral: string;
     grey: string;
   }
-}
-
-declare module "@mui/material/styles/createPalette" {
-  type GreyType = typeof GREY;
-
-  interface PaletteOptions {}
 }
 
 export { GREY, PRIMARY, SECONDARY, WARNING };

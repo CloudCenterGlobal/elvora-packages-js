@@ -13,6 +13,8 @@ export const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const RECRUITMENT_EMAIL = process.env.RECRUITMENT_EMAIL || SYSTEM_EMAIL;
 
+export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || SYSTEM_EMAIL;
+
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -26,6 +28,7 @@ declare global {
       SMTP_SECURE: "true" | string;
 
       RECRUITMENT_EMAIL: string;
+      SUPPORT_EMAIL: string;
     }
   }
 }

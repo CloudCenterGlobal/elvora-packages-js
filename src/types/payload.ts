@@ -80,6 +80,7 @@ export interface Config {
     permissions: Permission;
     'permissions-groups': PermissionsGroup;
     'permission-group-users': PermissionGroupUser;
+    services: Service;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -100,6 +101,7 @@ export interface Config {
     permissions: PermissionsSelect<false> | PermissionsSelect<true>;
     'permissions-groups': PermissionsGroupsSelect<false> | PermissionsGroupsSelect<true>;
     'permission-group-users': PermissionGroupUsersSelect<false> | PermissionGroupUsersSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -112,9 +114,10 @@ export interface Config {
   globals: {};
   globalsSelect: {};
   locale: null;
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -171,6 +174,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -431,6 +435,8 @@ export interface JobApplication {
   mobile?: string | null;
   cv: string;
   job: number | JobPosting;
+  status?: ('pending' | 'accepted' | 'rejected') | null;
+  status_description?: string | null;
   assessment?: {
     answers: {};
     fields: {
@@ -491,6 +497,26 @@ export interface PermissionGroupUser {
   id: number;
   user: number | User;
   group: number | PermissionsGroup;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Manage the list of services offered. These appear in the service name dropdown on the feedback form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  name: string;
+  /**
+   * Auto-generated from the name. Must be unique.
+   */
+  slug?: string | null;
+  /**
+   * Only active services appear in the feedback form dropdown.
+   */
+  active?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -569,6 +595,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'permission-group-users';
         value: number | PermissionGroupUser;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -779,6 +809,8 @@ export interface JobApplicationsSelect<T extends boolean = true> {
   mobile?: T;
   cv?: T;
   job?: T;
+  status?: T;
+  status_description?: T;
   assessment?: T;
   uuid?: T;
   updatedAt?: T;
@@ -812,6 +844,17 @@ export interface PermissionsGroupsSelect<T extends boolean = true> {
 export interface PermissionGroupUsersSelect<T extends boolean = true> {
   user?: T;
   group?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  active?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -854,6 +897,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -18,7 +18,7 @@ import PersonOutlined from "@mui/icons-material/PersonOutlined";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Box from "@mui/material/Box";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import { SxProps } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
@@ -145,9 +145,9 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
           >
             <Stack spacing={0} maxWidth="md" flex={1}>
               <div>
-                <Grid2 container maxWidth="md" spacing={0.5}>
+                <Grid container maxWidth="md" spacing={0.5}>
                   {getJobDetailsItems(job).map((item, index) => (
-                    <Grid2 size={{ xs: 12, md: 6 }} key={index} spacing={1}>
+                    <Grid size={{ xs: 12, md: 6 }} key={index} spacing={1}>
                       <Stack direction="row" spacing={1}>
                         <Typography
                           variant="caption"
@@ -166,9 +166,9 @@ const CareersDetailPageBase: React.FC<CareersDetailPageBaseProps> = async ({
                           {item.value}
                         </Typography>
                       </Stack>
-                    </Grid2>
+                    </Grid>
                   ))}
-                </Grid2>
+                </Grid>
 
                 <SectionSpacer smaller />
               </div>

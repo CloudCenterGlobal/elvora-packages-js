@@ -50,6 +50,30 @@ const JobApplications = createCollection({
       hasMany: false,
     },
     {
+      name: "status",
+      label: "Status",
+      type: "select",
+      required: false,
+      defaultValue: "pending",
+      options: [
+        { label: "Pending", value: "pending" },
+        { label: "Accepted", value: "accepted" },
+        { label: "Rejected", value: "rejected" },
+      ],
+      admin: {
+        position: "sidebar",
+      },
+    },
+    {
+      name: "status_description",
+      label: "Status notes",
+      type: "text",
+      required: false,
+      admin: {
+        position: "sidebar",
+      },
+    },
+    {
       name: "assessment",
       label: "Assessment",
       type: "json",

@@ -7,7 +7,7 @@ import { baseRoutes } from "@elvora/routes";
 import { CareersPageFilters } from "@elvora/sections/careers/filters";
 import { JobPostingMini } from "@elvora/types/careers";
 import Box from "@mui/material/Box";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import { SxProps } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
@@ -45,9 +45,9 @@ const CareersListPageBase: React.FC<CareersDetailPageBaseProps> = async ({ landi
               <Stack direction={{ xs: "column", md: "row" }} spacing={4}>
                 <CareersPageFilters />
                 <div style={{ width: "100%" }}>
-                  <Grid2 container rowSpacing={4} columnSpacing={3}>
+                  <Grid container rowSpacing={4} columnSpacing={3}>
                     {jobs.map((item, index) => (
-                      <Grid2
+                      <Grid
                         key={index}
                         size={{
                           xs: 12,
@@ -57,9 +57,9 @@ const CareersListPageBase: React.FC<CareersDetailPageBaseProps> = async ({ landi
                         <NextLink href={baseRoutes.careers.detail(item.uuid!)} underline="none">
                           <CareerItemCard item={item} />
                         </NextLink>
-                      </Grid2>
+                      </Grid>
                     ))}
-                  </Grid2>
+                  </Grid>
                 </div>
               </Stack>
             </>

@@ -6,7 +6,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"id" serial PRIMARY KEY NOT NULL,
   	"name" varchar NOT NULL,
   	"slug" varchar,
-  	"active" boolean DEFAULT true,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
@@ -24,5 +23,8 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   await db.execute(sql`
    ALTER TABLE "services" DISABLE ROW LEVEL SECURITY;
   DROP TABLE "services" CASCADE;
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_services_fk";
+  
+  DROP INDEX "payload_locked_documents_rels_services_id_idx";
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "services_id";`)
 }

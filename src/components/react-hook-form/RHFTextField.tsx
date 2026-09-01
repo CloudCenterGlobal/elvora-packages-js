@@ -68,8 +68,8 @@ const RHFTextField = <T extends object>({
         <DatePicker
           enableAccessibleFieldDOMStructure
           {...datePickerProps}
-          {...(commonProps as DatePickerProps<any, boolean>)}
-          value={commonProps.value ? dayjs(commonProps.value) : (null as unknown as Date)}
+          {...(commonProps as DatePickerProps<boolean>)}
+          value={commonProps.value ? dayjs(commonProps.value) : null}
         />
       );
     }
@@ -104,7 +104,7 @@ export type RHFTextFieldProps<T extends object = object> = {
   defaultLabelStyle?: boolean;
   helperText?: React.ReactNode;
 
-  datePickerProps?: Partial<DatePickerProps<any, boolean>>;
+  datePickerProps?: Partial<DatePickerProps<boolean>>;
 } & Omit<TextFieldProps, "name">;
 
 export { RHFTextField };
