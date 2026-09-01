@@ -79,6 +79,7 @@ export interface Config {
     'job-applications': JobApplication;
     'forms-referrals': FormsReferral;
     'forms-referral-documents': FormsReferralDocument;
+    'forms-callbacks': FormsCallback;
     permissions: Permission;
     'permissions-groups': PermissionsGroup;
     'permission-group-users': PermissionGroupUser;
@@ -101,6 +102,7 @@ export interface Config {
     'job-applications': JobApplicationsSelect<false> | JobApplicationsSelect<true>;
     'forms-referrals': FormsReferralsSelect<false> | FormsReferralsSelect<true>;
     'forms-referral-documents': FormsReferralDocumentsSelect<false> | FormsReferralDocumentsSelect<true>;
+    'forms-callbacks': FormsCallbacksSelect<false> | FormsCallbacksSelect<true>;
     permissions: PermissionsSelect<false> | PermissionsSelect<true>;
     'permissions-groups': PermissionsGroupsSelect<false> | PermissionsGroupsSelect<true>;
     'permission-group-users': PermissionGroupUsersSelect<false> | PermissionGroupUsersSelect<true>;
@@ -492,6 +494,24 @@ export interface FormsReferralDocument {
   focalY?: number | null;
 }
 /**
+ * Callback requests submitted through the Request a Callback form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-callbacks".
+ */
+export interface FormsCallback {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  contact_method: string;
+  preferred_datetime?: string | null;
+  additional_info?: string | null;
+  consent: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Permissions are used to control access to different parts of the system. They are used in conjunction with permission groups to determine what a user can do. You cannot edit these permissions directly.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -611,6 +631,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'forms-referral-documents';
         value: number | FormsReferralDocument;
+      } | null)
+    | ({
+        relationTo: 'forms-callbacks';
+        value: number | FormsCallback;
       } | null)
     | ({
         relationTo: 'permissions';
@@ -873,6 +897,21 @@ export interface FormsReferralDocumentsSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-callbacks_select".
+ */
+export interface FormsCallbacksSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  contact_method?: T;
+  preferred_datetime?: T;
+  additional_info?: T;
+  consent?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
