@@ -123,6 +123,9 @@ const getOrCreateJobApplication = async (job: JobPosting, data: CareersApplicati
     // update the existing application
     await deleteCVFile(application.docs[0].cv);
 
+    const updated_cv_path = getCvFilename(job.uuid!, data.cv);
+    await createCVFile(updated_cv_path, data.cv);
+
     return await payload.update({
       collection: "job-applications",
       id: application.docs[0].id,
@@ -131,12 +134,12 @@ const getOrCreateJobApplication = async (job: JobPosting, data: CareersApplicati
         first_name: data.first_name,
         last_name: data.last_name,
         mobile: data.mobile,
-        cv: getCvFilename(job.uuid!, data.cv),
+        cv: updated_cv_path,
       },
     });
   }
 
-  const cv_path = getCvFilename(job.uuid!, data.cv, true);
+  const cv_path = getCvFilename(job.uuid!, data.cv);
 
   return await payload
     .create({
@@ -161,16 +164,10 @@ const getOrCreateJobApplication = async (job: JobPosting, data: CareersApplicati
     });
 };
 
-const getCvFilename = (job_uuid: string, cv: File | globalThis.File, absolute?: boolean) => {
+const getCvFilename = (job_uuid: string, cv: File | globalThis.File) => {
   const prefix = `public/media/job-applications/${job_uuid}`;
 
-  const filename = `${prefix}/${cv.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-
-  if (absolute) {
-    return filename;
-  }
-
-  return filename;
+  return `${prefix}/${cv.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
 };
 
 const loadCvFromAbsolutePath = (cv_path: string) => {
@@ -190,12 +187,7 @@ const createCVFile = async (cv_path: string, cv: File | globalThis.File) => {
   const attachmentBuffer = await cv.arrayBuffer();
   const buffer = Buffer.from(attachmentBuffer!);
 
-  fs.writeFile(cv_path, buffer, (err: any) => {
-    if (err) {
-      console.error("Error writing file:", err);
-    }
-    console.log("File written successfully");
-  });
+  await fs.promises.writeFile(cv_path, buffer);
 
   return cv_path;
 };
@@ -203,11 +195,8 @@ const createCVFile = async (cv_path: string, cv: File | globalThis.File) => {
 const deleteCVFile = async (cv_path: string) => {
   const realPath = path.join(BASE_DIR, cv_path);
   if (fs.existsSync(realPath)) {
-    fs.unlink(realPath, (err: any) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      }
-      console.log("File deleted successfully");
+    await fs.promises.unlink(realPath).catch((err) => {
+      console.error("Error deleting file:", err);
     });
   }
 };

@@ -32,7 +32,7 @@ const CareersAssessmentPageBase: React.FC<Props> = async ({
   if (
     !job ||
     !job.job_questions ||
-    isJobOpenForApplications(job as JobPosting)
+    !isJobOpenForApplications(job as JobPosting)
   ) {
     return notFound();
   }
