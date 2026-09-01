@@ -105,7 +105,10 @@ const CareersApplicationForm: React.FC<CareersApplicationFormProps> = ({ hasQues
             label="Cv/Resume"
             helperText={`Upload a file no larger than ${fData(MAX_SIZE)}. Supported file types: .PDF .DOC`}
             accept={{
-              docs: [".pdf", "doc", ".docx"],
+              "application/pdf": [".pdf"],
+              "application/msword": [".doc"],
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+              "application/vnd.oasis.opendocument.text": [".odt"],
             }}
             maxSize={MAX_SIZE}
           />

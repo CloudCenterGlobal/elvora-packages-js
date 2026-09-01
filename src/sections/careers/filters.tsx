@@ -3,7 +3,7 @@ import { responsive } from "@elvora/utils/breakpoints";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 //@ts-ignore
-import bgPattern from "assets/get-in-touch/pattern.png";
+import bgPattern from "@elvora/assets/get-in-touch/pattern.png";
 import { CareersPageFiltersForm } from "./filters-form";
 
 const CareersPageFilters = async () => {
