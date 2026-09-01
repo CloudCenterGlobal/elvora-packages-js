@@ -1,4 +1,5 @@
 import { BlogsCollectionConfig } from "./Blogs";
+import { FormsCollectionConfig } from "./Forms";
 import { JobsCollectionConfig } from "./Jobs";
 import { MediaCollectionConfig } from "./Media";
 import { PermissionsCollectionConfig } from "./Permissions";
@@ -9,10 +10,12 @@ const collections = [
   ...MediaCollectionConfig,
   ...BlogsCollectionConfig,
   ...JobsCollectionConfig,
+  ...FormsCollectionConfig,
   ...PermissionsCollectionConfig,
 ];
 
 export * from "./Blogs";
+export * from "./Forms";
 export * from "./Jobs";
 export * from "./Media";
 export * from "./Users";

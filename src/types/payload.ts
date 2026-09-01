@@ -77,6 +77,8 @@ export interface Config {
     'job-locations': JobLocation;
     'job-forms': JobForm;
     'job-applications': JobApplication;
+    'forms-referrals': FormsReferral;
+    'forms-referral-documents': FormsReferralDocument;
     permissions: Permission;
     'permissions-groups': PermissionsGroup;
     'permission-group-users': PermissionGroupUser;
@@ -97,6 +99,8 @@ export interface Config {
     'job-locations': JobLocationsSelect<false> | JobLocationsSelect<true>;
     'job-forms': JobFormsSelect<false> | JobFormsSelect<true>;
     'job-applications': JobApplicationsSelect<false> | JobApplicationsSelect<true>;
+    'forms-referrals': FormsReferralsSelect<false> | FormsReferralsSelect<true>;
+    'forms-referral-documents': FormsReferralDocumentsSelect<false> | FormsReferralDocumentsSelect<true>;
     permissions: PermissionsSelect<false> | PermissionsSelect<true>;
     'permissions-groups': PermissionsGroupsSelect<false> | PermissionsGroupsSelect<true>;
     'permission-group-users': PermissionGroupUsersSelect<false> | PermissionGroupUsersSelect<true>;
@@ -112,9 +116,10 @@ export interface Config {
   globals: {};
   globalsSelect: {};
   locale: null;
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -171,6 +176,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -446,6 +452,54 @@ export interface JobApplication {
   createdAt: string;
 }
 /**
+ * Referrals submitted through the Make a Referral form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-referrals".
+ */
+export interface FormsReferral {
+  id: number;
+  referred_name: string;
+  referred_age: number;
+  services: (
+    | 'supported-living-residential'
+    | 'complex-care-transforming-care'
+    | 'hospital-discharge-transition'
+    | 'learning-disabilities'
+    | 'autism-spectrum-conditions'
+    | 'behaviours-that-challenge'
+    | 'positive-behaviour-support'
+  )[];
+  documents?: (number | FormsReferralDocument)[] | null;
+  additional_info?: string | null;
+  referrer_name: string;
+  organisation: string;
+  role: string;
+  email: string;
+  phone: string;
+  consent: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-referral-documents".
+ */
+export interface FormsReferralDocument {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
  * Permissions are used to control access to different parts of the system. They are used in conjunction with permission groups to determine what a user can do. You cannot edit these permissions directly.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -557,6 +611,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'job-applications';
         value: number | JobApplication;
+      } | null)
+    | ({
+        relationTo: 'forms-referrals';
+        value: number | FormsReferral;
+      } | null)
+    | ({
+        relationTo: 'forms-referral-documents';
+        value: number | FormsReferralDocument;
       } | null)
     | ({
         relationTo: 'permissions';
@@ -786,6 +848,42 @@ export interface JobApplicationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-referrals_select".
+ */
+export interface FormsReferralsSelect<T extends boolean = true> {
+  referred_name?: T;
+  referred_age?: T;
+  services?: T;
+  documents?: T;
+  additional_info?: T;
+  referrer_name?: T;
+  organisation?: T;
+  role?: T;
+  email?: T;
+  phone?: T;
+  consent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-referral-documents_select".
+ */
+export interface FormsReferralDocumentsSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "permissions_select".
  */
 export interface PermissionsSelect<T extends boolean = true> {
@@ -854,6 +952,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
