@@ -2,11 +2,12 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TABLE "forms_referrals_services" (
+   CREATE TABLE "forms_referrals_texts" (
+  	"id" serial PRIMARY KEY NOT NULL,
   	"order" integer NOT NULL,
   	"parent_id" integer NOT NULL,
-  	"value" varchar,
-  	"id" serial PRIMARY KEY NOT NULL
+  	"path" varchar NOT NULL,
+  	"text" varchar
   );
   
   CREATE TABLE "forms_referrals" (
@@ -49,11 +50,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "forms_referrals_id" integer;
   ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "forms_referral_documents_id" integer;
-  ALTER TABLE "forms_referrals_services" ADD CONSTRAINT "forms_referrals_services_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."forms_referrals"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "forms_referrals_texts" ADD CONSTRAINT "forms_referrals_texts_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."forms_referrals"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "forms_referrals_rels" ADD CONSTRAINT "forms_referrals_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."forms_referrals"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "forms_referrals_rels" ADD CONSTRAINT "forms_referrals_rels_forms_referral_documents_fk" FOREIGN KEY ("forms_referral_documents_id") REFERENCES "public"."forms_referral_documents"("id") ON DELETE cascade ON UPDATE no action;
-  CREATE INDEX "forms_referrals_services_order_idx" ON "forms_referrals_services" USING btree ("order");
-  CREATE INDEX "forms_referrals_services_parent_idx" ON "forms_referrals_services" USING btree ("parent_id");
+  CREATE INDEX "forms_referrals_texts_order_parent" ON "forms_referrals_texts" USING btree ("order","parent_id");
   CREATE INDEX "forms_referrals_updated_at_idx" ON "forms_referrals" USING btree ("updated_at");
   CREATE INDEX "forms_referrals_created_at_idx" ON "forms_referrals" USING btree ("created_at");
   CREATE INDEX "forms_referrals_rels_order_idx" ON "forms_referrals_rels" USING btree ("order");
@@ -71,11 +71,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   ALTER TABLE "forms_referrals_services" DISABLE ROW LEVEL SECURITY;
+   ALTER TABLE "forms_referrals_texts" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "forms_referrals" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "forms_referrals_rels" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "forms_referral_documents" DISABLE ROW LEVEL SECURITY;
-  DROP TABLE "forms_referrals_services" CASCADE;
+  DROP TABLE "forms_referrals_texts" CASCADE;
   DROP TABLE "forms_referrals" CASCADE;
   DROP TABLE "forms_referrals_rels" CASCADE;
   DROP TABLE "forms_referral_documents" CASCADE;

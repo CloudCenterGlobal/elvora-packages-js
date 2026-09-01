@@ -2020,10 +2020,16 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.forms_referrals_services": {
-      "name": "forms_referrals_services",
+    "public.forms_referrals_texts": {
+      "name": "forms_referrals_texts",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "order": {
           "name": "order",
           "type": "integer",
@@ -2036,38 +2042,29 @@
           "primaryKey": false,
           "notNull": true
         },
-        "value": {
-          "name": "value",
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
-        },
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
         }
       },
       "indexes": {
-        "forms_referrals_services_order_idx": {
-          "name": "forms_referrals_services_order_idx",
+        "forms_referrals_texts_order_parent": {
+          "name": "forms_referrals_texts_order_parent",
           "columns": [
             {
               "expression": "order",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "forms_referrals_services_parent_idx": {
-          "name": "forms_referrals_services_parent_idx",
-          "columns": [
+            },
             {
               "expression": "parent_id",
               "isExpression": false,
@@ -2082,9 +2079,9 @@
         }
       },
       "foreignKeys": {
-        "forms_referrals_services_parent_fk": {
-          "name": "forms_referrals_services_parent_fk",
-          "tableFrom": "forms_referrals_services",
+        "forms_referrals_texts_parent_fk": {
+          "name": "forms_referrals_texts_parent_fk",
+          "tableFrom": "forms_referrals_texts",
           "tableTo": "forms_referrals",
           "columnsFrom": [
             "parent_id"
