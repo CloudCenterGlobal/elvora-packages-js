@@ -39,10 +39,14 @@ const Referrals: CollectionConfig = createCollection({
         {
           name: "services",
           label: "Services of interest",
-          type: "select",
+          type: "text",
           hasMany: true,
           required: true,
-          options: [...REFERRAL_SERVICE_OPTIONS],
+          validate: (value: string[] | null | undefined) => {
+            const known = REFERRAL_SERVICE_OPTIONS.map((option) => option.value as string);
+            const invalid = (value ?? []).filter((entry) => !known.includes(entry));
+            return invalid.length === 0 || `Unknown service(s): ${invalid.join(", ")}`;
+          },
         },
       ],
     },

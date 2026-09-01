@@ -2038,8 +2038,7 @@
         },
         "value": {
           "name": "value",
-          "type": "enum_forms_referrals_services",
-          "typeSchema": "public",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -4038,19 +4037,6 @@
       "values": [
         "draft",
         "published"
-      ]
-    },
-    "public.enum_forms_referrals_services": {
-      "name": "enum_forms_referrals_services",
-      "schema": "public",
-      "values": [
-        "supported-living-residential",
-        "complex-care-transforming-care",
-        "hospital-discharge-transition",
-        "learning-disabilities",
-        "autism-spectrum-conditions",
-        "behaviours-that-challenge",
-        "positive-behaviour-support"
       ]
     }
   },

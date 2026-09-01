@@ -461,15 +461,7 @@ export interface FormsReferral {
   id: number;
   referred_name: string;
   referred_age: number;
-  services: (
-    | 'supported-living-residential'
-    | 'complex-care-transforming-care'
-    | 'hospital-discharge-transition'
-    | 'learning-disabilities'
-    | 'autism-spectrum-conditions'
-    | 'behaviours-that-challenge'
-    | 'positive-behaviour-support'
-  )[];
+  services: string[];
   documents?: (number | FormsReferralDocument)[] | null;
   additional_info?: string | null;
   referrer_name: string;

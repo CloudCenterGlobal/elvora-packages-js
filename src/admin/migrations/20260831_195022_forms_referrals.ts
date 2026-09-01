@@ -2,11 +2,10 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TYPE "public"."enum_forms_referrals_services" AS ENUM('supported-living-residential', 'complex-care-transforming-care', 'hospital-discharge-transition', 'learning-disabilities', 'autism-spectrum-conditions', 'behaviours-that-challenge', 'positive-behaviour-support');
-  CREATE TABLE "forms_referrals_services" (
+   CREATE TABLE "forms_referrals_services" (
   	"order" integer NOT NULL,
   	"parent_id" integer NOT NULL,
-  	"value" "enum_forms_referrals_services",
+  	"value" varchar,
   	"id" serial PRIMARY KEY NOT NULL
   );
   
@@ -81,6 +80,5 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "forms_referrals_rels" CASCADE;
   DROP TABLE "forms_referral_documents" CASCADE;
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "forms_referrals_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "forms_referral_documents_id";
-  DROP TYPE "public"."enum_forms_referrals_services";`)
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "forms_referral_documents_id";`)
 }
