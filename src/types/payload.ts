@@ -80,6 +80,7 @@ export interface Config {
     'forms-referrals': FormsReferral;
     'forms-referral-documents': FormsReferralDocument;
     'forms-callbacks': FormsCallback;
+    'forms-home-enquiries': FormsHomeEnquiry;
     permissions: Permission;
     'permissions-groups': PermissionsGroup;
     'permission-group-users': PermissionGroupUser;
@@ -103,6 +104,7 @@ export interface Config {
     'forms-referrals': FormsReferralsSelect<false> | FormsReferralsSelect<true>;
     'forms-referral-documents': FormsReferralDocumentsSelect<false> | FormsReferralDocumentsSelect<true>;
     'forms-callbacks': FormsCallbacksSelect<false> | FormsCallbacksSelect<true>;
+    'forms-home-enquiries': FormsHomeEnquiriesSelect<false> | FormsHomeEnquiriesSelect<true>;
     permissions: PermissionsSelect<false> | PermissionsSelect<true>;
     'permissions-groups': PermissionsGroupsSelect<false> | PermissionsGroupsSelect<true>;
     'permission-group-users': PermissionGroupUsersSelect<false> | PermissionGroupUsersSelect<true>;
@@ -512,6 +514,24 @@ export interface FormsCallback {
   createdAt: string;
 }
 /**
+ * Enquiries submitted from an individual home's page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-home-enquiries".
+ */
+export interface FormsHomeEnquiry {
+  id: number;
+  home_name: string;
+  home_slug: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  message: string;
+  consent: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Permissions are used to control access to different parts of the system. They are used in conjunction with permission groups to determine what a user can do. You cannot edit these permissions directly.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -635,6 +655,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'forms-callbacks';
         value: number | FormsCallback;
+      } | null)
+    | ({
+        relationTo: 'forms-home-enquiries';
+        value: number | FormsHomeEnquiry;
       } | null)
     | ({
         relationTo: 'permissions';
@@ -909,6 +933,21 @@ export interface FormsCallbacksSelect<T extends boolean = true> {
   contact_method?: T;
   preferred_datetime?: T;
   additional_info?: T;
+  consent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-home-enquiries_select".
+ */
+export interface FormsHomeEnquiriesSelect<T extends boolean = true> {
+  home_name?: T;
+  home_slug?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
   consent?: T;
   updatedAt?: T;
   createdAt?: T;

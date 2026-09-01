@@ -1,8 +1,9 @@
 import Referrals from "./Referrals";
 import ReferralDocuments from "./ReferralDocuments";
 import Callbacks from "./Callbacks";
+import HomeEnquiries from "./HomeEnquiries";
 
-const FormsCollectionConfig = [Referrals, ReferralDocuments, Callbacks].map((collection) => {
+const FormsCollectionConfig = [Referrals, ReferralDocuments, Callbacks, HomeEnquiries].map((collection) => {
   collection.admin = {
     ...collection.admin,
     group: "Forms",
@@ -11,4 +12,4 @@ const FormsCollectionConfig = [Referrals, ReferralDocuments, Callbacks].map((col
 });
 
 export * from "./constants";
-export { FormsCollectionConfig, Referrals, ReferralDocuments, Callbacks };
+export { FormsCollectionConfig, Referrals, ReferralDocuments, Callbacks, HomeEnquiries };
