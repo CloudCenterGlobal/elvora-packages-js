@@ -7,7 +7,13 @@ const Referrals: CollectionConfig = createCollection({
   dbName: "forms_referrals",
   admin: {
     useAsTitle: "referred_name",
-    defaultColumns: ["referred_name", "referrer_name", "organisation", "email", "createdAt"],
+    defaultColumns: [
+      "referred_name",
+      "referrer_name",
+      "organisation",
+      "email",
+      "createdAt",
+    ],
     description: "Referrals submitted through the Make a Referral form.",
   },
   access: {
@@ -74,13 +80,13 @@ const Referrals: CollectionConfig = createCollection({
           name: "organisation",
           label: "Referring organisation",
           type: "text",
-          required: true,
+          required: false,
         },
         {
           name: "role",
           label: "Referrer role",
           type: "text",
-          required: true,
+          required: false,
         },
         {
           name: "email",
@@ -92,7 +98,7 @@ const Referrals: CollectionConfig = createCollection({
           name: "phone",
           label: "Phone",
           type: "text",
-          required: true,
+          required: false,
         },
         {
           name: "consent",

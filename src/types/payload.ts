@@ -473,10 +473,10 @@ export interface FormsReferral {
   documents?: (number | FormsReferralDocument)[] | null;
   additional_info?: string | null;
   referrer_name: string;
-  organisation: string;
-  role: string;
+  organisation?: string | null;
+  role?: string | null;
   email: string;
-  phone: string;
+  phone?: string | null;
   consent: boolean;
   updatedAt: string;
   createdAt: string;

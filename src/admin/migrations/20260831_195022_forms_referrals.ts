@@ -16,10 +16,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"referred_age" numeric NOT NULL,
   	"additional_info" varchar,
   	"referrer_name" varchar NOT NULL,
-  	"organisation" varchar NOT NULL,
-  	"role" varchar NOT NULL,
+  	"organisation" varchar,
+  	"role" varchar,
   	"email" varchar NOT NULL,
-  	"phone" varchar NOT NULL,
+  	"phone" varchar,
   	"consent" boolean DEFAULT false NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -80,12 +80,6 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "forms_referrals" CASCADE;
   DROP TABLE "forms_referrals_rels" CASCADE;
   DROP TABLE "forms_referral_documents" CASCADE;
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_forms_referrals_fk";
-  
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_forms_referral_documents_fk";
-  
-  DROP INDEX "payload_locked_documents_rels_forms_referrals_id_idx";
-  DROP INDEX "payload_locked_documents_rels_forms_referral_documents_i_idx";
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "forms_referrals_id";
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "forms_referral_documents_id";
   DROP TYPE "public"."enum_forms_referrals_services";`)
