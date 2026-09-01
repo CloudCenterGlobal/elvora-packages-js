@@ -2122,7 +2122,7 @@
           "name": "referred_age",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "additional_info": {
           "name": "additional_info",

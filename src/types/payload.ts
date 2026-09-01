@@ -460,7 +460,7 @@ export interface JobApplication {
 export interface FormsReferral {
   id: number;
   referred_name: string;
-  referred_age: number;
+  referred_age?: number | null;
   services: string[];
   documents?: (number | FormsReferralDocument)[] | null;
   additional_info?: string | null;

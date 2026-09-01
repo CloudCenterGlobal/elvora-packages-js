@@ -34,7 +34,7 @@ const Referrals: CollectionConfig = createCollection({
           name: "referred_age",
           label: "Age",
           type: "number",
-          required: true,
+          required: false,
         },
         {
           name: "services",

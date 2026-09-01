@@ -12,7 +12,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE "forms_referrals" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"referred_name" varchar NOT NULL,
-  	"referred_age" numeric NOT NULL,
+  	"referred_age" numeric,
   	"additional_info" varchar,
   	"referrer_name" varchar NOT NULL,
   	"organisation" varchar,
