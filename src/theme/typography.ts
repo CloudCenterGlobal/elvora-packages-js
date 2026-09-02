@@ -6,7 +6,7 @@ const typography = {
   fontFamily: FONTS.poppins.fontFamily,
   fontWeightLight: FONTS.poppins.fontWeights[300],
   fontWeightRegular: FONTS.poppins.fontWeights[400],
-  fontWeightMedium: FONTS.poppins.fontWeights[500],
+  fontWeightMedium: FONTS.poppins.fontWeights[600],
   fontWeightBold: FONTS.poppins.fontWeights[700],
 
   allVariants: {
