@@ -210,6 +210,15 @@ const JobPosting = createCollection({
           async (req) => {
             const data = (req.siblingData || req.data) as IJobPosting;
 
+            // On update, always keep the value already stored in the DB -
+            // never trust whatever was submitted (browser extensions like
+            // LastPass have been observed overwriting this read-only field
+            // with an autofilled email on save).
+            if (req.operation === "update" && req.originalDoc?.uuid) {
+              set(data, "uuid", req.originalDoc.uuid);
+              return;
+            }
+
             if (!data?.uuid) {
               set(data, "uuid", uuidv4());
             }
