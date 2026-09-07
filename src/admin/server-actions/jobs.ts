@@ -140,6 +140,7 @@ const getJobFormByJobUUID = async (job_uuid: string) => {
     metadata: _job.metadata,
     uuid: _job.uuid,
     job_expiration: _job.job_expiration,
+    status: _job.status,
   };
 };
 
