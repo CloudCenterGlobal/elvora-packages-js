@@ -1,7 +1,6 @@
 // @elvora/admin/builder
 
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
-import { yupResolver } from "@hookform/resolvers/yup";
 import get from "lodash/get";
 import * as yup from "yup";
 
@@ -74,7 +73,7 @@ export const JobForms = createCollection({
         fields: [],
       },
       async validate(value) {
-        const response = await jobFormInnerSchemaResolver(value as any, value, { shouldUseNativeValidation: false } as any);
+        const response = await jobFormInnerSchemaResolver(value as any, value);
 
         if (response.errors && Object.keys(response.errors).length > 0) {
           return JSON.stringify(response.errors);
@@ -277,4 +276,22 @@ type ResolveOptions<Value extends any, Parent extends object = {}> = {
   index: number;
 };
 
-const jobFormInnerSchemaResolver = yupResolver(jobFormInnerSchema);
+async function jobFormInnerSchemaResolver(values: unknown, context: unknown) {
+  try {
+    await jobFormInnerSchema.validate(values, { abortEarly: false, context: context as object });
+    return { errors: {} as Record<string, { message: string; type?: string }> };
+  } catch (err) {
+    if (err instanceof yup.ValidationError) {
+      const errors: Record<string, { message: string; type?: string }> = {};
+      const inner = err.inner?.length ? err.inner : [err];
+
+      for (const e of inner) {
+        if (e.path) errors[e.path] = { message: e.message, type: e.type };
+      }
+
+      return { errors };
+    }
+
+    throw err;
+  }
+}
