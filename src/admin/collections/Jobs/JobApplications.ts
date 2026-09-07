@@ -140,7 +140,13 @@ const JobApplications = createCollection({
       },
       hooks: {
         beforeChange: [
-          ({ data }) => {
+          ({ data, operation, originalDoc }) => {
+            // On update, always keep the value already stored in the DB -
+            // never trust whatever was submitted.
+            if (operation === "update" && originalDoc?.uuid) {
+              return originalDoc.uuid;
+            }
+
             if (!data?.uuid) {
               return uuidv4();
             }
