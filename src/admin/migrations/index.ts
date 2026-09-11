@@ -8,6 +8,7 @@ import * as migration_20250603_133335 from './20250603_133335';
 import * as migration_20251218_073912 from './20251218_073912';
 import * as migration_20260831_195022_forms_referrals from './20260831_195022_forms_referrals';
 import * as migration_20260901_121804_forms_callbacks from './20260901_121804_forms_callbacks';
+import * as migration_20260910_074416_forms_property_partners from './20260910_074416_forms_property_partners';
 
 export const migrations = [
   {
@@ -59,5 +60,10 @@ export const migrations = [
     up: migration_20260901_121804_forms_callbacks.up,
     down: migration_20260901_121804_forms_callbacks.down,
     name: '20260901_121804_forms_callbacks',
+  },
+  {
+    up: migration_20260910_074416_forms_property_partners.up,
+    down: migration_20260910_074416_forms_property_partners.down,
+    name: '20260910_074416_forms_property_partners'
   },
 ];

@@ -80,6 +80,7 @@ export interface Config {
     'forms-referrals': FormsReferral;
     'forms-referral-documents': FormsReferralDocument;
     'forms-callbacks': FormsCallback;
+    'forms-property-partners': FormsPropertyPartner;
     permissions: Permission;
     'permissions-groups': PermissionsGroup;
     'permission-group-users': PermissionGroupUser;
@@ -103,6 +104,7 @@ export interface Config {
     'forms-referrals': FormsReferralsSelect<false> | FormsReferralsSelect<true>;
     'forms-referral-documents': FormsReferralDocumentsSelect<false> | FormsReferralDocumentsSelect<true>;
     'forms-callbacks': FormsCallbacksSelect<false> | FormsCallbacksSelect<true>;
+    'forms-property-partners': FormsPropertyPartnersSelect<false> | FormsPropertyPartnersSelect<true>;
     permissions: PermissionsSelect<false> | PermissionsSelect<true>;
     'permissions-groups': PermissionsGroupsSelect<false> | PermissionsGroupsSelect<true>;
     'permission-group-users': PermissionGroupUsersSelect<false> | PermissionGroupUsersSelect<true>;
@@ -512,6 +514,23 @@ export interface FormsCallback {
   createdAt: string;
 }
 /**
+ * Enquiries submitted through the Supported Living Partners landing page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-property-partners".
+ */
+export interface FormsPropertyPartner {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  property_location: string;
+  additional_info?: string | null;
+  consent: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Permissions are used to control access to different parts of the system. They are used in conjunction with permission groups to determine what a user can do. You cannot edit these permissions directly.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -635,6 +654,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'forms-callbacks';
         value: number | FormsCallback;
+      } | null)
+    | ({
+        relationTo: 'forms-property-partners';
+        value: number | FormsPropertyPartner;
       } | null)
     | ({
         relationTo: 'permissions';
@@ -908,6 +931,20 @@ export interface FormsCallbacksSelect<T extends boolean = true> {
   phone?: T;
   contact_method?: T;
   preferred_datetime?: T;
+  additional_info?: T;
+  consent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms-property-partners_select".
+ */
+export interface FormsPropertyPartnersSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  property_location?: T;
   additional_info?: T;
   consent?: T;
   updatedAt?: T;
