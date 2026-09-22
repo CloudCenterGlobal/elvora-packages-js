@@ -1,9 +1,8 @@
 import BlogCategories from "./BlogCategories";
 import BlogImages from "./BlogImages";
 import Blogs from "./Blogs";
-import BlogTags from "./BlogTags";
 
-const BlogsCollectionConfig = [Blogs, BlogCategories, BlogImages, BlogTags].map((a) => ({
+const BlogsCollectionConfig = [Blogs, BlogCategories, BlogImages].map((a) => ({
   ...a,
   admin: {
     ...(a as any).admin,
@@ -11,4 +10,4 @@ const BlogsCollectionConfig = [Blogs, BlogCategories, BlogImages, BlogTags].map(
   },
 }));
 
-export { BlogCategories, BlogImages, Blogs, BlogsCollectionConfig, BlogTags };
+export { BlogCategories, BlogImages, Blogs, BlogsCollectionConfig };

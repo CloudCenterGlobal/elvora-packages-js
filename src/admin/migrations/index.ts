@@ -10,6 +10,8 @@ import * as migration_20260831_195022_forms_referrals from './20260831_195022_fo
 import * as migration_20260901_121804_forms_callbacks from './20260901_121804_forms_callbacks';
 import * as migration_20260910_074416_forms_property_partners from './20260910_074416_forms_property_partners';
 import * as migration_20260922_082455_payload_3_90_upgrade from './20260922_082455_payload_3_90_upgrade';
+import * as migration_20260922_135007_blogs_eyebrow_optional_author_drop_tags from './20260922_135007_blogs_eyebrow_optional_author_drop_tags';
+import * as migration_20260922_135441_blogs_add_gallery from './20260922_135441_blogs_add_gallery';
 
 export const migrations = [
   {
@@ -70,6 +72,16 @@ export const migrations = [
   {
     up: migration_20260922_082455_payload_3_90_upgrade.up,
     down: migration_20260922_082455_payload_3_90_upgrade.down,
-    name: '20260922_082455_payload_3_90_upgrade'
+    name: '20260922_082455_payload_3_90_upgrade',
+  },
+  {
+    up: migration_20260922_135007_blogs_eyebrow_optional_author_drop_tags.up,
+    down: migration_20260922_135007_blogs_eyebrow_optional_author_drop_tags.down,
+    name: '20260922_135007_blogs_eyebrow_optional_author_drop_tags',
+  },
+  {
+    up: migration_20260922_135441_blogs_add_gallery.up,
+    down: migration_20260922_135441_blogs_add_gallery.down,
+    name: '20260922_135441_blogs_add_gallery'
   },
 ];

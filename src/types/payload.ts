@@ -72,7 +72,6 @@ export interface Config {
     blogs: Blog;
     'blog-categories': BlogCategory;
     'blog-images': BlogImage;
-    'blog-tags': BlogTag;
     'job-postings': JobPosting;
     'job-locations': JobLocation;
     'job-forms': JobForm;
@@ -96,7 +95,6 @@ export interface Config {
     blogs: BlogsSelect<false> | BlogsSelect<true>;
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
     'blog-images': BlogImagesSelect<false> | BlogImagesSelect<true>;
-    'blog-tags': BlogTagsSelect<false> | BlogTagsSelect<true>;
     'job-postings': JobPostingsSelect<false> | JobPostingsSelect<true>;
     'job-locations': JobLocationsSelect<false> | JobLocationsSelect<true>;
     'job-forms': JobFormsSelect<false> | JobFormsSelect<true>;
@@ -211,7 +209,7 @@ export interface Blog {
   id: number;
   title: string;
   /**
-   * This will be automatically generated from the title once the blog post is saved.
+   * Auto-generated from the title if left blank. Edit it directly to override.
    */
   slug?: string | null;
   content: {
@@ -229,16 +227,23 @@ export interface Blog {
     };
     [k: string]: unknown;
   };
+  /**
+   * Short label shown above the title (e.g. "My Story", "Publication"). Defaults to the first category's name if left blank.
+   */
+  eyebrow?: string | null;
   thumbnail: number | BlogImage;
   /**
-   * Author of the blog post. This will be displayed on the blog post.
+   * Optional additional images, shown as a gallery on the blog post below the body.
    */
-  author: number | User;
+  gallery?: (number | BlogImage)[] | null;
+  /**
+   * Optional — not currently shown on the blog post itself.
+   */
+  author?: (number | null) | User;
   /**
    * Categories of the blog post. Recommended to add at least one category.
    */
   categories: (number | BlogCategory)[];
-  tags: (number | BlogTag)[];
   /**
    * Check this box to publish the blog post.
    */
@@ -279,16 +284,6 @@ export interface BlogCategory {
    * A short description of the category
    */
   description?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-tags".
- */
-export interface BlogTag {
-  id: number;
-  name: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -625,10 +620,6 @@ export interface PayloadLockedDocument {
         value: number | BlogImage;
       } | null)
     | ({
-        relationTo: 'blog-tags';
-        value: number | BlogTag;
-      } | null)
-    | ({
         relationTo: 'job-postings';
         value: number | JobPosting;
       } | null)
@@ -766,10 +757,11 @@ export interface BlogsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   content?: T;
+  eyebrow?: T;
   thumbnail?: T;
+  gallery?: T;
   author?: T;
   categories?: T;
-  tags?: T;
   published?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -801,15 +793,6 @@ export interface BlogImagesSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-tags_select".
- */
-export interface BlogTagsSelect<T extends boolean = true> {
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

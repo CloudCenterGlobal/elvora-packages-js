@@ -19,28 +19,33 @@ const idOf = (value: unknown): number | string | undefined => {
   return typeof value === "object" ? (value as { id: number | string }).id : (value as number | string);
 };
 
+const idsOf = (value: unknown): (number | string)[] => {
+  if (!Array.isArray(value)) return [];
+  return value.map(idOf).filter((id): id is number | string => id !== undefined);
+};
+
 /**
  * Deletes a `blog-images` doc (and, via its own hooks, the file on
- * disk) — but only if no other blog post still references it. A blog's
- * thumbnail is normally 1:1 with its image, but the admin's "Choose
- * from existing" picker lets an editor point two posts at the same
- * upload, so this checks before removing anything out from under a
- * post that still needs it.
+ * disk) — but only if no blog post still references it, as either a
+ * thumbnail or a gallery item. Checked against current DB state (this
+ * always runs after the triggering write has committed), so no
+ * "exclude this blog" special-casing is needed: if the same post still
+ * points at this image from its *other* field (e.g. it's both the
+ * thumbnail and, until just now, also in the gallery), that still
+ * shows up here and blocks the delete correctly.
  */
-async function deleteThumbnailIfOrphaned({
+async function deleteImageIfOrphaned({
   req,
-  thumbnailId,
-  excludeBlogId,
+  imageId,
 }: {
   req: Parameters<CollectionAfterChangeHook>[0]["req"];
-  thumbnailId: number | string;
-  excludeBlogId: number | string;
+  imageId: number | string;
 }) {
   try {
     const stillReferenced = await req.payload.find({
       collection: "blogs",
       where: {
-        and: [{ thumbnail: { equals: thumbnailId } }, { id: { not_equals: excludeBlogId } }],
+        or: [{ thumbnail: { equals: imageId } }, { gallery: { equals: imageId } }],
       },
       limit: 1,
       depth: 0,
@@ -49,11 +54,11 @@ async function deleteThumbnailIfOrphaned({
 
     if (stillReferenced.docs.length > 0) return;
 
-    await req.payload.delete({ collection: "blog-images", id: thumbnailId, req });
+    await req.payload.delete({ collection: "blog-images", id: imageId, req });
   } catch (error) {
     // Cleanup failing shouldn't fail the blog save/delete itself — just
     // leaves an orphaned image behind for manual cleanup.
-    req.payload.logger.error({ err: error, thumbnailId }, "Failed to delete orphaned blog thumbnail");
+    req.payload.logger.error({ err: error, imageId }, "Failed to delete orphaned blog image");
   }
 }
 
@@ -70,37 +75,51 @@ const THEME_TEXT_COLORS = {
   "plum-dark": { label: "Plum (dark)", css: { color: "#3B2340" } },
 };
 
-const beforeValidate: CollectionBeforeValidateHook = async ({ data, req }) => {
+// Derives the slug from the title only when the field's empty — an
+// editor's own value (typed directly, or a previous auto-generated one
+// they've since edited) is left as the source instead of being
+// silently overwritten on every save. Either way, whatever ends up in
+// `data.slug` (title-derived or hand-typed) is run through `slugify`,
+// so a manually entered value can't sneak spaces, punctuation, or
+// other characters past the "Auto-generated ... this must be unique"
+// URL-safe slug the rest of the field's own validation assumes.
+const beforeValidate: CollectionBeforeValidateHook = async ({ data }) => {
   if (data) {
-    data.slug = slugify(data.title ?? "", {
-      lower: true,
-    });
+    data.slug = slugify(data.slug || data.title || "", { lower: true, strict: true });
   }
 
   return data;
 };
 
-// Thumbnail swapped for a different upload on an update — the old one
-// is no longer reachable from anywhere in the admin once this save
-// completes, so clean it up rather than leaving it to accumulate.
+// Thumbnail swapped, or an image dropped from the gallery, on an
+// update — anything no longer referenced by this doc's new state is
+// cleaned up rather than left to accumulate.
 const afterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, operation, req }) => {
   if (operation !== "update") return doc;
 
   const oldThumbnailId = idOf(previousDoc?.thumbnail);
   const newThumbnailId = idOf(doc?.thumbnail);
-  if (!oldThumbnailId || oldThumbnailId === newThumbnailId) return doc;
+  const removedThumbnailId = oldThumbnailId && oldThumbnailId !== newThumbnailId ? oldThumbnailId : undefined;
 
-  await deleteThumbnailIfOrphaned({ req, thumbnailId: oldThumbnailId, excludeBlogId: doc.id });
+  const oldGalleryIds = idsOf(previousDoc?.gallery);
+  const newGalleryIds = new Set(idsOf(doc?.gallery));
+  const removedGalleryIds = oldGalleryIds.filter((id) => !newGalleryIds.has(id));
+
+  const candidateIds = new Set([...(removedThumbnailId ? [removedThumbnailId] : []), ...removedGalleryIds]);
+  for (const imageId of candidateIds) {
+    await deleteImageIfOrphaned({ req, imageId });
+  }
 
   return doc;
 };
 
-// Blog post deleted outright — its thumbnail goes with it.
+// Blog post deleted outright — its thumbnail and gallery go with it.
 const afterDelete: CollectionAfterDeleteHook = async ({ doc, req }) => {
-  const thumbnailId = idOf(doc?.thumbnail);
-  if (!thumbnailId) return doc;
+  const imageIds = new Set([...(idOf(doc?.thumbnail) ? [idOf(doc.thumbnail)!] : []), ...idsOf(doc?.gallery)]);
 
-  await deleteThumbnailIfOrphaned({ req, thumbnailId, excludeBlogId: doc.id });
+  for (const imageId of imageIds) {
+    await deleteImageIfOrphaned({ req, imageId });
+  }
 
   return doc;
 };
@@ -137,8 +156,7 @@ const Blogs = createCollection({
       unique: true,
       admin: {
         position: "sidebar",
-        readOnly: true,
-        description: "This will be automatically generated from the title once the blog post is saved.",
+        description: "Auto-generated from the title if left blank. Edit it directly to override.",
       },
     },
     {
@@ -166,6 +184,16 @@ const Blogs = createCollection({
       }),
     },
     {
+      name: "eyebrow",
+      label: "Eyebrow / Tagline",
+      type: "text",
+      required: false,
+      admin: {
+        position: "sidebar",
+        description: 'Short label shown above the title (e.g. "My Story", "Publication"). Defaults to the first category\'s name if left blank.',
+      },
+    },
+    {
       name: "thumbnail",
       label: "Thumbnail",
       type: "upload",
@@ -173,14 +201,25 @@ const Blogs = createCollection({
       required: true,
     },
     {
+      name: "gallery",
+      label: "Gallery",
+      type: "upload",
+      relationTo: "blog-images",
+      hasMany: true,
+      required: false,
+      admin: {
+        description: "Optional additional images, shown as a gallery on the blog post below the body.",
+      },
+    },
+    {
       name: "author",
       label: "Author",
       type: "relationship",
       relationTo: "users",
-      required: true,
+      required: false,
       hasMany: false,
       admin: {
-        description: "Author of the blog post. This will be displayed on the blog post.",
+        description: "Optional — not currently shown on the blog post itself.",
         position: "sidebar",
       },
     },
@@ -194,17 +233,6 @@ const Blogs = createCollection({
       admin: {
         position: "sidebar",
         description: "Categories of the blog post. Recommended to add at least one category.",
-      },
-    },
-    {
-      name: "tags",
-      label: "Tags",
-      type: "relationship",
-      relationTo: "blog-tags",
-      required: true,
-      hasMany: true,
-      admin: {
-        position: "sidebar",
       },
     },
     {
