@@ -1,6 +1,31 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
+import {
+  BlockquoteFeature,
+  HorizontalRuleFeature,
+  InlineCodeFeature,
+  lexicalEditor,
+  OrderedListFeature,
+  StrikethroughFeature,
+  SubscriptFeature,
+  SuperscriptFeature,
+  TextStateFeature,
+  UnderlineFeature,
+} from "@payloadcms/richtext-lexical";
 import { CollectionBeforeValidateHook } from "payload";
 import slugify from "slugify";
+
+/**
+ * Mirrors the brand palette in the main app's `src/theme/palette.ts`
+ * (CORAL/CORAL_DARK/PLUM/PLUM_DEEP) — hardcoded rather than imported
+ * from there, since this package is meant to stay usable outside this
+ * one app. Keep in sync by hand if the brand palette changes.
+ */
+const THEME_TEXT_COLORS = {
+  coral: { label: "Coral", css: { color: "#FF4646" } },
+  "coral-dark": { label: "Coral (dark)", css: { color: "#CC2F2F" } },
+  plum: { label: "Plum", css: { color: "#64405F" } },
+  "plum-dark": { label: "Plum (dark)", css: { color: "#3B2340" } },
+};
 
 const beforeValidate: CollectionBeforeValidateHook = async ({ data, req }) => {
   if (data) {
@@ -51,6 +76,24 @@ const Blogs = createCollection({
       label: "Content",
       type: "richText",
       required: true,
+      // Extends the root editor (Bold/Italic/Link/Align/Indent/Heading/
+      // Paragraph/UnorderedList) with the rest of standard formatting,
+      // plus a text-colour picker restricted to the brand palette
+      // instead of a free-form colour wheel.
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => [
+          ...rootFeatures,
+          UnderlineFeature(),
+          StrikethroughFeature(),
+          SubscriptFeature(),
+          SuperscriptFeature(),
+          InlineCodeFeature(),
+          OrderedListFeature(),
+          BlockquoteFeature(),
+          HorizontalRuleFeature(),
+          TextStateFeature({ state: { color: THEME_TEXT_COLORS } }),
+        ],
+      }),
     },
     {
       name: "thumbnail",

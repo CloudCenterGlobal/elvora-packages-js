@@ -170,6 +170,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -524,7 +525,7 @@ export interface FormsPropertyPartner {
   name: string;
   email: string;
   phone: string;
-  property_location: string;
+  property_location?: string | null;
   additional_info?: string | null;
   consent: boolean;
   updatedAt: string;
@@ -729,6 +730,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:

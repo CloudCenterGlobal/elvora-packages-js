@@ -48,9 +48,6 @@ async function createPayloadConfig(options: PayloadConfig) {
       },
 
       theme: "light",
-      avatar: {
-        Component: "@elvora/components/payload/#PayloadAvatar",
-      },
       components: {
         providers: ["@elvora/components/payload/#PayloadProvider"],
       },
