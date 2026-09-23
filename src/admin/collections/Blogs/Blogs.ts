@@ -1,6 +1,7 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import {
   BlockquoteFeature,
+  BlocksFeature,
   HorizontalRuleFeature,
   InlineCodeFeature,
   lexicalEditor,
@@ -12,8 +13,55 @@ import {
   UnderlineFeature,
   UploadFeature,
 } from "@payloadcms/richtext-lexical";
-import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionBeforeValidateHook } from "payload";
+import { Block, CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionBeforeValidateHook } from "payload";
 import slugify from "slugify";
+
+// A multi-image layout block for the content field — lets an editor
+// pick 2+ images from `blog-images`, arranged as a grid or a
+// horizontal row, each with its own optional caption. Separate from
+// the single-image `UploadFeature` node above.
+const IMAGE_GROUP_BLOCK: Block = {
+  slug: "imageGroup",
+  labels: { singular: "Image Group", plural: "Image Groups" },
+  fields: [
+    {
+      name: "layout",
+      label: "Layout",
+      type: "select",
+      required: true,
+      defaultValue: "grid",
+      options: [
+        { label: "Grid", value: "grid" },
+        { label: "Horizontal row", value: "row" },
+      ],
+    },
+    {
+      name: "images",
+      label: "Images",
+      type: "array",
+      required: true,
+      minRows: 2,
+      labels: { singular: "Image", plural: "Images" },
+      fields: [
+        {
+          name: "image",
+          label: "Image",
+          type: "upload",
+          relationTo: "blog-images",
+          required: true,
+        },
+        {
+          name: "caption",
+          label: "Caption",
+          type: "text",
+          admin: {
+            description: "Optional — shown beneath this image.",
+          },
+        },
+      ],
+    },
+  ],
+};
 
 const idOf = (value: unknown): number | string | undefined => {
   if (value === null || value === undefined) return undefined;
@@ -26,9 +74,10 @@ const idsOf = (value: unknown): (number | string)[] => {
 };
 
 // Walks a Lexical `content` tree (the raw, unpopulated JSON as stored —
-// an `upload` node's `value` is just the `blog-images` id, not the
-// populated doc) looking for inline-image nodes added via the content
-// field's `UploadFeature`, and returns the ids they reference.
+// an `upload` node's `value`, and an `imageGroup` block's `images[].image`,
+// are just the `blog-images` id, not the populated doc) looking for
+// every inline-image reference added via the content field's
+// `UploadFeature` or `imageGroup` block, and returns the ids they use.
 function collectInlineImageIds(content: unknown): (number | string)[] {
   const ids: (number | string)[] = [];
 
@@ -39,6 +88,16 @@ function collectInlineImageIds(content: unknown): (number | string)[] {
     if (record.type === "upload" && record.relationTo === "blog-images") {
       const id = idOf(record.value);
       if (id !== undefined) ids.push(id);
+    }
+
+    if (record.type === "block") {
+      const fields = record.fields as { blockType?: string; images?: { image?: unknown }[] } | undefined;
+      if (fields?.blockType === "imageGroup") {
+        for (const item of fields.images ?? []) {
+          const id = idOf(item?.image);
+          if (id !== undefined) ids.push(id);
+        }
+      }
     }
 
     if (Array.isArray(record.children)) {
@@ -251,6 +310,10 @@ const Blogs = createCollection({
               },
             },
           }),
+          // A multi-image grid/row for placing several photos side by
+          // side, mid-body — the single-image `UploadFeature` above
+          // covers the one-at-a-time case.
+          BlocksFeature({ blocks: [IMAGE_GROUP_BLOCK] }),
         ],
       }),
     },
