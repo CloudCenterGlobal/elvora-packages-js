@@ -10,6 +10,7 @@ import {
   SuperscriptFeature,
   TextStateFeature,
   UnderlineFeature,
+  UploadFeature,
 } from "@payloadcms/richtext-lexical";
 import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionBeforeValidateHook } from "payload";
 import slugify from "slugify";
@@ -24,15 +25,46 @@ const idsOf = (value: unknown): (number | string)[] => {
   return value.map(idOf).filter((id): id is number | string => id !== undefined);
 };
 
+// Walks a Lexical `content` tree (the raw, unpopulated JSON as stored —
+// an `upload` node's `value` is just the `blog-images` id, not the
+// populated doc) looking for inline-image nodes added via the content
+// field's `UploadFeature`, and returns the ids they reference.
+function collectInlineImageIds(content: unknown): (number | string)[] {
+  const ids: (number | string)[] = [];
+
+  const visit = (node: unknown) => {
+    if (!node || typeof node !== "object") return;
+    const record = node as Record<string, unknown>;
+
+    if (record.type === "upload" && record.relationTo === "blog-images") {
+      const id = idOf(record.value);
+      if (id !== undefined) ids.push(id);
+    }
+
+    if (Array.isArray(record.children)) {
+      for (const child of record.children) visit(child);
+    }
+    if ("root" in record) visit(record.root);
+  };
+
+  visit(content);
+  return ids;
+}
+
 /**
  * Deletes a `blog-images` doc (and, via its own hooks, the file on
- * disk) — but only if no blog post still references it, as either a
- * thumbnail or a gallery item. Checked against current DB state (this
- * always runs after the triggering write has committed), so no
- * "exclude this blog" special-casing is needed: if the same post still
- * points at this image from its *other* field (e.g. it's both the
- * thumbnail and, until just now, also in the gallery), that still
- * shows up here and blocks the delete correctly.
+ * disk) — but only if no blog post still references it, as a
+ * thumbnail, a gallery item, or an inline image embedded in the body.
+ * Checked against current DB state (this always runs after the
+ * triggering write has committed), so no "exclude this blog"
+ * special-casing is needed: if the same post still points at this
+ * image from another field/placement, that still shows up here and
+ * blocks the delete correctly.
+ *
+ * Inline references live inside the `content` JSON blob, which can't
+ * be matched with a `where` filter — this fetches every blog's
+ * thumbnail/gallery/content and checks in JS instead. Fine at the
+ * scale of a blog collection; revisit if that ever changes.
  */
 async function deleteImageIfOrphaned({
   req,
@@ -42,17 +74,23 @@ async function deleteImageIfOrphaned({
   imageId: number | string;
 }) {
   try {
-    const stillReferenced = await req.payload.find({
+    const { docs } = await req.payload.find({
       collection: "blogs",
-      where: {
-        or: [{ thumbnail: { equals: imageId } }, { gallery: { equals: imageId } }],
-      },
-      limit: 1,
+      limit: 0,
+      pagination: false,
       depth: 0,
+      select: { thumbnail: true, gallery: true, content: true },
       req,
     });
 
-    if (stillReferenced.docs.length > 0) return;
+    const stillReferenced = docs.some(
+      (doc) =>
+        idOf(doc.thumbnail) === imageId ||
+        idsOf(doc.gallery).includes(imageId) ||
+        collectInlineImageIds(doc.content).includes(imageId)
+    );
+
+    if (stillReferenced) return;
 
     await req.payload.delete({ collection: "blog-images", id: imageId, req });
   } catch (error) {
@@ -105,7 +143,15 @@ const afterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, operat
   const newGalleryIds = new Set(idsOf(doc?.gallery));
   const removedGalleryIds = oldGalleryIds.filter((id) => !newGalleryIds.has(id));
 
-  const candidateIds = new Set([...(removedThumbnailId ? [removedThumbnailId] : []), ...removedGalleryIds]);
+  const oldInlineIds = collectInlineImageIds(previousDoc?.content);
+  const newInlineIds = new Set(collectInlineImageIds(doc?.content));
+  const removedInlineIds = oldInlineIds.filter((id) => !newInlineIds.has(id));
+
+  const candidateIds = new Set([
+    ...(removedThumbnailId ? [removedThumbnailId] : []),
+    ...removedGalleryIds,
+    ...removedInlineIds,
+  ]);
   for (const imageId of candidateIds) {
     await deleteImageIfOrphaned({ req, imageId });
   }
@@ -113,9 +159,14 @@ const afterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, operat
   return doc;
 };
 
-// Blog post deleted outright — its thumbnail and gallery go with it.
+// Blog post deleted outright — its thumbnail, gallery, and any inline
+// body images go with it.
 const afterDelete: CollectionAfterDeleteHook = async ({ doc, req }) => {
-  const imageIds = new Set([...(idOf(doc?.thumbnail) ? [idOf(doc.thumbnail)!] : []), ...idsOf(doc?.gallery)]);
+  const imageIds = new Set([
+    ...(idOf(doc?.thumbnail) ? [idOf(doc.thumbnail)!] : []),
+    ...idsOf(doc?.gallery),
+    ...collectInlineImageIds(doc?.content),
+  ]);
 
   for (const imageId of imageIds) {
     await deleteImageIfOrphaned({ req, imageId });
@@ -180,6 +231,26 @@ const Blogs = createCollection({
           BlockquoteFeature(),
           HorizontalRuleFeature(),
           TextStateFeature({ state: { color: THEME_TEXT_COLORS } }),
+          // Lets an editor drop an image from `blog-images` into the
+          // middle of the body text, with its own optional caption —
+          // separate from (and in addition to) the thumbnail/gallery
+          // upload fields below.
+          UploadFeature({
+            collections: {
+              "blog-images": {
+                fields: [
+                  {
+                    name: "caption",
+                    label: "Caption",
+                    type: "text",
+                    admin: {
+                      description: "Optional — shown beneath the image.",
+                    },
+                  },
+                ],
+              },
+            },
+          }),
         ],
       }),
     },
