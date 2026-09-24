@@ -13,8 +13,17 @@ import {
   UnderlineFeature,
   UploadFeature,
 } from "@payloadcms/richtext-lexical";
+import { revalidatePath } from "next/cache";
 import { Block, CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionBeforeValidateHook } from "payload";
 import slugify from "slugify";
+
+// The stories listing and every `[slug]` detail page are ISR-cached
+// (`revalidate = 300`) with no other trigger to bust that cache early —
+// so a blog or blog-image edit wouldn't show up on the site for up to 5
+// minutes without this. `"layout"` busts the listing page and every
+// story page beneath it in one call, since which posts reference a
+// given image isn't known without re-walking `content`/`gallery`.
+const revalidateStories = () => revalidatePath("/about/our-stories", "layout");
 
 // A multi-image layout block for the content field — lets an editor
 // pick 2+ images from `blog-images`, arranged as a grid or a
@@ -192,6 +201,8 @@ const beforeValidate: CollectionBeforeValidateHook = async ({ data }) => {
 // update — anything no longer referenced by this doc's new state is
 // cleaned up rather than left to accumulate.
 const afterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, operation, req }) => {
+  revalidateStories();
+
   if (operation !== "update") return doc;
 
   const oldThumbnailId = idOf(previousDoc?.thumbnail);
@@ -221,6 +232,8 @@ const afterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, operat
 // Blog post deleted outright — its thumbnail, gallery, and any inline
 // body images go with it.
 const afterDelete: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  revalidateStories();
+
   const imageIds = new Set([
     ...(idOf(doc?.thumbnail) ? [idOf(doc.thumbnail)!] : []),
     ...idsOf(doc?.gallery),
