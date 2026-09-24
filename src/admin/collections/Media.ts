@@ -1,7 +1,75 @@
+import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
-import type { CollectionAfterChangeHook, CollectionConfig, UploadConfig } from "payload";
+import type { CollectionAfterChangeHook, CollectionBeforeChangeHook, CollectionConfig, Field, UploadConfig } from "payload";
+import sharp from "sharp";
+
+const BLUR_PLACEHOLDER_WIDTH = 16;
+
+const BLUR_DATA_URL_FIELD: Field = {
+  name: "blurDataURL",
+  type: "text",
+  admin: { hidden: true },
+};
+
+// sha256 of the final (post-crop/format) file bytes `createBlurDataURLHook`
+// last generated a placeholder from — lets it (and the backfill script)
+// tell "the image actually changed" apart from "this doc got re-saved"
+// (e.g. a focal-point-only edit re-runs the same bytes through Payload's
+// upload pipeline under a new filename) without redoing the render.
+const FILE_HASH_FIELD: Field = {
+  name: "fileHash",
+  type: "text",
+  admin: { hidden: true },
+};
+
+const hashBuffer = (buffer: Buffer) => crypto.createHash("sha256").update(buffer).digest("hex");
+
+const generateBlurDataURL = async (source: Buffer | string) => {
+  const buffer = await sharp(source).rotate().resize(BLUR_PLACEHOLDER_WIDTH).webp({ quality: 40 }).toBuffer();
+  return `data:image/webp;base64,${buffer.toString("base64")}`;
+};
+
+/**
+ * `next/image`'s automatic `placeholder="blur"` only works for a
+ * locally-imported file Next can inspect at build time — for a
+ * dynamic `src` string (every image here, all served from the DB at
+ * request time) it has no pixels to derive a blur from unless we hand
+ * it a `blurDataURL` ourselves. Generated from `req.file` (the
+ * just-processed bytes — post-crop/format, the same buffer
+ * `generateFileData.js` has already assigned to `req.file` by the
+ * time collection `beforeChange` hooks run) so it reflects what's
+ * actually saved, not the raw upload. No-ops when this write didn't
+ * touch the file (a plain field edit), it isn't a raster image, or the
+ * file's content hash matches what's already stored (a crop/focal-point
+ * save with no real pixel change still re-runs the file through the
+ * upload pipeline under a new filename — this is what keeps that from
+ * costing a redundant render on every such save).
+ */
+const createBlurDataURLHook = (): CollectionBeforeChangeHook => {
+  return async ({ data, originalDoc, req }) => {
+    const file = req.file;
+    if (!file?.mimetype?.startsWith("image/") || file.mimetype === "image/svg+xml") {
+      return data;
+    }
+
+    const source = file.data?.length ? file.data : file.tempFilePath;
+    if (!source) return data;
+
+    try {
+      const buffer = Buffer.isBuffer(source) ? source : await fs.readFile(source);
+      const hash = hashBuffer(buffer);
+      if (hash === originalDoc?.fileHash) return data;
+
+      const blurDataURL = await generateBlurDataURL(buffer);
+      return { ...data, blurDataURL, fileHash: hash };
+    } catch (error) {
+      req.payload.logger.error({ err: error }, "Failed to generate blur placeholder");
+      return data;
+    }
+  };
+};
 
 const getMediaDir = (slug: string) => `public/media/${slug}`;
 
@@ -90,4 +158,15 @@ const ProfileImages = createCollection(
 
 const MediaCollectionConfig = [ProfileImages];
 
-export { createFileReplacedCleanupHook, createMediaCollection, getMediaDir, MediaCollectionConfig, ProfileImages };
+export {
+  BLUR_DATA_URL_FIELD,
+  createBlurDataURLHook,
+  createFileReplacedCleanupHook,
+  createMediaCollection,
+  FILE_HASH_FIELD,
+  generateBlurDataURL,
+  getMediaDir,
+  hashBuffer,
+  MediaCollectionConfig,
+  ProfileImages,
+};

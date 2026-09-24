@@ -257,6 +257,8 @@ export interface Blog {
  */
 export interface BlogImage {
   id: number;
+  blurDataURL?: string | null;
+  fileHash?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -782,6 +784,8 @@ export interface BlogCategoriesSelect<T extends boolean = true> {
  * via the `definition` "blog-images_select".
  */
 export interface BlogImagesSelect<T extends boolean = true> {
+  blurDataURL?: T;
+  fileHash?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

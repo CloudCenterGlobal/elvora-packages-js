@@ -1,7 +1,14 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import { revalidatePath } from "next/cache";
 import { CollectionAfterChangeHook } from "payload";
-import { createFileReplacedCleanupHook, createMediaCollection, getMediaDir } from "../Media";
+import {
+  BLUR_DATA_URL_FIELD,
+  createBlurDataURLHook,
+  createFileReplacedCleanupHook,
+  createMediaCollection,
+  FILE_HASH_FIELD,
+  getMediaDir,
+} from "../Media";
 
 const STATIC_DIR = getMediaDir("blog-images");
 
@@ -29,6 +36,7 @@ const BlogImages = createCollection(
       read: () => true,
     },
     hooks: {
+      beforeChange: [createBlurDataURLHook()],
       afterChange: [afterChange, createFileReplacedCleanupHook(STATIC_DIR)],
     },
     upload: {
@@ -51,6 +59,8 @@ const BlogImages = createCollection(
         type: "text",
         hooks: {},
       },
+      BLUR_DATA_URL_FIELD,
+      FILE_HASH_FIELD,
     ],
   })
 );
