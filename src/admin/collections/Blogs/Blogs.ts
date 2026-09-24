@@ -45,6 +45,22 @@ const IMAGE_GROUP_BLOCK: Block = {
       ],
     },
     {
+      name: "aspectRatio",
+      label: "Image aspect ratio",
+      type: "select",
+      required: true,
+      defaultValue: "4:3",
+      options: [
+        { label: "Square (1:1)", value: "1:1" },
+        { label: "Classic (4:3)", value: "4:3" },
+        { label: "Widescreen (16:9)", value: "16:9" },
+        { label: "Portrait (3:4)", value: "3:4" },
+      ],
+      admin: {
+        description: "Shape each image tile in this group is cropped to.",
+      },
+    },
+    {
       name: "images",
       label: "Images",
       type: "array",
