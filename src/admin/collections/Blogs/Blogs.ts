@@ -13,17 +13,9 @@ import {
   UnderlineFeature,
   UploadFeature,
 } from "@payloadcms/richtext-lexical";
-import { revalidatePath } from "next/cache";
 import { Block, CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionBeforeValidateHook } from "payload";
 import slugify from "slugify";
-
-// The stories listing and every `[slug]` detail page are ISR-cached
-// (`revalidate = 300`) with no other trigger to bust that cache early —
-// so a blog or blog-image edit wouldn't show up on the site for up to 5
-// minutes without this. `"layout"` busts the listing page and every
-// story page beneath it in one call, since which posts reference a
-// given image isn't known without re-walking `content`/`gallery`.
-const revalidateStories = () => revalidatePath("/about/our-stories", "layout");
+import { revalidateStories } from "./revalidateStories";
 
 // A multi-image layout block for the content field — lets an editor
 // pick 2+ images from `blog-images`, arranged as a grid or a

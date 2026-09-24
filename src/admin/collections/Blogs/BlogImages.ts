@@ -1,5 +1,4 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
-import { revalidatePath } from "next/cache";
 import { CollectionAfterChangeHook } from "payload";
 import {
   BLUR_DATA_URL_FIELD,
@@ -9,17 +8,12 @@ import {
   FILE_HASH_FIELD,
   getMediaDir,
 } from "../Media";
+import { revalidateStories } from "./revalidateStories";
 
 const STATIC_DIR = getMediaDir("blog-images");
 
-// A focal point or crop edit here doesn't touch the referencing blog
-// post's own doc, so `Blogs`' afterChange hook never fires for it -
-// without this the story pages stay on stale ISR output for up to 5
-// minutes after the edit. See the same call in `Blogs.ts` for why
-// `"layout"` (bust everything under the path) instead of a specific
-// story slug: which post(s) use this image isn't known here.
 const afterChange: CollectionAfterChangeHook = async ({ doc }) => {
-  revalidatePath("/about/our-stories", "layout");
+  revalidateStories();
   return doc;
 };
 
