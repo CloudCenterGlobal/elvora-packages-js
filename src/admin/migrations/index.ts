@@ -12,6 +12,7 @@ import * as migration_20260910_074416_forms_property_partners from './20260910_0
 import * as migration_20260922_082455_payload_3_90_upgrade from './20260922_082455_payload_3_90_upgrade';
 import * as migration_20260922_135007_blogs_eyebrow_optional_author_drop_tags from './20260922_135007_blogs_eyebrow_optional_author_drop_tags';
 import * as migration_20260922_135441_blogs_add_gallery from './20260922_135441_blogs_add_gallery';
+import * as migration_20260924_122358_blog_images_add_blur_data from './20260924_122358_blog_images_add_blur_data';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20260922_135441_blogs_add_gallery.up,
     down: migration_20260922_135441_blogs_add_gallery.down,
-    name: '20260922_135441_blogs_add_gallery'
+    name: '20260922_135441_blogs_add_gallery',
+  },
+  {
+    up: migration_20260924_122358_blog_images_add_blur_data.up,
+    down: migration_20260924_122358_blog_images_add_blur_data.down,
+    name: '20260924_122358_blog_images_add_blur_data'
   },
 ];
