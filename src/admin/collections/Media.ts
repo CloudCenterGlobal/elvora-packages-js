@@ -13,11 +13,8 @@ const BLUR_DATA_URL_FIELD: Field = {
   admin: { hidden: true },
 };
 
-// sha256 of the final (post-crop/format) file bytes `createBlurDataURLHook`
-// last generated a placeholder from — lets it (and the backfill script)
-// tell "the image actually changed" apart from "this doc got re-saved"
-// (e.g. a focal-point-only edit re-runs the same bytes through Payload's
-// upload pipeline under a new filename) without redoing the render.
+// sha256 of the last file createBlurDataURLHook generated a placeholder
+// from, so a re-save with unchanged bytes can skip redoing the render.
 const FILE_HASH_FIELD: Field = {
   name: "fileHash",
   type: "text",
@@ -31,22 +28,9 @@ const generateBlurDataURL = async (source: Buffer | string) => {
   return `data:image/webp;base64,${buffer.toString("base64")}`;
 };
 
-/**
- * `next/image`'s automatic `placeholder="blur"` only works for a
- * locally-imported file Next can inspect at build time — for a
- * dynamic `src` string (every image here, all served from the DB at
- * request time) it has no pixels to derive a blur from unless we hand
- * it a `blurDataURL` ourselves. Generated from `req.file` (the
- * just-processed bytes — post-crop/format, the same buffer
- * `generateFileData.js` has already assigned to `req.file` by the
- * time collection `beforeChange` hooks run) so it reflects what's
- * actually saved, not the raw upload. No-ops when this write didn't
- * touch the file (a plain field edit), it isn't a raster image, or the
- * file's content hash matches what's already stored (a crop/focal-point
- * save with no real pixel change still re-runs the file through the
- * upload pipeline under a new filename — this is what keeps that from
- * costing a redundant render on every such save).
- */
+// Generates the next/image placeholder="blur" data from the just-processed
+// file. Skips it when the file didn't change, isn't a raster image, or its
+// hash matches what's already stored.
 const createBlurDataURLHook = (): CollectionBeforeChangeHook => {
   return async ({ data, originalDoc, req }) => {
     const file = req.file;
@@ -82,16 +66,8 @@ const deleteFileIfExists = async (staticDir: string, filename?: string | null) =
   }
 };
 
-/**
- * When an upload doc's file is replaced in place (the admin's "remove
- * current file, drop a new one, save" flow on an existing document —
- * same id, new bytes) Payload never cleans up the file it replaced:
- * `deleteAssociatedFiles` (the fs.unlink call for a file + its
- * generated sizes) only runs on a whole-document delete, not an
- * update. Left alone, every in-place replace orphans the previous
- * file and its sizes on disk. Wire this into a collection's
- * `hooks.afterChange` to unlink them instead.
- */
+// Payload doesn't clean up a file it replaces on update (only on delete),
+// so wire this into afterChange to unlink the old file + sizes.
 const createFileReplacedCleanupHook = (staticDir: string): CollectionAfterChangeHook => {
   return async ({ doc, previousDoc, operation }) => {
     if (operation !== "update") return doc;
