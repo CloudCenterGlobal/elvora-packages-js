@@ -1,7 +1,9 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import { revalidatePath } from "next/cache";
 import { CollectionAfterChangeHook } from "payload";
-import { createMediaCollection, getMediaDir } from "../Media";
+import { createFileReplacedCleanupHook, createMediaCollection, getMediaDir } from "../Media";
+
+const STATIC_DIR = getMediaDir("blog-images");
 
 // A focal point or crop edit here doesn't touch the referencing blog
 // post's own doc, so `Blogs`' afterChange hook never fires for it -
@@ -27,11 +29,11 @@ const BlogImages = createCollection(
       read: () => true,
     },
     hooks: {
-      afterChange: [afterChange],
+      afterChange: [afterChange, createFileReplacedCleanupHook(STATIC_DIR)],
     },
     upload: {
       crop: true,
-      staticDir: getMediaDir("blog-images"),
+      staticDir: STATIC_DIR,
       bulkUpload: false,
       resizeOptions: {
         background: {
