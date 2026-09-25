@@ -13,6 +13,7 @@ import * as migration_20260922_082455_payload_3_90_upgrade from './20260922_0824
 import * as migration_20260922_135007_blogs_eyebrow_optional_author_drop_tags from './20260922_135007_blogs_eyebrow_optional_author_drop_tags';
 import * as migration_20260922_135441_blogs_add_gallery from './20260922_135441_blogs_add_gallery';
 import * as migration_20260924_122358_blog_images_add_blur_data from './20260924_122358_blog_images_add_blur_data';
+import * as migration_20260925_112552_homepage_settings_global from './20260925_112552_homepage_settings_global';
 
 export const migrations = [
   {
@@ -88,6 +89,11 @@ export const migrations = [
   {
     up: migration_20260924_122358_blog_images_add_blur_data.up,
     down: migration_20260924_122358_blog_images_add_blur_data.down,
-    name: '20260924_122358_blog_images_add_blur_data'
+    name: '20260924_122358_blog_images_add_blur_data',
+  },
+  {
+    up: migration_20260925_112552_homepage_settings_global.up,
+    down: migration_20260925_112552_homepage_settings_global.down,
+    name: '20260925_112552_homepage_settings_global'
   },
 ];

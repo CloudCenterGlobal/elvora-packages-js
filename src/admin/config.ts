@@ -20,6 +20,7 @@ import { fileURLToPath } from "url";
 import { DbConfig, PayloadConfig } from "@elvora/types";
 import { initRedisClient } from "@elvora/utils/redis";
 import { collections, Users } from "./collections";
+import { globals } from "./globals";
 
 // Database
 
@@ -74,6 +75,7 @@ async function createPayloadConfig(options: PayloadConfig) {
     },
     email: options.email,
     collections: collections,
+    globals: globals,
     editor: lexicalEditor({
       features({ rootFeatures }) {
         return [

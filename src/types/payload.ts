@@ -115,8 +115,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'homepage-settings': HomepageSetting;
+  };
+  globalsSelect: {
+    'homepage-settings': HomepageSettingsSelect<false> | HomepageSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -1009,6 +1013,29 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage-settings".
+ */
+export interface HomepageSetting {
+  id: number;
+  /**
+   * Stories shown in the homepage highlights. Drag to reorder. Pick up to 6 to show them all, or more than 6 to show a random 6 that rotate every 5 minutes. Leave empty to show the 6 most recent published stories.
+   */
+  featuredStories?: (number | Blog)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage-settings_select".
+ */
+export interface HomepageSettingsSelect<T extends boolean = true> {
+  featuredStories?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
