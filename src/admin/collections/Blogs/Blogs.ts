@@ -15,6 +15,7 @@ import {
 } from "@payloadcms/richtext-lexical";
 import { Block, CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionBeforeValidateHook } from "payload";
 import slugify from "slugify";
+import { randomizeDatesEndpoint } from "./randomizeDates";
 import { revalidateStories } from "./revalidateStories";
 
 // A multi-image layout block for the content field — lets an editor
@@ -262,7 +263,12 @@ const Blogs = createCollection({
     description: "Manage blog posts",
     enableRichTextRelationship: true,
     defaultColumns: ["title", "thumbnail", "author", "published", "createdAt", "categories"],
+    components: {
+      beforeListTable: ["@elvora/admin/collections/Blogs/RandomizeDatesButton#RandomizeDatesButton"],
+    },
   },
+
+  endpoints: [randomizeDatesEndpoint],
 
   hooks: {
     beforeValidate: [beforeValidate],
