@@ -72,6 +72,7 @@ export interface Config {
     blogs: Blog;
     'blog-categories': BlogCategory;
     'blog-images': BlogImage;
+    'service-users': ServiceUser;
     'job-postings': JobPosting;
     'job-locations': JobLocation;
     'job-forms': JobForm;
@@ -95,6 +96,7 @@ export interface Config {
     blogs: BlogsSelect<false> | BlogsSelect<true>;
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
     'blog-images': BlogImagesSelect<false> | BlogImagesSelect<true>;
+    'service-users': ServiceUsersSelect<false> | ServiceUsersSelect<true>;
     'job-postings': JobPostingsSelect<false> | JobPostingsSelect<true>;
     'job-locations': JobLocationsSelect<false> | JobLocationsSelect<true>;
     'job-forms': JobFormsSelect<false> | JobFormsSelect<true>;
@@ -115,12 +117,8 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {
-    'homepage-settings': HomepageSetting;
-  };
-  globalsSelect: {
-    'homepage-settings': HomepageSettingsSelect<false> | HomepageSettingsSelect<true>;
-  };
+  globals: {};
+  globalsSelect: {};
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -249,6 +247,10 @@ export interface Blog {
    */
   categories: (number | BlogCategory)[];
   /**
+   * Optional — the service user this story relates to. The homepage shows only one story per service user.
+   */
+  serviceUser?: (number | null) | ServiceUser;
+  /**
    * Check this box to publish the blog post.
    */
   published?: boolean | null;
@@ -290,6 +292,22 @@ export interface BlogCategory {
    * A short description of the category
    */
   description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * People we support. Link a blog post to one to show only one story per service user on the homepage.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-users".
+ */
+export interface ServiceUser {
+  id: number;
+  name: string;
+  /**
+   * This will be automatically generated from the name. It must be unique.
+   */
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -627,6 +645,10 @@ export interface PayloadLockedDocument {
         value: number | BlogImage;
       } | null)
     | ({
+        relationTo: 'service-users';
+        value: number | ServiceUser;
+      } | null)
+    | ({
         relationTo: 'job-postings';
         value: number | JobPosting;
       } | null)
@@ -769,6 +791,7 @@ export interface BlogsSelect<T extends boolean = true> {
   gallery?: T;
   author?: T;
   categories?: T;
+  serviceUser?: T;
   published?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -802,6 +825,16 @@ export interface BlogImagesSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-users_select".
+ */
+export interface ServiceUsersSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1015,29 +1048,6 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage-settings".
- */
-export interface HomepageSetting {
-  id: number;
-  /**
-   * Stories shown in the homepage highlights. Drag to reorder. Pick up to 6 to show them all, or more than 6 to show a random 6 that rotate every 5 minutes. Leave empty to show the 6 most recent published stories.
-   */
-  featuredStories?: (number | Blog)[] | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage-settings_select".
- */
-export interface HomepageSettingsSelect<T extends boolean = true> {
-  featuredStories?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

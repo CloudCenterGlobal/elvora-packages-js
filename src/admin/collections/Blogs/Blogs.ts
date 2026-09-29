@@ -397,6 +397,18 @@ const Blogs = createCollection({
       },
     },
     {
+      name: "serviceUser",
+      label: "Service User",
+      type: "relationship",
+      relationTo: "service-users",
+      required: false,
+      hasMany: false,
+      admin: {
+        position: "sidebar",
+        description: "Optional — the service user this story relates to. The homepage shows only one story per service user.",
+      },
+    },
+    {
       name: "published",
       label: "Publish",
       type: "checkbox",

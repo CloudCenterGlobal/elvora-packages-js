@@ -15,6 +15,8 @@ import * as migration_20260922_135441_blogs_add_gallery from './20260922_135441_
 import * as migration_20260924_122358_blog_images_add_blur_data from './20260924_122358_blog_images_add_blur_data';
 import * as migration_20260925_112552_homepage_settings_global from './20260925_112552_homepage_settings_global';
 import * as migration_20260928_154431_forms_property_partners_investment_areas from './20260928_154431_forms_property_partners_investment_areas';
+import * as migration_20260929_140044_service_users_on_blogs from './20260929_140044_service_users_on_blogs';
+import * as migration_20260929_140229_remove_homepage_settings from './20260929_140229_remove_homepage_settings';
 
 export const migrations = [
   {
@@ -100,6 +102,16 @@ export const migrations = [
   {
     up: migration_20260928_154431_forms_property_partners_investment_areas.up,
     down: migration_20260928_154431_forms_property_partners_investment_areas.down,
-    name: '20260928_154431_forms_property_partners_investment_areas'
+    name: '20260928_154431_forms_property_partners_investment_areas',
+  },
+  {
+    up: migration_20260929_140044_service_users_on_blogs.up,
+    down: migration_20260929_140044_service_users_on_blogs.down,
+    name: '20260929_140044_service_users_on_blogs',
+  },
+  {
+    up: migration_20260929_140229_remove_homepage_settings.up,
+    down: migration_20260929_140229_remove_homepage_settings.down,
+    name: '20260929_140229_remove_homepage_settings'
   },
 ];

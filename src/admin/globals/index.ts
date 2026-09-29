@@ -1,5 +1,3 @@
-import HomepageSettings from "./HomepageSettings";
+const globals: never[] = [];
 
-const globals = [HomepageSettings];
-
-export { globals, HomepageSettings };
+export { globals };
