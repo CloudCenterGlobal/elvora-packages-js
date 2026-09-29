@@ -14,6 +14,7 @@ import * as migration_20260922_135007_blogs_eyebrow_optional_author_drop_tags fr
 import * as migration_20260922_135441_blogs_add_gallery from './20260922_135441_blogs_add_gallery';
 import * as migration_20260924_122358_blog_images_add_blur_data from './20260924_122358_blog_images_add_blur_data';
 import * as migration_20260925_112552_homepage_settings_global from './20260925_112552_homepage_settings_global';
+import * as migration_20260928_154431_forms_property_partners_investment_areas from './20260928_154431_forms_property_partners_investment_areas';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20260925_112552_homepage_settings_global.up,
     down: migration_20260925_112552_homepage_settings_global.down,
-    name: '20260925_112552_homepage_settings_global'
+    name: '20260925_112552_homepage_settings_global',
+  },
+  {
+    up: migration_20260928_154431_forms_property_partners_investment_areas.up,
+    down: migration_20260928_154431_forms_property_partners_investment_areas.down,
+    name: '20260928_154431_forms_property_partners_investment_areas'
   },
 ];

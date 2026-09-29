@@ -9,6 +9,19 @@ export const REFERRAL_SERVICE_OPTIONS = [
 ] as const;
 
 /**
+ * Areas offered on the property partners form. Mirrors the consuming app's
+ * investment-areas content, same reasoning as the referral services above.
+ */
+export const INVESTMENT_AREA_OPTIONS = [
+  { label: "Staffordshire & Stoke-on-Trent", value: "staffordshire-stoke" },
+  { label: "Warwickshire", value: "warwickshire" },
+  { label: "West Northamptonshire", value: "west-northamptonshire" },
+  { label: "Coventry", value: "coventry" },
+  { label: "Shropshire and Telford & Wrekin", value: "shropshire-telford-wrekin" },
+  { label: "Leicestershire", value: "leicestershire" },
+] as const;
+
+/**
  * How someone can be contacted for a requested callback. Kept as plain
  * option values (not a DB enum) for the same reason as the referral
  * services above — this package can't import from the consuming app, and

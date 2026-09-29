@@ -1,5 +1,6 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
+import { INVESTMENT_AREA_OPTIONS } from "./constants";
 
 const PropertyPartners: CollectionConfig = createCollection({
   slug: "forms-property-partners",
@@ -36,6 +37,18 @@ const PropertyPartners: CollectionConfig = createCollection({
       label: "Property location",
       type: "text",
       required: false,
+    },
+    {
+      name: "investment_areas",
+      label: "Investment areas",
+      type: "text",
+      hasMany: true,
+      required: false,
+      validate: (value: string[] | null | undefined) => {
+        const known = INVESTMENT_AREA_OPTIONS.map((option) => option.value as string);
+        const invalid = (value ?? []).filter((entry) => !known.includes(entry));
+        return invalid.length === 0 || `Unknown investment area(s): ${invalid.join(", ")}`;
+      },
     },
     {
       name: "additional_info",

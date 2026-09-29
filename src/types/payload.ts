@@ -527,6 +527,7 @@ export interface FormsPropertyPartner {
   email: string;
   phone: string;
   property_location?: string | null;
+  investment_areas?: string[] | null;
   additional_info?: string | null;
   consent: boolean;
   updatedAt: string;
@@ -938,6 +939,7 @@ export interface FormsPropertyPartnersSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   property_location?: T;
+  investment_areas?: T;
   additional_info?: T;
   consent?: T;
   updatedAt?: T;
