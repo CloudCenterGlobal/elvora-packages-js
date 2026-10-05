@@ -1,6 +1,5 @@
 "use client";
 
-import { NextLink } from "@elvora/components/next-link";
 import { notistackRef } from "@elvora/components/notistack";
 import {
   RHFFormProvider,
@@ -11,7 +10,6 @@ import {
   RHFSelectFieldProps,
   RHFTextField,
 } from "@elvora/components/react-hook-form";
-import { baseRoutes } from "@elvora/routes";
 import { JobForm } from "@elvora/types/payload";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -19,6 +17,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { getFieldName, getSchema } from "./utils";
+import PrivacyPolicyNotice from "@/components/forms/privacy-policy-notice";
 
 const RenderJobForm = ({ formData, onSubmit, values, disabled }: RenderJobFormProps) => {
   const { schema, defaultValues, fieldProps } = getSchema(formData, values);
@@ -109,24 +108,7 @@ const RenderJobForm = ({ formData, onSubmit, values, disabled }: RenderJobFormPr
             Complete Application
           </LoadingButton>
 
-          <Typography
-            variant="caption"
-            color="text.alt"
-            sx={{
-              a: {
-                fontWeight: 600,
-              },
-            }}
-          >
-            By clicking "Complete Application", you agree to our{" "}
-            <NextLink underline="hover" href={baseRoutes.termsAndConditions.root} color="inherit">
-              Terms & Conditions{" "}
-            </NextLink>{" "}
-            and{" "}
-            <NextLink href={baseRoutes.privacyPolicy.root} underline="hover" color="inherit">
-              Privacy Policy{" "}
-            </NextLink>
-          </Typography>
+          <PrivacyPolicyNotice />
         </Stack>
       )}
     </RHFFormProvider>

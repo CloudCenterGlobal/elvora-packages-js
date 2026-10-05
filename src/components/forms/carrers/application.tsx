@@ -1,7 +1,6 @@
 "use client";
 
 import { onCareerApplicationSubmit } from "@elvora/admin/server-actions/careers";
-import { NextLink } from "@elvora/components/next-link";
 import { notistackRef } from "@elvora/components/notistack";
 import { RHFFormProvider, RHFTextField, RHFUploadSingleFile } from "@elvora/components/react-hook-form";
 import { responsive } from "@elvora/utils/breakpoints";
@@ -21,8 +20,8 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import * as yup from "yup";
-import { baseRoutes } from "@elvora/routes";
 import { SxProps } from "@mui/material/styles";
+import PrivacyPolicyNotice from "@/components/forms/privacy-policy-notice";
 
 export const MAX_SIZE = 4000 * 1000;
 
@@ -115,22 +114,7 @@ const CareersApplicationForm: React.FC<CareersApplicationFormProps> = ({ hasQues
         </Stack>
 
         <Stack className="footer" spacing={1}>
-          <Typography
-            color="secondary.main"
-            variant="caption"
-            component="div"
-            className="privacy-policy"
-            sx={{ px: 1 }}
-          >
-            By clicking "{label}", you agree to our{" "}
-            <NextLink underline="hover" href={baseRoutes.termsAndConditions.root} color="inherit">
-              Terms & Conditions{" "}
-            </NextLink>{" "}
-            and{" "}
-            <NextLink href={baseRoutes.privacyPolicy.root} underline="hover" color="inherit">
-              Privacy Policy{" "}
-            </NextLink>
-          </Typography>
+          <PrivacyPolicyNotice />
 
           <LoadingButton variant="contained" fullWidth type="submit" loading={methods.formState.isSubmitting}>
             {label}
@@ -162,12 +146,6 @@ const sx: SxProps = {
 
   "& .MuiTextField-root fieldset": {
     boxShadow: 6,
-  },
-
-  "& .privacy-policy": {
-    "& a": {
-      fontWeight: 600,
-    },
   },
 
   [responsive("up", "md")]: {
