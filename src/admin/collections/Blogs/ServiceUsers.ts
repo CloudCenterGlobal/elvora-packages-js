@@ -14,10 +14,14 @@ const ServiceUsers = createCollection({
   fields: [
     {
       name: "name",
-      label: "Name",
+      label: "Initial",
       type: "text",
+      maxLength: 3,
       unique: true,
       required: true,
+      admin: {
+        description: "Use the service user's initial only. Do not enter their full name.",
+      },
     },
     {
       name: "slug",
@@ -25,8 +29,7 @@ const ServiceUsers = createCollection({
       type: "text",
       unique: true,
       admin: {
-        position: "sidebar",
-        description: "This will be automatically generated from the name. It must be unique.",
+        disabled: true,
       },
     },
   ],

@@ -316,10 +316,10 @@ export interface BlogCategory {
  */
 export interface ServiceUser {
   id: number;
-  name: string;
   /**
-   * This will be automatically generated from the name. It must be unique.
+   * Use the service user's initial only. Do not enter their full name.
    */
+  name: string;
   slug?: string | null;
   updatedAt: string;
   createdAt: string;
