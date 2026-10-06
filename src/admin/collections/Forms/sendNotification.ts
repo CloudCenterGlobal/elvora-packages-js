@@ -1,4 +1,5 @@
 import type { SendStoredFormSubmissionNotification } from "@/lib/email/form-submission-service";
+import { getSiteUrl } from "@elvora/utils/urls";
 import type { Endpoint } from "payload";
 
 const formSubmissionNotificationEndpoint = (
@@ -27,9 +28,10 @@ const formSubmissionNotificationEndpoint = (
       return Response.json({ message: "Unable to determine this site's URL." }, { status: 500 });
     }
 
-    const origin = new URL(req.url).origin;
+    const requestOrigin = new URL(req.url).origin;
 
     try {
+      const origin = await getSiteUrl(requestOrigin);
       const { sendFormSubmissionNotificationForDocument } = await import("@/lib/email/form-submission-service");
 
       await sendFormSubmissionNotificationForDocument({

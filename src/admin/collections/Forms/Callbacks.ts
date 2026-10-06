@@ -18,7 +18,7 @@ const Callbacks: CollectionConfig = createCollection({
           emailPreview: {
             Component: "@elvora/admin/collections/Forms/EmailPreview#FormSubmissionEmailPreview",
             path: "/email-preview",
-            tab: { label: "Email preview" },
+            tab: { label: "Email preview", href: "/email-preview" },
           },
         },
       },

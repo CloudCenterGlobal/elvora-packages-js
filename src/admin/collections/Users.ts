@@ -1,4 +1,5 @@
 import { createCollection, userHasPermission } from "@elvora/admin/collections/Permissions/helpers";
+import { getSiteUrl } from "@elvora/utils/urls";
 import { cacheUserPermissionsInRedis } from "./Permissions/helpers";
 import { userInvitationEndpoint } from "./Users/sendInvitation";
 
@@ -11,11 +12,10 @@ export const Users = createCollection({
     forgotPassword: {
       expiration: 15 * 60 * 1000,
       async generateEmailHTML(req) {
-        let link = `https://${req!.req?.host}/admin/reset/${req!.token}`;
-
-        if (link.includes("localhost") || link.includes("127.0.0.1")) {
-          link = link.replace("https://", "http://");
-        }
+        const link = `${await getSiteUrl(() => {
+          const host = req!.req?.host;
+          return `${host?.includes("localhost") || host?.includes("127.0.0.1") ? "http" : "https"}://${host}`;
+        })}/admin/reset/${req!.token}`;
 
         const { renderForgotPasswordEmail } = await import("@/lib/email/forgot-password-email");
 

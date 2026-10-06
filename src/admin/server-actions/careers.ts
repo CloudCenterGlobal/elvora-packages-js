@@ -9,6 +9,7 @@ import { sendFormSubmissionMail } from "@elvora/utils/mailer";
 import { CareersApplicationFormValues, MAX_SIZE } from "@elvora/components/forms/carrers/application";
 import { getFormSubmissionValuesAsArray, getOriginAndreferer } from "@elvora/utils/functions";
 import { getPayload } from "@elvora/utils/payload";
+import { getSiteUrl } from "@elvora/utils/urls";
 import { getJobByUuid } from "./jobs";
 import { baseRoutes } from "@elvora/routes";
 import { JobApplication, JobPosting } from "@elvora/types";
@@ -67,7 +68,7 @@ const sendJobApplicationMail = async (job: JobPosting, data: CareersApplicationF
 
   const title = `New Job Application for ${job.role} - ${data.first_name} ${data.last_name}`;
 
-  const url = origin + (application ? baseRoutes.admin.collections.jobApplications.detailById(application.id) : baseRoutes.careers.detail(job.uuid!));
+  const url = (await getSiteUrl(origin)) + (application ? baseRoutes.admin.collections.jobApplications.detailById(application.id) : baseRoutes.careers.detail(job.uuid!));
 
   sendFormSubmissionMail({
     to: RECRUITMENT_EMAIL,

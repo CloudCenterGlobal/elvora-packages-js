@@ -1,4 +1,5 @@
 import { getFormSubmissionContent, type FormSubmissionCollection } from "@/lib/email/form-submission-content";
+import { getSiteUrl } from "@elvora/utils/urls";
 import type { DocumentViewServerProps } from "payload";
 import { SendNotificationButton } from "./SendNotificationButton";
 
@@ -19,7 +20,7 @@ const FormSubmissionEmailPreview = async ({
     title,
     description: "A new website form submission has been received.",
     fields: preview.fields,
-    submissionUrl: `/admin/collections/${collectionSlug}/${doc.id}/email-preview`,
+    submissionUrl: `${await getSiteUrl(() => new URL(initPageResult.req.url!).origin)}/admin/collections/${collectionSlug}/${doc.id}/email-preview`,
   });
 
   return (
@@ -28,7 +29,7 @@ const FormSubmissionEmailPreview = async ({
       <p style={{ marginBottom: "24px" }}>This is the notification sent to the configured form-submission recipients.</p>
       <SendNotificationButton collection={collectionSlug} id={doc.id} />
       <iframe
-        sandbox="allow-popups"
+        sandbox="allow-popups allow-popups-to-escape-sandbox"
         srcDoc={html}
         style={{ border: "1px solid #d1d5db", borderRadius: "4px", height: "800px", width: "100%" }}
         title="Form submission email notification"
