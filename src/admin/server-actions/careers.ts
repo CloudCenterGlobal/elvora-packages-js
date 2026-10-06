@@ -5,7 +5,6 @@ import fs, { readFileSync } from "fs";
 import mime from "mime-types";
 import { redirect, RedirectType } from "next/navigation";
 import path from "path";
-import { sendFormSubmissionMail } from "@elvora/utils/mailer";
 import { CareersApplicationFormValues, MAX_SIZE } from "@elvora/components/forms/carrers/application";
 import { getFormSubmissionValuesAsArray, getOriginAndreferer } from "@elvora/utils/functions";
 import { getPayload } from "@elvora/utils/payload";
@@ -59,10 +58,7 @@ const onCareerApplicationSubmit = async (data: CareersApplicationFormValues) => 
 };
 
 const sendJobApplicationMail = async (job: JobPosting, data: CareersApplicationFormValues, application?: JobApplication) => {
-  // if cv is a buffer, use it as is
   const { renderFormSubmissionEmail } = await import("@/lib/email/form-submission-email");
-
-  const buffer = data.cv instanceof Buffer ? data.cv : Buffer.from(await data.cv.arrayBuffer());
 
   const { referer, origin } = await getOriginAndreferer();
 
@@ -70,28 +66,40 @@ const sendJobApplicationMail = async (job: JobPosting, data: CareersApplicationF
 
   const url = (await getSiteUrl(origin)) + (application ? baseRoutes.admin.collections.jobApplications.detailById(application.id) : baseRoutes.careers.detail(job.uuid!));
 
-  sendFormSubmissionMail({
-    to: RECRUITMENT_EMAIL,
-    html: await renderFormSubmissionEmail({
-      title,
-      description: "A new job application has been submitted",
-      fields: getFormSubmissionValuesAsArray(data, {
-        cv: true,
-        uuid: true,
-      }),
-      referer,
-      submissionUrl: url,
-      submissionLabel: `View Application | ${job.role}`,
-    }),
-    subject: title,
-    attachments: [
-      {
-        filename: data.cv.name,
-        content: buffer,
-        contentType: data.cv.type,
+  const payload = await getPayload();
+
+  // The application and its CV are already stored, so a queueing failure is logged instead of failing the submission.
+  try {
+    await payload.jobs.queue({
+      task: "send-email",
+      input: {
+        to: RECRUITMENT_EMAIL,
+        subject: `${title} - Webform Submission`,
+        html: await renderFormSubmissionEmail({
+          title,
+          description: "A new job application has been submitted",
+          fields: getFormSubmissionValuesAsArray(data, {
+            cv: true,
+            uuid: true,
+          }),
+          referer,
+          submissionUrl: url,
+          submissionLabel: `View Application | ${job.role}`,
+        }),
+        attachments: application?.cv
+          ? [
+              {
+                filename: data.cv.name,
+                path: path.join(BASE_DIR, application.cv),
+                contentType: data.cv.type,
+              },
+            ]
+          : [],
       },
-    ],
-  });
+    });
+  } catch (error) {
+    payload.logger.error({ err: error, applicationId: application?.id }, "Failed to queue job application email");
+  }
 };
 
 /**
@@ -239,7 +247,7 @@ const onCompleteAssessmentSubmit = async ({
     cv = loadCvFromAbsolutePath(response.docs[0].cv);
   }
 
-  sendJobApplicationMail(
+  await sendJobApplicationMail(
     response.docs[0].job as JobPosting,
     {
       first_name: response.docs[0].first_name,

@@ -18,12 +18,14 @@ const formSubmissionNotificationEndpoint = (
       return Response.json({ message: "A form submission id is required." }, { status: 400 });
     }
 
-    const document = await req.payload.findByID({
+    // Confirms the submission exists and that this user may read it before anything is queued.
+    await req.payload.findByID({
       collection,
       id,
-      depth: 1,
+      depth: 0,
       req,
     });
+
     if (!req.url) {
       return Response.json({ message: "Unable to determine this site's URL." }, { status: 500 });
     }
@@ -32,19 +34,21 @@ const formSubmissionNotificationEndpoint = (
 
     try {
       const origin = await getSiteUrl(requestOrigin);
-      const { sendFormSubmissionNotificationForDocument } = await import("@/lib/email/form-submission-service");
 
-      await sendFormSubmissionNotificationForDocument({
-        collection,
-        document,
-        submissionUrl: `${origin}/admin/collections/${collection}/${id}/email-preview`,
+      await req.payload.jobs.queue({
+        task: "send-form-submission-notification",
+        input: {
+          collection,
+          id: String(id),
+          submissionUrl: `${origin}/admin/collections/${collection}/${id}/email-preview`,
+        },
       });
     } catch (error) {
-      req.payload.logger.error({ err: error, collection, id }, "Failed to resend form-submission notification");
+      req.payload.logger.error({ err: error, collection, id }, "Failed to queue form-submission notification");
       return Response.json({ message: "Unable to resend the notification." }, { status: 502 });
     }
 
-    return Response.json({ message: "Notification sent." });
+    return Response.json({ message: "Notification queued." });
   },
 });
 

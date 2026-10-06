@@ -12,6 +12,7 @@ type QueuedEmailInput = {
   subject: string;
   html?: string;
   text?: string;
+  attachments?: { filename: string; path: string; contentType?: string }[];
 };
 
 const toAddressList = (value: SendEmailOptions["to"]) => {
@@ -30,6 +31,8 @@ const sendEmailTask: TaskConfig<"send-email"> = {
     { name: "subject", type: "text", required: true },
     { name: "html", type: "textarea" },
     { name: "text", type: "textarea" },
+    // Files are referenced by path and read from disk when the job runs, so the job row never holds file contents.
+    { name: "attachments", type: "json" },
   ],
   handler: async ({ input }) => {
     const email = input as QueuedEmailInput;

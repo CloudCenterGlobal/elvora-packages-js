@@ -36,7 +36,7 @@ const SendNotificationButton = ({ collection, id }: SendNotificationButtonProps)
         return;
       }
 
-      toast.success("Notification sent.");
+      toast.success("Notification queued and will be sent shortly.");
     } catch (error) {
       console.error("Failed to resend form-submission notification.", error);
       toast.error("Unable to resend the notification.");

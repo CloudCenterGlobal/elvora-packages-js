@@ -1264,6 +1264,15 @@ export interface TaskSendEmail {
     subject: string;
     html?: string | null;
     text?: string | null;
+    attachments?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
   output?: unknown;
 }
