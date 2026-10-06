@@ -17,6 +17,7 @@ import * as migration_20260925_112552_homepage_settings_global from './20260925_
 import * as migration_20260928_154431_forms_property_partners_investment_areas from './20260928_154431_forms_property_partners_investment_areas';
 import * as migration_20260929_140044_service_users_on_blogs from './20260929_140044_service_users_on_blogs';
 import * as migration_20260929_140229_remove_homepage_settings from './20260929_140229_remove_homepage_settings';
+import * as migration_20261006_142522_queue_email_jobs from './20261006_142522_queue_email_jobs';
 import * as migration_20261006_150500_users_invited_at from './20261006_150500_users_invited_at';
 
 export const migrations = [
@@ -113,11 +114,16 @@ export const migrations = [
   {
     up: migration_20260929_140229_remove_homepage_settings.up,
     down: migration_20260929_140229_remove_homepage_settings.down,
-    name: '20260929_140229_remove_homepage_settings'
+    name: '20260929_140229_remove_homepage_settings',
+  },
+  {
+    up: migration_20261006_142522_queue_email_jobs.up,
+    down: migration_20261006_142522_queue_email_jobs.down,
+    name: '20261006_142522_queue_email_jobs',
   },
   {
     up: migration_20261006_150500_users_invited_at.up,
     down: migration_20261006_150500_users_invited_at.down,
-    name: '20261006_150500_users_invited_at',
+    name: '20261006_150500_users_invited_at'
   },
 ];
