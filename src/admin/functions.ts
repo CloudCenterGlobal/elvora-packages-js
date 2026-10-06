@@ -15,14 +15,10 @@ const getMailConfig = (): MailTransportConfig => {
   return {
     host: mailConfig.SMTP_HOST,
     port: Number(mailConfig.SMTP_PORT!),
-    secure: false,
-    requireTLS: true,
+    secure: mailConfig.SMTP_SECURE,
     auth: {
       user: mailConfig.SMTP_USERNAME,
       pass: mailConfig.SMTP_PASSWORD,
-    },
-    tls: {
-      ciphers: "SSLv3",
     },
   };
 };

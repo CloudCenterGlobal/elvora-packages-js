@@ -3,7 +3,6 @@ import { fData } from "@elvora/utils/formatNumber";
 import { File } from "buffer";
 import fs, { readFileSync } from "fs";
 import mime from "mime-types";
-import { loadAndCompileTemplate } from "@elvora/mjml/helpers";
 import { redirect, RedirectType } from "next/navigation";
 import path from "path";
 import { sendFormSubmissionMail } from "@elvora/utils/mailer";
@@ -60,6 +59,8 @@ const onCareerApplicationSubmit = async (data: CareersApplicationFormValues) => 
 
 const sendJobApplicationMail = async (job: JobPosting, data: CareersApplicationFormValues, application?: JobApplication) => {
   // if cv is a buffer, use it as is
+  const { renderFormSubmissionEmail } = await import("@/lib/email/form-submission-email");
+
   const buffer = data.cv instanceof Buffer ? data.cv : Buffer.from(await data.cv.arrayBuffer());
 
   const { referer, origin } = await getOriginAndreferer();
@@ -70,24 +71,16 @@ const sendJobApplicationMail = async (job: JobPosting, data: CareersApplicationF
 
   sendFormSubmissionMail({
     to: RECRUITMENT_EMAIL,
-    html: loadAndCompileTemplate("forms-submission", {
-      description: "A new job application has been submitted",
+    html: await renderFormSubmissionEmail({
       title,
-      form: {
-        items: getFormSubmissionValuesAsArray(data, {
-          cv: true,
-          uuid: true,
-        }),
-        referer,
-      },
-      banner: {
-        title: "View Application",
-        image: origin + "/images/logo.png",
-        link: {
-          url,
-          text: job.role,
-        },
-      },
+      description: "A new job application has been submitted",
+      fields: getFormSubmissionValuesAsArray(data, {
+        cv: true,
+        uuid: true,
+      }),
+      referer,
+      submissionUrl: url,
+      submissionLabel: `View Application | ${job.role}`,
     }),
     subject: title,
     attachments: [

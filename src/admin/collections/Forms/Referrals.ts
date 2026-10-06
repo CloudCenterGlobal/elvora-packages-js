@@ -1,6 +1,7 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
 import { REFERRAL_SERVICE_OPTIONS } from "./constants";
+import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const Referrals: CollectionConfig = createCollection({
   slug: "forms-referrals",
@@ -15,10 +16,22 @@ const Referrals: CollectionConfig = createCollection({
       "createdAt",
     ],
     description: "Referrals submitted through the Make a Referral form.",
+    components: {
+      views: {
+        edit: {
+          emailPreview: {
+            Component: "@elvora/admin/collections/Forms/EmailPreview#FormSubmissionEmailPreview",
+            path: "/email-preview",
+            tab: { label: "Email preview" },
+          },
+        },
+      },
+    },
   },
   access: {
     update: () => false,
   },
+  endpoints: [formSubmissionNotificationEndpoint("forms-referrals")],
   fields: [
     {
       type: "collapsible",

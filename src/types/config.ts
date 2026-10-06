@@ -1,5 +1,5 @@
 import SMTPConnection from "nodemailer/lib/smtp-connection";
-import type { Config } from "payload";
+import type { Config, TaskConfig } from "payload";
 
 export type DbConfig = {
   host?: string;
@@ -12,6 +12,7 @@ export type DbConfig = {
 export type PayloadConfig = {
   db: DbConfig;
   email?: Config["email"];
+  tasks?: TaskConfig[];
 };
 
 export type MailTransportConfig = SMTPConnection.Options;

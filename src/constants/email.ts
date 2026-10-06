@@ -3,11 +3,13 @@ export const SMTP_HOST = process.env.SMTP_HOST!;
 export const SMTP_USERNAME = process.env.SMTP_USERNAME || "";
 export const SMTP_PASSWORD = process.env.SMTP_PASSWORD || "";
 
-export const SMTP_SECURE = process.env.SMTP_SECURE?.toLowerCase() === "true" || true;
+export const SMTP_SECURE = process.env.SMTP_SECURE?.toLowerCase() === "true";
 
 export const SYSTEM_EMAIL = process.env.SYSTEM_EMAIL;
 
 export const SYSTEM_NAME = process.env.SYSTEM_NAME || "Admin";
+
+export const FORM_SUBMISSION_EMAILS = process.env.FORM_SUBMISSION_EMAILS || "";
 
 export const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -24,6 +26,10 @@ declare global {
       SYSTEM_EMAIL: string;
       SYSTEM_NAME: string;
       SMTP_SECURE: "true" | string;
+      /**
+       * Comma-separated list of email addresses to receive form submission notifications.
+       */
+      FORM_SUBMISSION_EMAILS: string;
 
       RECRUITMENT_EMAIL: string;
     }

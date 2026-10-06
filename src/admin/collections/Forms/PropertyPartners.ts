@@ -1,6 +1,7 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
 import { INVESTMENT_AREA_OPTIONS } from "./constants";
+import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const PropertyPartners: CollectionConfig = createCollection({
   slug: "forms-property-partners",
@@ -9,10 +10,22 @@ const PropertyPartners: CollectionConfig = createCollection({
     useAsTitle: "name",
     defaultColumns: ["name", "email", "phone", "property_location", "createdAt"],
     description: "Enquiries submitted through the Supported Living Partners landing page.",
+    components: {
+      views: {
+        edit: {
+          emailPreview: {
+            Component: "@elvora/admin/collections/Forms/EmailPreview#FormSubmissionEmailPreview",
+            path: "/email-preview",
+            tab: { label: "Email preview" },
+          },
+        },
+      },
+    },
   },
   access: {
     update: () => false,
   },
+  endpoints: [formSubmissionNotificationEndpoint("forms-property-partners")],
   fields: [
     {
       name: "name",

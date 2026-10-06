@@ -1,6 +1,7 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
 import { CALLBACK_METHOD_OPTIONS } from "./constants";
+import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const Callbacks: CollectionConfig = createCollection({
   slug: "forms-callbacks",
@@ -9,10 +10,22 @@ const Callbacks: CollectionConfig = createCollection({
     useAsTitle: "name",
     defaultColumns: ["name", "email", "phone", "contact_method", "createdAt"],
     description: "Callback requests submitted through the Request a Callback form.",
+    components: {
+      views: {
+        edit: {
+          emailPreview: {
+            Component: "@elvora/admin/collections/Forms/EmailPreview#FormSubmissionEmailPreview",
+            path: "/email-preview",
+            tab: { label: "Email preview" },
+          },
+        },
+      },
+    },
   },
   access: {
     update: () => false,
   },
+  endpoints: [formSubmissionNotificationEndpoint("forms-callbacks")],
   fields: [
     {
       name: "name",

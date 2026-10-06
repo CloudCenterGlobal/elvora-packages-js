@@ -1,6 +1,6 @@
 import { createCollection, userHasPermission } from "@elvora/admin/collections/Permissions/helpers";
-import { loadAndCompileTemplate } from "@elvora/mjml/helpers";
 import { cacheUserPermissionsInRedis } from "./Permissions/helpers";
+import { userInvitationEndpoint } from "./Users/sendInvitation";
 
 export const Users = createCollection({
   slug: "users",
@@ -9,14 +9,17 @@ export const Users = createCollection({
     // 15 mins
     tokenExpiration: 15 * 60,
     forgotPassword: {
-      generateEmailHTML(req) {
+      expiration: 15 * 60 * 1000,
+      async generateEmailHTML(req) {
         let link = `https://${req!.req?.host}/admin/reset/${req!.token}`;
 
         if (link.includes("localhost") || link.includes("127.0.0.1")) {
           link = link.replace("https://", "http://");
         }
 
-        return loadAndCompileTemplate("forgot-password", {
+        const { renderForgotPasswordEmail } = await import("@/lib/email/forgot-password-email");
+
+        return renderForgotPasswordEmail({
           link,
           name: req?.user?.name || " there",
           expiry: 15,
@@ -27,11 +30,17 @@ export const Users = createCollection({
   admin: {
     useAsTitle: "name",
     group: "Users",
+    components: {
+      edit: {
+        beforeDocumentControls: ["@elvora/admin/collections/Users/SendInvitationButton#SendInvitationButton"],
+      },
+    },
   },
   access: {
     read: () => {
       return true;
     },
+    endpoints: [userInvitationEndpoint],
     update: ({ req, data }) => {
       return (!!data && data.id === req.user?.id) || userHasPermission(req, ["users.update"]);
     },
@@ -63,7 +72,7 @@ export const Users = createCollection({
         description: "This is the email used to login",
       },
       access: {
-        update({ req, data }) {
+        update({ req }) {
           return userHasPermission(req, ["users.update"]);
         },
       },
@@ -83,6 +92,15 @@ export const Users = createCollection({
         update({ req, data }) {
           return data?.id === req.user?.id || userHasPermission(req, ["users.update"]);
         },
+      },
+    },
+    {
+      name: "invitedAt",
+      label: "Invitation sent",
+      type: "date",
+      admin: {
+        position: "sidebar",
+        readOnly: true,
       },
     },
     {

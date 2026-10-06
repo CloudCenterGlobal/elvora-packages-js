@@ -21,6 +21,7 @@ import { DbConfig, PayloadConfig } from "@elvora/types";
 import { initRedisClient } from "@elvora/utils/redis";
 import { collections, Users } from "./collections";
 import { globals } from "./globals";
+import { createJobsConfig, createQueuedMailAdapter } from "./jobs";
 
 // Database
 
@@ -73,7 +74,8 @@ async function createPayloadConfig(options: PayloadConfig) {
         ],
       },
     },
-    email: options.email,
+    email: createQueuedMailAdapter(options.email),
+    jobs: createJobsConfig(options.tasks),
     collections: collections,
     globals: globals,
     editor: lexicalEditor({
