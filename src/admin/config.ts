@@ -44,6 +44,7 @@ async function createPayloadConfig(options: PayloadConfig) {
         });
     },
     admin: {
+      ...options.admin,
       user: Users.slug,
       importMap: {
         baseDir: path.resolve(dirname),
@@ -51,7 +52,8 @@ async function createPayloadConfig(options: PayloadConfig) {
 
       theme: "light",
       components: {
-        providers: ["@elvora/components/payload/#PayloadProvider"],
+        ...options.admin?.components,
+        providers: ["@elvora/components/payload/#PayloadProvider", ...(options.admin?.components?.providers ?? [])],
       },
       livePreview: {
         url({ data, collectionConfig, req }) {

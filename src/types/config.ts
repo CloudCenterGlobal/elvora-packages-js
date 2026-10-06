@@ -13,6 +13,7 @@ export type PayloadConfig = {
   db: DbConfig;
   email?: Config["email"];
   tasks?: TaskConfig[];
+  admin?: Config["admin"];
 };
 
 export type MailTransportConfig = SMTPConnection.Options;
