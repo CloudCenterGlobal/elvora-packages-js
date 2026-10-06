@@ -663,6 +663,8 @@ export interface PayloadKv {
     | null;
 }
 /**
+ * Queued background tasks such as emails. Failed tasks stay here with their error and are retried automatically.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs".
  */

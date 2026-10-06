@@ -6,6 +6,7 @@ import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const Referrals: CollectionConfig = createCollection({
   slug: "forms-referrals",
+  labels: { singular: "Referral", plural: "Referrals" },
   dbName: "forms_referrals",
   admin: {
     useAsTitle: "referred_name",

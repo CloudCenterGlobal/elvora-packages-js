@@ -5,6 +5,7 @@ import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const Contacts: CollectionConfig = createCollection({
   slug: "forms-contacts",
+  labels: { singular: "Contact Enquiry", plural: "Contact Enquiries" },
   dbName: "forms_contacts",
   admin: {
     useAsTitle: "name",

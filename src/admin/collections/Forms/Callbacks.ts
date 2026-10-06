@@ -6,6 +6,7 @@ import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const Callbacks: CollectionConfig = createCollection({
   slug: "forms-callbacks",
+  labels: { singular: "Callback Request", plural: "Callback Requests" },
   dbName: "forms_callbacks",
   admin: {
     useAsTitle: "name",

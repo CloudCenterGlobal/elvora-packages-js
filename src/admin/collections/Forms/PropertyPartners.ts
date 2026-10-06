@@ -6,6 +6,7 @@ import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const PropertyPartners: CollectionConfig = createCollection({
   slug: "forms-property-partners",
+  labels: { singular: "Property Partner Application", plural: "Property Partner Applications" },
   dbName: "forms_property_partners",
   admin: {
     useAsTitle: "name",

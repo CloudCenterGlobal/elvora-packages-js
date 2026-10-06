@@ -4,6 +4,7 @@ import { createMediaCollection } from "../Media";
 const ReferralDocuments = createCollection(
   createMediaCollection({
     slug: "forms-referral-documents",
+    labels: { singular: "Referral Document", plural: "Referral Documents" },
     dbName: "forms_referral_documents",
     admin: {},
     fields: [],

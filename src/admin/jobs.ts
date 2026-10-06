@@ -77,9 +77,31 @@ const createQueuedMailAdapter = (adapter: EmailAdapter | Promise<EmailAdapter> |
   })();
 };
 
+const isSuperAdmin = ({ req }: { req: { user?: { role?: string | null } | null } }) => req.user?.role === "super-admin";
+
+/** Jobs are inspect-only: super-admins can view and delete them, but never create or edit them. */
 const createJobsConfig = (tasks: TaskConfig[] = []): JobsConfig => ({
   tasks: [sendEmailTask, ...tasks],
   autoRun: [{ cron: "*/5 * * * * *", limit: 10, queue: "default" }],
+  // Set to "false" where a dedicated worker (`pnpm run worker`) processes the queue instead.
+  shouldAutoRun: () => process.env.PAYLOAD_JOBS_AUTORUN !== "false",
+  jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
+    ...defaultJobsCollection,
+    access: {
+      create: () => false,
+      update: () => false,
+      read: isSuperAdmin,
+      delete: isSuperAdmin,
+    },
+    admin: {
+      ...defaultJobsCollection.admin,
+      hidden: false,
+      group: "System",
+      useAsTitle: "taskSlug",
+      defaultColumns: ["taskSlug", "queue", "processing", "hasError", "totalTried", "createdAt", "completedAt"],
+      description: "Queued background tasks such as emails. Failed tasks stay here with their error and are retried automatically.",
+    },
+  }),
 });
 
 export { createJobsConfig, createQueuedMailAdapter, SEND_EMAIL_TASK, sendEmailTask };
