@@ -36,11 +36,11 @@ export const Users = createCollection({
       },
     },
   },
+  endpoints: [userInvitationEndpoint],
   access: {
     read: () => {
       return true;
     },
-    endpoints: [userInvitationEndpoint],
     update: ({ req, data }) => {
       return (!!data && data.id === req.user?.id) || userHasPermission(req, ["users.update"]);
     },
