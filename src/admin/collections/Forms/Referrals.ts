@@ -1,5 +1,6 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
+import { withReadStatus } from "./readStatus";
 import { REFERRAL_SERVICE_OPTIONS } from "./constants";
 import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
@@ -13,6 +14,7 @@ const Referrals: CollectionConfig = createCollection({
       "referrer_name",
       "organisation",
       "email",
+      "status",
       "createdAt",
     ],
     description: "Referrals submitted through the Make a Referral form.",
@@ -27,9 +29,6 @@ const Referrals: CollectionConfig = createCollection({
         },
       },
     },
-  },
-  access: {
-    update: () => false,
   },
   endpoints: [formSubmissionNotificationEndpoint("forms-referrals")],
   fields: [
@@ -129,4 +128,4 @@ const Referrals: CollectionConfig = createCollection({
   ],
 });
 
-export default Referrals;
+export default withReadStatus(Referrals);

@@ -507,6 +507,10 @@ export interface FormsReferral {
   email: string;
   phone?: string | null;
   consent: boolean;
+  /**
+   * Submissions start as unread. Set to read once someone has dealt with it.
+   */
+  status?: ('unread' | 'read') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -543,6 +547,10 @@ export interface FormsCallback {
   preferred_datetime?: string | null;
   additional_info?: string | null;
   consent: boolean;
+  /**
+   * Submissions start as unread. Set to read once someone has dealt with it.
+   */
+  status?: ('unread' | 'read') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -561,6 +569,10 @@ export interface FormsPropertyPartner {
   investment_areas?: string[] | null;
   additional_info?: string | null;
   consent: boolean;
+  /**
+   * Submissions start as unread. Set to read once someone has dealt with it.
+   */
+  status?: ('unread' | 'read') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -577,6 +589,10 @@ export interface FormsContact {
   phone?: string | null;
   location: string;
   message: string;
+  /**
+   * Submissions start as unread. Set to read once someone has dealt with it.
+   */
+  status?: ('unread' | 'read') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1054,6 +1070,7 @@ export interface FormsReferralsSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   consent?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1086,6 +1103,7 @@ export interface FormsCallbacksSelect<T extends boolean = true> {
   preferred_datetime?: T;
   additional_info?: T;
   consent?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1101,6 +1119,7 @@ export interface FormsPropertyPartnersSelect<T extends boolean = true> {
   investment_areas?: T;
   additional_info?: T;
   consent?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1114,6 +1133,7 @@ export interface FormsContactsSelect<T extends boolean = true> {
   phone?: T;
   location?: T;
   message?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

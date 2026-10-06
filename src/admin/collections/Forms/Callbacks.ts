@@ -1,5 +1,6 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
+import { withReadStatus } from "./readStatus";
 import { CALLBACK_METHOD_OPTIONS } from "./constants";
 import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
@@ -8,7 +9,7 @@ const Callbacks: CollectionConfig = createCollection({
   dbName: "forms_callbacks",
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "phone", "contact_method", "createdAt"],
+    defaultColumns: ["name", "email", "phone", "contact_method", "status", "createdAt"],
     description: "Callback requests submitted through the Request a Callback form.",
     components: {
       views: {
@@ -21,9 +22,6 @@ const Callbacks: CollectionConfig = createCollection({
         },
       },
     },
-  },
-  access: {
-    update: () => false,
   },
   endpoints: [formSubmissionNotificationEndpoint("forms-callbacks")],
   fields: [
@@ -82,4 +80,4 @@ const Callbacks: CollectionConfig = createCollection({
   ],
 });
 
-export default Callbacks;
+export default withReadStatus(Callbacks);

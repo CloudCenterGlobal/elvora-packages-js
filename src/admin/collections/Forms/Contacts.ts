@@ -1,5 +1,6 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
+import { withReadStatus } from "./readStatus";
 import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const Contacts: CollectionConfig = createCollection({
@@ -7,7 +8,7 @@ const Contacts: CollectionConfig = createCollection({
   dbName: "forms_contacts",
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "phone", "location", "createdAt"],
+    defaultColumns: ["name", "email", "phone", "location", "status", "createdAt"],
     description: "Enquiries submitted through the Contact form.",
     components: {
       views: {
@@ -20,9 +21,6 @@ const Contacts: CollectionConfig = createCollection({
         },
       },
     },
-  },
-  access: {
-    update: () => false,
   },
   endpoints: [formSubmissionNotificationEndpoint("forms-contacts")],
   fields: [
@@ -59,4 +57,4 @@ const Contacts: CollectionConfig = createCollection({
   ],
 });
 
-export default Contacts;
+export default withReadStatus(Contacts);

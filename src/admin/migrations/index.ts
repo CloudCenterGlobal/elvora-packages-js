@@ -18,6 +18,7 @@ import * as migration_20260928_154431_forms_property_partners_investment_areas f
 import * as migration_20260929_140044_service_users_on_blogs from './20260929_140044_service_users_on_blogs';
 import * as migration_20260929_140229_remove_homepage_settings from './20260929_140229_remove_homepage_settings';
 import * as migration_20261006_142522_queue_email_jobs from './20261006_142522_queue_email_jobs';
+import * as migration_20261006_143316_form_read_status from './20261006_143316_form_read_status';
 import * as migration_20261006_150500_users_invited_at from './20261006_150500_users_invited_at';
 
 export const migrations = [
@@ -120,6 +121,11 @@ export const migrations = [
     up: migration_20261006_142522_queue_email_jobs.up,
     down: migration_20261006_142522_queue_email_jobs.down,
     name: '20261006_142522_queue_email_jobs',
+  },
+  {
+    up: migration_20261006_143316_form_read_status.up,
+    down: migration_20261006_143316_form_read_status.down,
+    name: '20261006_143316_form_read_status',
   },
   {
     up: migration_20261006_150500_users_invited_at.up,
