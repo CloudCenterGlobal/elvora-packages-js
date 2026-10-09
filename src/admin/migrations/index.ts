@@ -20,6 +20,7 @@ import * as migration_20260929_140229_remove_homepage_settings from './20260929_
 import * as migration_20261006_142522_queue_email_jobs from './20261006_142522_queue_email_jobs';
 import * as migration_20261006_143316_form_read_status from './20261006_143316_form_read_status';
 import * as migration_20261006_150500_users_invited_at from './20261006_150500_users_invited_at';
+import * as migration_20261009_170501_lead_call_fields from './20261009_170501_lead_call_fields';
 
 export const migrations = [
   {
@@ -130,6 +131,11 @@ export const migrations = [
   {
     up: migration_20261006_150500_users_invited_at.up,
     down: migration_20261006_150500_users_invited_at.down,
-    name: '20261006_150500_users_invited_at'
+    name: '20261006_150500_users_invited_at',
+  },
+  {
+    up: migration_20261009_170501_lead_call_fields.up,
+    down: migration_20261009_170501_lead_call_fields.down,
+    name: '20261009_170501_lead_call_fields'
   },
 ];

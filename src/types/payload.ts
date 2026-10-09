@@ -570,6 +570,42 @@ export interface FormsPropertyPartner {
   additional_info?: string | null;
   consent: boolean;
   /**
+   * Outcome of the qualifying questions on /property-partners/apply.
+   */
+  qualification?: {
+    form_version?: number | null;
+    result?: ('pass' | 'decline') | null;
+    score?: number | null;
+    max_score?: number | null;
+  };
+  /**
+   * What they answered, in the wording they saw.
+   */
+  answers?:
+    | {
+        step_id?: string | null;
+        question?: string | null;
+        answer?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The call time they picked and whether it was booked in Calendly.
+   */
+  call?: {
+    status?: ('booked' | 'failed' | 'not_scheduled' | 'cancelled') | null;
+    scheduled_at?: string | null;
+    timezone?: string | null;
+    failure_reason?: string | null;
+    calendly_invitee_uri?: string | null;
+  };
+  tracking?: {
+    utm_source?: string | null;
+    utm_campaign?: string | null;
+    utm_content?: string | null;
+    fbclid?: string | null;
+  };
+  /**
    * Submissions start as unread. Set to read once someone has dealt with it.
    */
   status?: ('unread' | 'read') | null;
@@ -1121,6 +1157,39 @@ export interface FormsPropertyPartnersSelect<T extends boolean = true> {
   investment_areas?: T;
   additional_info?: T;
   consent?: T;
+  qualification?:
+    | T
+    | {
+        form_version?: T;
+        result?: T;
+        score?: T;
+        max_score?: T;
+      };
+  answers?:
+    | T
+    | {
+        step_id?: T;
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  call?:
+    | T
+    | {
+        status?: T;
+        scheduled_at?: T;
+        timezone?: T;
+        failure_reason?: T;
+        calendly_invitee_uri?: T;
+      };
+  tracking?:
+    | T
+    | {
+        utm_source?: T;
+        utm_campaign?: T;
+        utm_content?: T;
+        fbclid?: T;
+      };
   status?: T;
   updatedAt?: T;
   createdAt?: T;

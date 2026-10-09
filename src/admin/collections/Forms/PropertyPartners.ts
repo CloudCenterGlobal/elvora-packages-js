@@ -10,7 +10,7 @@ const PropertyPartners: CollectionConfig = createCollection({
   dbName: "forms_property_partners",
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "phone", "property_location", "status", "createdAt"],
+    defaultColumns: ["name", "email", "phone", "call.status", "call.scheduled_at", "status", "createdAt"],
     description: "Enquiries submitted through the Supported Living Partners landing page.",
     components: {
       views: {
@@ -74,6 +74,77 @@ const PropertyPartners: CollectionConfig = createCollection({
       type: "checkbox",
       required: true,
       defaultValue: false,
+    },
+    {
+      name: "qualification",
+      label: "Qualification",
+      type: "group",
+      admin: { description: "Outcome of the qualifying questions on /property-partners/apply." },
+      fields: [
+        { name: "form_version", label: "Question set version", type: "number" },
+        {
+          name: "result",
+          label: "Result",
+          type: "select",
+          options: [
+            { label: "Pass", value: "pass" },
+            { label: "Decline", value: "decline" },
+          ],
+        },
+        { name: "score", label: "Score", type: "number" },
+        { name: "max_score", label: "Maximum score", type: "number" },
+      ],
+    },
+    {
+      name: "answers",
+      label: "Answers",
+      type: "array",
+      admin: { description: "What they answered, in the wording they saw.", initCollapsed: false },
+      fields: [
+        { name: "step_id", label: "Question ID", type: "text", admin: { hidden: true } },
+        { name: "question", label: "Question", type: "text" },
+        { name: "answer", label: "Answer", type: "text" },
+      ],
+    },
+    {
+      name: "call",
+      label: "Call booking",
+      type: "group",
+      admin: { description: "The call time they picked and whether it was booked in Calendly." },
+      fields: [
+        {
+          name: "status",
+          label: "Status",
+          type: "select",
+          index: true,
+          options: [
+            { label: "Booked", value: "booked" },
+            { label: "Failed", value: "failed" },
+            { label: "No time selected", value: "not_scheduled" },
+            { label: "Cancelled", value: "cancelled" },
+          ],
+        },
+        {
+          name: "scheduled_at",
+          label: "Selected time",
+          type: "date",
+          admin: { date: { pickerAppearance: "dayAndTime" } },
+        },
+        { name: "timezone", label: "Visitor timezone", type: "text" },
+        { name: "failure_reason", label: "Why it failed", type: "text" },
+        { name: "calendly_invitee_uri", label: "Calendly invitee", type: "text", index: true },
+      ],
+    },
+    {
+      name: "tracking",
+      label: "Ad tracking",
+      type: "group",
+      fields: [
+        { name: "utm_source", label: "UTM source", type: "text" },
+        { name: "utm_campaign", label: "UTM campaign", type: "text" },
+        { name: "utm_content", label: "UTM content", type: "text" },
+        { name: "fbclid", label: "Meta click ID (fbclid)", type: "text" },
+      ],
     },
   ],
 });
