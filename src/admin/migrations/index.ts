@@ -21,6 +21,7 @@ import * as migration_20261006_142522_queue_email_jobs from './20261006_142522_q
 import * as migration_20261006_143316_form_read_status from './20261006_143316_form_read_status';
 import * as migration_20261006_150500_users_invited_at from './20261006_150500_users_invited_at';
 import * as migration_20261009_170501_lead_call_fields from './20261009_170501_lead_call_fields';
+import * as migration_20261013_065859_tracking_ad_fields from './20261013_065859_tracking_ad_fields';
 
 export const migrations = [
   {
@@ -136,6 +137,11 @@ export const migrations = [
   {
     up: migration_20261009_170501_lead_call_fields.up,
     down: migration_20261009_170501_lead_call_fields.down,
-    name: '20261009_170501_lead_call_fields'
+    name: '20261009_170501_lead_call_fields',
+  },
+  {
+    up: migration_20261013_065859_tracking_ad_fields.up,
+    down: migration_20261013_065859_tracking_ad_fields.down,
+    name: '20261013_065859_tracking_ad_fields'
   },
 ];

@@ -603,6 +603,12 @@ export interface FormsPropertyPartner {
     utm_source?: string | null;
     utm_campaign?: string | null;
     utm_content?: string | null;
+    utm_medium?: string | null;
+    utm_term?: string | null;
+    campaign_id?: string | null;
+    adset_id?: string | null;
+    ad_id?: string | null;
+    placement?: string | null;
     fbclid?: string | null;
   };
   /**
@@ -1188,6 +1194,12 @@ export interface FormsPropertyPartnersSelect<T extends boolean = true> {
         utm_source?: T;
         utm_campaign?: T;
         utm_content?: T;
+        utm_medium?: T;
+        utm_term?: T;
+        campaign_id?: T;
+        adset_id?: T;
+        ad_id?: T;
+        placement?: T;
         fbclid?: T;
       };
   status?: T;
