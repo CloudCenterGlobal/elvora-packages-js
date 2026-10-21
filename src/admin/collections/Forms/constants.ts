@@ -31,3 +31,13 @@ export const CALLBACK_METHOD_OPTIONS = [
   { label: "Microsoft Teams", value: "teams" },
   { label: "Phone Call", value: "phone" },
 ] as const;
+
+/**
+ * Partner application types sharing the partner applications collection.
+ * The app's partner registry is keyed by these values, so a new type is
+ * added here first (plus a migration for the enum) and then defined there.
+ */
+export const PARTNER_TYPE_OPTIONS = [
+  { label: "Property partner", value: "property" },
+  { label: "Housing partner", value: "housing" },
+] as const;

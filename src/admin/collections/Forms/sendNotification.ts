@@ -1,4 +1,5 @@
 import type { SendStoredFormSubmissionNotification } from "@/lib/email/form-submission-service";
+import { formSubmissionAdminPath } from "@/lib/email/form-submission-path";
 import { getSiteUrl } from "@elvora/utils/urls";
 import type { Endpoint } from "payload";
 
@@ -40,7 +41,7 @@ const formSubmissionNotificationEndpoint = (
         input: {
           collection,
           id: String(id),
-          submissionUrl: `${origin}/admin/collections/${collection}/${id}/email-preview`,
+          submissionUrl: `${origin}${formSubmissionAdminPath(collection, id)}`,
         },
       });
     } catch (error) {

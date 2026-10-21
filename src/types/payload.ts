@@ -555,22 +555,22 @@ export interface FormsCallback {
   createdAt: string;
 }
 /**
- * Enquiries submitted through the Supported Living Partners landing page.
+ * Property and housing partner applications. Filter by partner type.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms-property-partners".
  */
 export interface FormsPropertyPartner {
   id: number;
+  partner_type?: ('property' | 'housing') | null;
   name: string;
   email: string;
   phone: string;
-  property_location?: string | null;
   investment_areas?: string[] | null;
   additional_info?: string | null;
   consent: boolean;
   /**
-   * Outcome of the qualifying questions on /property-partners/apply.
+   * Outcome of the qualifying questions on the partner apply page.
    */
   qualification?: {
     form_version?: number | null;
@@ -589,16 +589,6 @@ export interface FormsPropertyPartner {
         id?: string | null;
       }[]
     | null;
-  /**
-   * The call time they picked and whether it was booked in Calendly.
-   */
-  call?: {
-    status?: ('booked' | 'failed' | 'not_scheduled' | 'cancelled') | null;
-    scheduled_at?: string | null;
-    timezone?: string | null;
-    failure_reason?: string | null;
-    calendly_invitee_uri?: string | null;
-  };
   tracking?: {
     utm_source?: string | null;
     utm_campaign?: string | null;
@@ -1156,10 +1146,10 @@ export interface FormsCallbacksSelect<T extends boolean = true> {
  * via the `definition` "forms-property-partners_select".
  */
 export interface FormsPropertyPartnersSelect<T extends boolean = true> {
+  partner_type?: T;
   name?: T;
   email?: T;
   phone?: T;
-  property_location?: T;
   investment_areas?: T;
   additional_info?: T;
   consent?: T;
@@ -1178,15 +1168,6 @@ export interface FormsPropertyPartnersSelect<T extends boolean = true> {
         question?: T;
         answer?: T;
         id?: T;
-      };
-  call?:
-    | T
-    | {
-        status?: T;
-        scheduled_at?: T;
-        timezone?: T;
-        failure_reason?: T;
-        calendly_invitee_uri?: T;
       };
   tracking?:
     | T

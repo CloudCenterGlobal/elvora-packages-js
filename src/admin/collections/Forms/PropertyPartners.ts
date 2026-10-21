@@ -1,18 +1,21 @@
 import { createCollection } from "@elvora/admin/collections/Permissions/helpers";
 import type { CollectionConfig } from "payload";
 import { withReadStatus } from "./readStatus";
-import { INVESTMENT_AREA_OPTIONS } from "./constants";
+import { withCustomPage } from "./withCustomPage";
+import { INVESTMENT_AREA_OPTIONS, PARTNER_TYPE_OPTIONS } from "./constants";
 import { formSubmissionNotificationEndpoint } from "./sendNotification";
 
 const PropertyPartners: CollectionConfig = createCollection({
   slug: "forms-property-partners",
-  labels: { singular: "Property Partner Application", plural: "Property Partner Applications" },
+  labels: { singular: "Partner Application", plural: "Partner Applications" },
   dbName: "forms_property_partners",
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "phone", "call.status", "call.scheduled_at", "status", "createdAt"],
-    description: "Enquiries submitted through the Supported Living Partners landing page.",
+    pagination: { defaultLimit: 25, limits: [10, 25, 50, 100] },
+    defaultColumns: ["name", "partner_type", "email", "phone", "status", "createdAt"],
+    description: "Property and housing partner applications. Filter by partner type.",
     components: {
+      beforeListTable: ["@elvora/admin/collections/Forms/PartnerTypeFilter#PartnerTypeFilter"],
       views: {
         edit: {
           emailPreview: {
@@ -26,6 +29,14 @@ const PropertyPartners: CollectionConfig = createCollection({
   },
   endpoints: [formSubmissionNotificationEndpoint("forms-property-partners")],
   fields: [
+    {
+      name: "partner_type",
+      label: "Partner type",
+      type: "select",
+      defaultValue: "property",
+      index: true,
+      options: [...PARTNER_TYPE_OPTIONS],
+    },
     {
       name: "name",
       label: "Name",
@@ -43,12 +54,6 @@ const PropertyPartners: CollectionConfig = createCollection({
       label: "Contact number",
       type: "text",
       required: true,
-    },
-    {
-      name: "property_location",
-      label: "Property location",
-      type: "text",
-      required: false,
     },
     {
       name: "investment_areas",
@@ -79,7 +84,7 @@ const PropertyPartners: CollectionConfig = createCollection({
       name: "qualification",
       label: "Qualification",
       type: "group",
-      admin: { description: "Outcome of the qualifying questions on /property-partners/apply." },
+      admin: { description: "Outcome of the qualifying questions on the partner apply page." },
       fields: [
         { name: "form_version", label: "Question set version", type: "number" },
         {
@@ -107,35 +112,6 @@ const PropertyPartners: CollectionConfig = createCollection({
       ],
     },
     {
-      name: "call",
-      label: "Call booking",
-      type: "group",
-      admin: { description: "The call time they picked and whether it was booked in Calendly." },
-      fields: [
-        {
-          name: "status",
-          label: "Status",
-          type: "select",
-          index: true,
-          options: [
-            { label: "Booked", value: "booked" },
-            { label: "Failed", value: "failed" },
-            { label: "No time selected", value: "not_scheduled" },
-            { label: "Cancelled", value: "cancelled" },
-          ],
-        },
-        {
-          name: "scheduled_at",
-          label: "Selected time",
-          type: "date",
-          admin: { date: { pickerAppearance: "dayAndTime" } },
-        },
-        { name: "timezone", label: "Visitor timezone", type: "text" },
-        { name: "failure_reason", label: "Why it failed", type: "text" },
-        { name: "calendly_invitee_uri", label: "Calendly invitee", type: "text", index: true },
-      ],
-    },
-    {
       name: "tracking",
       label: "Ad tracking",
       type: "group",
@@ -155,4 +131,6 @@ const PropertyPartners: CollectionConfig = createCollection({
   ],
 });
 
-export default withReadStatus(PropertyPartners);
+export default withReadStatus(
+  withCustomPage(PropertyPartners, "@elvora/admin/collections/Forms/SubmissionPage#SubmissionPage"),
+);

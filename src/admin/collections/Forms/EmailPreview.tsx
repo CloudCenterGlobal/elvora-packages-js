@@ -1,4 +1,5 @@
 import { getFormSubmissionContent, type FormSubmissionCollection } from "@/lib/email/form-submission-content";
+import { formSubmissionAdminPath } from "@/lib/email/form-submission-path";
 import { getSiteUrl } from "@elvora/utils/urls";
 import type { DocumentViewServerProps } from "payload";
 import { SendNotificationButton } from "./SendNotificationButton";
@@ -14,13 +15,12 @@ const FormSubmissionEmailPreview = async ({
   }
 
   const preview = getFormSubmissionContent(collectionSlug, doc);
-  const title = `New ${preview.formName} submission`;
   const { renderFormSubmissionEmail } = await import("@/lib/email/form-submission-email");
   const html = await renderFormSubmissionEmail({
-    title,
-    description: "A new website form submission has been received.",
+    title: preview.title,
+    description: preview.description,
     fields: preview.fields,
-    submissionUrl: `${await getSiteUrl(() => new URL(initPageResult.req.url!).origin)}/admin/collections/${collectionSlug}/${doc.id}/email-preview`,
+    submissionUrl: `${await getSiteUrl(() => new URL(initPageResult.req.url!).origin)}${formSubmissionAdminPath(collectionSlug, doc.id)}`,
   });
 
   return (
