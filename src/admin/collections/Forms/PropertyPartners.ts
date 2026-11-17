@@ -13,7 +13,7 @@ const PropertyPartners: CollectionConfig = createCollection({
     useAsTitle: "name",
     pagination: { defaultLimit: 25, limits: [10, 25, 50, 100] },
     defaultColumns: ["name", "partner_type", "email", "phone", "status", "createdAt"],
-    description: "Property and housing partner applications. Filter by partner type.",
+    description: "Property, housing and company sale applications. Filter by partner type.",
     components: {
       beforeListTable: ["@elvora/admin/collections/Forms/PartnerTypeFilter#PartnerTypeFilter"],
       views: {

@@ -40,4 +40,5 @@ export const CALLBACK_METHOD_OPTIONS = [
 export const PARTNER_TYPE_OPTIONS = [
   { label: "Property partner", value: "property" },
   { label: "Housing partner", value: "housing" },
+  { label: "Company sale", value: "sell" },
 ] as const;

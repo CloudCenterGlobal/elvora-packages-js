@@ -24,6 +24,7 @@ import * as migration_20261009_170501_lead_call_fields from './20261009_170501_l
 import * as migration_20261013_065859_tracking_ad_fields from './20261013_065859_tracking_ad_fields';
 import * as migration_20261021_130554_drop_call_and_property_location from './20261021_130554_drop_call_and_property_location';
 import * as migration_20261021_130604_add_partner_type from './20261021_130604_add_partner_type';
+import * as migration_20261117_181430_add_sell_partner_type from './20261117_181430_add_sell_partner_type';
 
 export const migrations = [
   {
@@ -154,6 +155,11 @@ export const migrations = [
   {
     up: migration_20261021_130604_add_partner_type.up,
     down: migration_20261021_130604_add_partner_type.down,
-    name: '20261021_130604_add_partner_type'
+    name: '20261021_130604_add_partner_type',
+  },
+  {
+    up: migration_20261117_181430_add_sell_partner_type.up,
+    down: migration_20261117_181430_add_sell_partner_type.down,
+    name: '20261117_181430_add_sell_partner_type'
   },
 ];

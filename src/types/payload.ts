@@ -555,14 +555,14 @@ export interface FormsCallback {
   createdAt: string;
 }
 /**
- * Property and housing partner applications. Filter by partner type.
+ * Property, housing and company sale applications. Filter by partner type.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms-property-partners".
  */
 export interface FormsPropertyPartner {
   id: number;
-  partner_type?: ('property' | 'housing') | null;
+  partner_type?: ('property' | 'housing' | 'sell') | null;
   name: string;
   email: string;
   phone: string;
