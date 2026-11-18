@@ -128,6 +128,31 @@ const PropertyPartners: CollectionConfig = createCollection({
         { name: "fbclid", label: "Meta click ID (fbclid)", type: "text" },
       ],
     },
+    {
+      name: "zoho",
+      label: "Zoho CRM",
+      type: "group",
+      admin: { description: "Sync state for the Zoho CRM lead. Filled in by the sync job." },
+      fields: [
+        {
+          name: "status",
+          label: "Sync status",
+          type: "select",
+          index: true,
+          options: [
+            { label: "Pending", value: "pending" },
+            { label: "Synced", value: "synced" },
+            { label: "Failed", value: "failed" },
+            { label: "Skipped", value: "skipped" },
+          ],
+        },
+        { name: "lead_id", label: "Zoho lead ID", type: "text" },
+        { name: "note_id", label: "Zoho note ID", type: "text" },
+        { name: "synced_at", label: "Synced at", type: "date" },
+        { name: "attempts", label: "Attempts", type: "number", defaultValue: 0 },
+        { name: "last_error", label: "Last error", type: "textarea" },
+      ],
+    },
   ],
 });
 

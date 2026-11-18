@@ -121,8 +121,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    settings: Setting;
+  };
+  globalsSelect: {
+    settings: SettingsSelect<false> | SettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -133,6 +137,7 @@ export interface Config {
       'send-email': TaskSendEmail;
       'send-form-submission-notification': TaskSendFormSubmissionNotification;
       'send-user-invitation': TaskSendUserInvitation;
+      'sync-zoho-lead': TaskSyncZohoLead;
       inline: {
         input: unknown;
         output: unknown;
@@ -602,6 +607,17 @@ export interface FormsPropertyPartner {
     fbclid?: string | null;
   };
   /**
+   * Sync state for the Zoho CRM lead. Filled in by the sync job.
+   */
+  zoho?: {
+    status?: ('pending' | 'synced' | 'failed' | 'skipped') | null;
+    lead_id?: string | null;
+    note_id?: string | null;
+    synced_at?: string | null;
+    attempts?: number | null;
+    last_error?: string | null;
+  };
+  /**
    * Submissions start as unread. Set to read once someone has dealt with it.
    */
   status?: ('unread' | 'read') | null;
@@ -748,7 +764,8 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'send-email' | 'send-form-submission-notification' | 'send-user-invitation';
+        taskSlug:
+          'inline' | 'send-email' | 'send-form-submission-notification' | 'send-user-invitation' | 'sync-zoho-lead';
         taskID: string;
         input?:
           | {
@@ -781,7 +798,8 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'send-email' | 'send-form-submission-notification' | 'send-user-invitation') | null;
+  taskSlug?:
+    ('inline' | 'send-email' | 'send-form-submission-notification' | 'send-user-invitation' | 'sync-zoho-lead') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1183,6 +1201,16 @@ export interface FormsPropertyPartnersSelect<T extends boolean = true> {
         placement?: T;
         fbclid?: T;
       };
+  zoho?:
+    | T
+    | {
+        status?: T;
+        lead_id?: T;
+        note_id?: T;
+        synced_at?: T;
+        attempts?: T;
+        last_error?: T;
+      };
   status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1304,6 +1332,80 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Credentials and options for lead integrations. Values here take priority over environment variables.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: number;
+  zoho?: {
+    client_id?: string | null;
+    /**
+     * Saved values show as dots. Leave as is to keep it, or type a new one.
+     */
+    client_secret?: string | null;
+    accounts_url?: string | null;
+    api_url?: string | null;
+    /**
+     * Must match a member status that exists in Zoho. Leave blank to use Zoho's default.
+     */
+    member_status?: string | null;
+    dry_run?: boolean | null;
+    /**
+     * Optional. After this date these values are ignored until you set a new date or clear it.
+     */
+    expires_at?: string | null;
+    /**
+     * Set by Connect Zoho. Paste one here only to override it.
+     */
+    refresh_token?: string | null;
+    connected_at?: string | null;
+    connected_by?: string | null;
+  };
+  privyr?: {
+    /**
+     * Saved values show as dots. Leave as is to keep it, or type a new one.
+     */
+    webhook_url?: string | null;
+    /**
+     * Optional. After this date these values are ignored until you set a new date or clear it.
+     */
+    expires_at?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  zoho?:
+    | T
+    | {
+        client_id?: T;
+        client_secret?: T;
+        accounts_url?: T;
+        api_url?: T;
+        member_status?: T;
+        dry_run?: T;
+        expires_at?: T;
+        refresh_token?: T;
+        connected_at?: T;
+        connected_by?: T;
+      };
+  privyr?:
+    | T
+    | {
+        webhook_url?: T;
+        expires_at?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
@@ -1358,6 +1460,16 @@ export interface TaskSendUserInvitation {
   input: {
     userId: string;
     origin: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSync-zoho-lead".
+ */
+export interface TaskSyncZohoLead {
+  input: {
+    id: string;
   };
   output?: unknown;
 }

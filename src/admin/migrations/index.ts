@@ -25,6 +25,8 @@ import * as migration_20261013_065859_tracking_ad_fields from './20261013_065859
 import * as migration_20261021_130554_drop_call_and_property_location from './20261021_130554_drop_call_and_property_location';
 import * as migration_20261021_130604_add_partner_type from './20261021_130604_add_partner_type';
 import * as migration_20261117_181430_add_sell_partner_type from './20261117_181430_add_sell_partner_type';
+import * as migration_20261118_123158_add_zoho_sync from './20261118_123158_add_zoho_sync';
+import * as migration_20261118_125413_add_settings from './20261118_125413_add_settings';
 
 export const migrations = [
   {
@@ -160,6 +162,16 @@ export const migrations = [
   {
     up: migration_20261117_181430_add_sell_partner_type.up,
     down: migration_20261117_181430_add_sell_partner_type.down,
-    name: '20261117_181430_add_sell_partner_type'
+    name: '20261117_181430_add_sell_partner_type',
+  },
+  {
+    up: migration_20261118_123158_add_zoho_sync.up,
+    down: migration_20261118_123158_add_zoho_sync.down,
+    name: '20261118_123158_add_zoho_sync',
+  },
+  {
+    up: migration_20261118_125413_add_settings.up,
+    down: migration_20261118_125413_add_settings.down,
+    name: '20261118_125413_add_settings'
   },
 ];

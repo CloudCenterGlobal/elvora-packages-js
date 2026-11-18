@@ -79,7 +79,7 @@ async function createPayloadConfig(options: PayloadConfig) {
     email: createQueuedMailAdapter(options.email),
     jobs: createJobsConfig(options.tasks),
     collections: collections,
-    globals: globals,
+    globals: [...globals, ...(options.globals ?? [])],
     editor: lexicalEditor({
       features({ rootFeatures }) {
         return [
